@@ -8,3 +8,9 @@
   padding-top: 9.375rem;
   flex: 1;
 }
+
+@media (max-width: 667px) {
+  .main {
+    padding-top: 10.625rem;
+  }
+}
