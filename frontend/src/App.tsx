@@ -1,11 +1,11 @@
-function App() {
-  //! test backend
-  fetch("/api/data")
-    .then((response) => response.json())
-    .then((data) => console.log(data))
-    .catch((error) => console.error(error));
+import Layout from "./components/Layout";
 
-  return <div className="App"></div>;
+function App() {
+  return (
+    <div className="App">
+      <Layout>Hello World</Layout>
+    </div>
+  );
 }
 
 export default App;
