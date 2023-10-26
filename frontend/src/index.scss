@@ -6,6 +6,7 @@ body {
   margin: 0;
   padding: 0;
   font-family: "Fira Sans", sans-serif;
+  background-color: rgba(54, 54, 54, 0.04);
 }
 
 ul {
@@ -16,4 +17,16 @@ ul {
 a {
   text-decoration: none;
   color: #2a2a2a;
+}
+
+h3 {
+  color: #363636;
+  font-size: 2rem;
+  margin-bottom: 2rem;
+}
+
+@media (max-width: 668px) {
+  html {
+    font-size: 12px;
+  }
 }
