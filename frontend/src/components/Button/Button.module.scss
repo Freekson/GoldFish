@@ -10,10 +10,56 @@
     padding: 0.5rem 1rem;
     box-sizing: border-box;
     transition: 0.1s ease-in;
-    background: #2a2a2a;
+    background: transparent;
 
     &:hover {
+      background: linear-gradient(184.53deg, #f9a43f 5.27%, #fb791b 91.78%);
+      color: white;
       text-decoration: none;
+    }
+  }
+}
+
+.active {
+  text-align: center;
+  a {
+    display: block;
+    width: 100%;
+    color: white;
+    font-weight: 500;
+    border-radius: 9px;
+    padding: 1rem 2rem;
+    box-sizing: border-box;
+    transition: 0.1s ease-in;
+    border: 2px #f9a43f solid;
+    transition: all 0.1s linears;
+    background: linear-gradient(184.53deg, #f9a43f 5.27%, #fb791b 91.78%);
+
+    &:hover {
+      border: 2px #f9a43f solid;
+      background: transparent;
+      color: black;
+    }
+  }
+}
+
+.inactive {
+  text-align: center;
+  a {
+    display: block;
+    width: 100%;
+    color: black;
+    font-weight: 500;
+    border-radius: 9px;
+    padding: 1rem 2rem;
+    box-sizing: border-box;
+    transition: 0.1s ease-in;
+    border: 2px #f9a43f solid;
+    transition: all 0.1s linears;
+    background: transparent;
+
+    &:hover {
+      border: 2px #f9a43f solid;
       background: linear-gradient(184.53deg, #f9a43f 5.27%, #fb791b 91.78%);
       color: white;
     }
