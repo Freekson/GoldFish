@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import styles from "./Header.module.scss";
+import { Link } from "react-router-dom";
 
 const Header: React.FC = () => {
   const [isActive, setIsActive] = useState(false);
@@ -21,11 +22,13 @@ const Header: React.FC = () => {
               <rect y="6.75" width="18" height="2.25" fill="white" />
               <rect y="13.5" width="18" height="2.25" fill="white" />
             </svg>
-            <img
-              className={styles["header__logo"]}
-              src="./img/logo.png"
-              alt="logo"
-            />
+            <Link to={"/"}>
+              <img
+                className={styles["header__logo"]}
+                src="../img/logo.png"
+                alt="logo"
+              />
+            </Link>
             <div className={styles["header__input-container"]}>
               <input
                 className={styles["header__input"]}
@@ -80,8 +83,7 @@ const Header: React.FC = () => {
                   />
                 </svg>
               </a>
-              <a href="#cart">
-                {" "}
+              <Link to="/cart">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="30"
@@ -102,7 +104,7 @@ const Header: React.FC = () => {
                     fill="white"
                   />
                 </svg>
-              </a>
+              </Link>
             </div>
           </div>
         </div>

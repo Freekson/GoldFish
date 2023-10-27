@@ -1,0 +1,16 @@
+.link,
+.span,
+.link-last {
+  color: #2a2a2a;
+  opacity: 0.85;
+  &:hover {
+    text-decoration: underline;
+  }
+}
+.span {
+  margin: 0 10px;
+}
+
+.link-last {
+  opacity: 0.4;
+}
