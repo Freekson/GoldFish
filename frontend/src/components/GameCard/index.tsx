@@ -1,5 +1,6 @@
 import { useState } from "react";
 import styles from "./GameCard.module.scss";
+import { useNavigate } from "react-router-dom";
 
 type TProps = {
   img: string;
@@ -16,8 +17,9 @@ const GameCard: React.FC<TProps> = ({
   discount,
 }) => {
   const [inCart, setInCart] = useState(0);
+  const navigate = useNavigate();
   return (
-    <div className={styles.card}>
+    <div className={styles.card} onClick={() => navigate("/product/123")}>
       {isDiscount ? <p className={styles.discount}>{discount}%</p> : ""}
       <img src={img} alt={title} />
       <p className={styles.title}>{title}</p>
