@@ -370,7 +370,6 @@ const ProductPage: React.FC = () => {
             className={inCart === 0 ? styles["buy"] : styles["buy_active"]}
             onClick={() => {
               setInCart(inCart + 1);
-              console.log(inCart);
             }}
           >
             {inCart <= 0 ? (
