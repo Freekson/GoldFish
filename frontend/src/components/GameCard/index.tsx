@@ -29,13 +29,12 @@ const GameCard: React.FC<TProps> = ({
           <span>${price - (price / 100) * discount}</span>
         </p>
       ) : (
-        <p className={styles.price}>{price}</p>
+        <p className={styles.price}>${price}</p>
       )}
       <div
         className={inCart === 0 ? styles["buy"] : styles["buy_active"]}
         onClick={() => {
           setInCart(inCart + 1);
-          console.log(inCart);
         }}
       >
         {inCart <= 0 ? (
