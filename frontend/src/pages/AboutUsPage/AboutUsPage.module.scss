@@ -1,0 +1,59 @@
+.about-us {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 3rem;
+
+  & > div {
+    width: 49%;
+  }
+
+  &__img {
+    display: flex;
+    justify-content: space-around;
+  }
+
+  &:last-child {
+    margin-bottom: 5rem;
+  }
+}
+
+@media (max-width: 1300px) {
+  .about-us {
+    flex-direction: column;
+
+    & > div {
+      width: 90%;
+    }
+
+    &__img {
+      margin-top: 2rem;
+    }
+
+    &:last-child {
+      margin-bottom: 5rem;
+
+      .about-us__text {
+        order: -1;
+      }
+    }
+  }
+}
+
+@media (max-width: 760px) {
+  .about-us {
+    &__img {
+      flex-wrap: wrap;
+
+      img:first-child {
+        margin-bottom: 2rem;
+      }
+    }
+    p {
+      font-size: 1.3rem;
+    }
+    h2 {
+      font-size: 1.5rem;
+    }
+  }
+}

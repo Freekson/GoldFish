@@ -133,7 +133,7 @@ const Header: React.FC = () => {
               <a href="#blog">Blog</a>
             </li>
             <li>
-              <a href="#about">About us</a>
+              <Link to="/about-us">About us</Link>
             </li>
             <li>
               <a href="#contct">Contacts</a>
