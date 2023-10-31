@@ -1,13 +1,18 @@
 import { Link } from "react-router-dom";
 import styles from "./Breadcrumbs.module.scss";
 type TProps = {
-  items: string[];
-  pathes: string[];
+  items?: string[];
+  pathes?: string[];
   last: string;
   to: string;
 };
 
-const Breadcrumbs: React.FC<TProps> = ({ items, last, pathes, to }) => {
+const Breadcrumbs: React.FC<TProps> = ({
+  items = ["Main"],
+  last,
+  pathes = ["/"],
+  to,
+}) => {
   return (
     <div>
       {items.map((item, index) => (
