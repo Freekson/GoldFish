@@ -9,7 +9,7 @@ const AboutUsPage: React.FC = () => {
       <Helmet>
         <title>About us</title>
       </Helmet>
-      <Breadcrumbs last="About us" to="/about-us" />
+      <Breadcrumbs last="About us" />
       <h3>About us</h3>
       <section className={styles["about-us"]}>
         <div className={styles["about-us__text"]}>

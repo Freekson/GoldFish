@@ -15,10 +15,9 @@ const ProductPage: React.FC = () => {
         <title>Product</title>
       </Helmet>
       <Breadcrumbs
-        items={["Main", "Catalog", "Category"]}
+        items={["Home", "Catalog", "Category"]}
         pathes={["/", "/catalog", "/category"]}
         last="Product"
-        to="/product/123"
       />
       <h3>Product</h3>
       <section className={styles["product"]}>
