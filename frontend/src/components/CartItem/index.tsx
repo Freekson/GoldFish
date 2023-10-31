@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import styles from "./CartItem.module.scss";
 type TProps = {
   img: string;
@@ -7,9 +8,13 @@ type TProps = {
 const CartItem: React.FC<TProps> = ({ img, name, price }) => {
   return (
     <div className={styles.item}>
-      <img src={img} alt={name} />
+      <Link to="/product/123">
+        <img src={img} alt={name} />
+      </Link>
       <div className={styles["item__info"]}>
-        <p className={styles["item__name"]}>{name}</p>
+        <Link to="/product/123" className={styles["item__name"]}>
+          {name}
+        </Link>
         <p>${price}</p>
         <div className={styles["item__functional"]}>
           <span>-</span>

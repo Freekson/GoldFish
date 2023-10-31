@@ -3,10 +3,14 @@ import styles from "./Main.module.scss";
 import ImageText from "../../components/ImageText";
 import GameCard from "../../components/GameCard";
 import Button from "../../components/Button";
+import { Helmet } from "react-helmet-async";
 
 const MainPage: React.FC = () => {
   return (
     <Layout>
+      <Helmet>
+        <title>GoldFish</title>
+      </Helmet>
       <section className={styles["catalog"]}>
         <h3>Catalog</h3>
         <div className={styles["catalog__wrapper"]}>

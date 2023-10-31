@@ -4,14 +4,14 @@ type TProps = {
   items?: string[];
   pathes?: string[];
   last: string;
-  to: string;
+  to?: string;
 };
 
 const Breadcrumbs: React.FC<TProps> = ({
-  items = ["Main"],
+  items = ["Home"],
   last,
   pathes = ["/"],
-  to,
+  to = ".",
 }) => {
   return (
     <div>

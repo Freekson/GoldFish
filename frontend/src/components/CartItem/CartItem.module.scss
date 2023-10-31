@@ -51,13 +51,17 @@
 
 @media (max-width: 400px) {
   .item {
+    flex-direction: column;
+    align-items: center;
+    img {
+      margin-bottom: 3rem;
+    }
+
     &__name {
       margin-bottom: 0;
+      text-align: center;
     }
-    &__functional {
-      width: 100%;
-      justify-content: center;
-    }
+
     svg {
       margin-top: 1rem;
     }

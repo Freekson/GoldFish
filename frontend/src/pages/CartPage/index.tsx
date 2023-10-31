@@ -20,7 +20,7 @@ const CartPage: React.FC = () => {
       <Helmet>
         <title>Cart</title>
       </Helmet>
-      <Breadcrumbs items={["Main"]} pathes={["/"]} last="Cart" to="/cart" />
+      <Breadcrumbs last="Cart" />
       <h3>Cart</h3>
       <section className={styles.cart}>
         <div className={styles["cart__items"]}>

@@ -1,6 +1,7 @@
 .product {
   display: flex;
   justify-content: space-between;
+  align-items: start;
 
   &__img {
     width: 60%;
@@ -24,9 +25,8 @@
     align-items: center;
     height: auto;
     overflow: hidden;
-    padding: 0 20px;
+    padding: 10px 20px;
     box-sizing: border-box;
-    max-height: 550px;
 
     hr {
       width: 100%;
