@@ -8,7 +8,7 @@ const Footer: React.FC = () => {
       <footer className={styles.footer}>
         <ul className={styles["footer__list"]}>
           <li>
-            <img src="../img/logo.png" alt="logo" />
+            <img src="/img/logo.png" alt="logo" />
             <p>
               City Lublin, <br /> Nadbystrzycka 42a
             </p>

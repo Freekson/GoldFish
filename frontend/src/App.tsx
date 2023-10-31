@@ -4,6 +4,7 @@ import CartPage from "./pages/CartPage";
 import ProductPage from "./pages/ProductPage";
 import AboutUsPage from "./pages/AboutUsPage";
 import OrdersListPage from "./pages/OrdersListPage";
+import OrderTrackPage from "./pages/OrderTrackPage";
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
         <Route path="/cart" element={<CartPage />}></Route>
         <Route path="/about-us" element={<AboutUsPage />}></Route>
         <Route path="/profile/orders" element={<OrdersListPage />}></Route>
+        <Route path="/profile/orders/:id" element={<OrderTrackPage />}></Route>
       </Routes>
     </div>
   );

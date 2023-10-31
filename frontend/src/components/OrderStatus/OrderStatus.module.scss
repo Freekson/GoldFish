@@ -1,0 +1,26 @@
+.order-status {
+  width: 100%;
+  svg {
+    fill: #f9a43f;
+    margin-right: 1rem;
+    width: 20px;
+    height: 20px;
+    box-sizing: border-box;
+  }
+  .status {
+    display: flex;
+    align-items: center;
+
+    p {
+      font-weight: 400;
+    }
+
+    .active {
+      font-weight: 500;
+    }
+    .inactive {
+      font-weight: 400;
+      color: gray;
+    }
+  }
+}
