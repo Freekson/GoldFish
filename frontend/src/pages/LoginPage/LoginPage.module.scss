@@ -1,0 +1,106 @@
+.login {
+  &__wrapper {
+    width: 40%;
+    background-color: white;
+    border-radius: 9px;
+    box-shadow: 5px 6px 16px 0px #2a2a2a29;
+    padding: 2rem 2rem;
+    margin: 4rem auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    form {
+      width: 100%;
+    }
+
+    h3 {
+      margin-top: 0;
+      margin-bottom: 1rem;
+    }
+
+    p {
+      color: #2a2a2a;
+      a {
+        text-decoration: underline;
+      }
+    }
+
+    fieldset {
+      border: none;
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      box-sizing: border-box;
+      margin: 0;
+
+      label {
+        margin-bottom: 0.7rem;
+      }
+
+      input {
+        width: 100%;
+        border: 1px solid #2a2a2a61;
+        border-radius: 9px;
+        padding: 0.7rem 0.7rem;
+        box-sizing: border-box;
+        outline: none;
+
+        &:focus {
+          border: 1px solid #f9a43f;
+        }
+      }
+
+      a {
+        text-align: right;
+        margin-top: 0.5rem;
+
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+
+    .btn__wrapper {
+      display: flex;
+      justify-content: center;
+      margin: 1.7rem 0;
+
+      button {
+        display: block;
+        width: 50%;
+        color: white;
+        background: linear-gradient(184.53deg, #f9a43f 5.27%, #fb791b 91.78%);
+        border-radius: 9px;
+        border: none;
+        padding: 0.7rem 1rem;
+        box-sizing: border-box;
+        cursor: pointer;
+        font-size: 1.375rem;
+        font-weight: 500;
+      }
+    }
+  }
+}
+
+@media (max-width: 992px) {
+  .login {
+    &__wrapper {
+      width: 60%;
+    }
+  }
+}
+
+@media (max-width: 420px) {
+  .login {
+    &__wrapper {
+      width: 80%;
+
+      .btn__wrapper {
+        button {
+          width: 70%;
+        }
+      }
+    }
+  }
+}
