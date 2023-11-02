@@ -1,6 +1,7 @@
 import React from "react";
 import styles from "./Footer.module.scss";
 import Button from "../Button";
+import { Link } from "react-router-dom";
 
 const Footer: React.FC = () => {
   return (
@@ -16,24 +17,24 @@ const Footer: React.FC = () => {
           <li>
             <ul>
               <li>
-                <a href="#1">
+                <Link to="/catalog">
                   <b>Catalog</b>
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#1">Category 1</a>
+                <Link to="/catalog/?category=1">Category 1</Link>
               </li>
               <li>
-                <a href="#2">Category 2</a>
+                <Link to="/catalog/?category=2">Category 2</Link>
               </li>
               <li>
-                <a href="#3">Category 3</a>
+                <Link to="/catalog/?category=3">Category 3</Link>
               </li>
               <li>
-                <a href="#4">Category 4</a>
+                <Link to="/catalog/?category=4">Category 4</Link>
               </li>
               <li>
-                <a href="#5">Category 5</a>
+                <Link to="/catalog/?category=5">Category 5</Link>
               </li>
             </ul>
           </li>

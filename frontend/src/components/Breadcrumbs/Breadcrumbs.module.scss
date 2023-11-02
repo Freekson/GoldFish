@@ -3,12 +3,18 @@
 .link-last {
   color: #2a2a2a;
   opacity: 0.85;
+}
+
+.link,
+.link-last {
   &:hover {
     text-decoration: underline;
   }
 }
+
 .span {
   margin: 0 10px;
+  user-select: none;
 }
 
 .link-last {
