@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import styles from "./Header.module.scss";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Header: React.FC = () => {
   const [isActive, setIsActive] = useState(false);
+  const navigate = useNavigate();
   return (
     <header className={styles.header}>
       <div className={styles["header__container"]}>
@@ -36,6 +37,7 @@ const Header: React.FC = () => {
                 placeholder="Find game"
               />
               <svg
+                onClick={() => navigate("/catalog")}
                 className={styles["header__input-img"]}
                 xmlns="http://www.w3.org/2000/svg"
                 width="21"
@@ -198,7 +200,10 @@ const Header: React.FC = () => {
         >
           <ul>
             <li>
-              <a href="#1">
+              <Link
+                to="/catalog/?category=1"
+                onClick={() => setIsActive(false)}
+              >
                 Category 1
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -209,10 +214,13 @@ const Header: React.FC = () => {
                 >
                   <path d="M0 12L5 7L0 2L1 0L8 7L1 14L0 12Z" fill="#C8C5C3" />
                 </svg>
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="#2">
+              <Link
+                to="/catalog/?category=2"
+                onClick={() => setIsActive(false)}
+              >
                 Category 2
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -223,10 +231,13 @@ const Header: React.FC = () => {
                 >
                   <path d="M0 12L5 7L0 2L1 0L8 7L1 14L0 12Z" fill="#C8C5C3" />
                 </svg>
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="#3">
+              <Link
+                to="/catalog/?category=3"
+                onClick={() => setIsActive(false)}
+              >
                 Category 3
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -237,10 +248,13 @@ const Header: React.FC = () => {
                 >
                   <path d="M0 12L5 7L0 2L1 0L8 7L1 14L0 12Z" fill="#C8C5C3" />
                 </svg>
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="#4">
+              <Link
+                to="/catalog/?category=4"
+                onClick={() => setIsActive(false)}
+              >
                 Category 4
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -251,10 +265,13 @@ const Header: React.FC = () => {
                 >
                   <path d="M0 12L5 7L0 2L1 0L8 7L1 14L0 12Z" fill="#C8C5C3" />
                 </svg>
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="#5">
+              <Link
+                to="/catalog/?category=5"
+                onClick={() => setIsActive(false)}
+              >
                 Category 5
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -265,7 +282,7 @@ const Header: React.FC = () => {
                 >
                   <path d="M0 12L5 7L0 2L1 0L8 7L1 14L0 12Z" fill="#C8C5C3" />
                 </svg>
-              </a>
+              </Link>
             </li>
           </ul>
         </div>

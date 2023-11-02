@@ -4,9 +4,10 @@ import styles from "./OpenedCard.module.scss";
 type TProps = {
   title: string;
   description: React.ReactNode;
+  className?: string;
 };
 
-const OpenedCard: React.FC<TProps> = ({ title, description }) => {
+const OpenedCard: React.FC<TProps> = ({ title, description, className }) => {
   const [isDescriptionOpen, setIsDescriptionOpen] = useState(false);
 
   const toggleDescription = () => {
@@ -14,8 +15,8 @@ const OpenedCard: React.FC<TProps> = ({ title, description }) => {
   };
 
   return (
-    <div className={styles.card} onClick={toggleDescription}>
-      <div className={styles.descriptionToggle}>
+    <div className={`${styles.card} ${className}`}>
+      <div className={styles.descriptionToggle} onClick={toggleDescription}>
         <p className={styles.title}>
           {title}
           <svg
@@ -32,7 +33,7 @@ const OpenedCard: React.FC<TProps> = ({ title, description }) => {
       </div>
 
       <div className={isDescriptionOpen ? styles.active : styles.description}>
-        <p>{description}</p>
+        {description}
       </div>
     </div>
   );

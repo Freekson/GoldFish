@@ -16,13 +16,13 @@ const ProductPage: React.FC = () => {
       </Helmet>
       <Breadcrumbs
         items={["Home", "Catalog", "Category"]}
-        pathes={["/", "/catalog", "/category"]}
+        pathes={["/", "/catalog", "/catalog/?category=1"]}
         last="Product"
       />
       <h3>Product</h3>
       <section className={styles["product"]}>
         <div className={styles["product__img"]}>
-          <img src="../img/game-1.png" alt="game" />
+          <img src="/img/game-1.png" alt="game" />
           <h4>Popular questions</h4>
           <OpenedCard
             title="Description"
@@ -407,22 +407,22 @@ const ProductPage: React.FC = () => {
         <h4>Similar:</h4>
         <div className={styles["similar__wrapper"]}>
           <GameCard
-            img="../img/game-1.png"
+            img="/img/game-1.png"
             title="Broken Realms: Horrek's Dreadlance"
             price={23}
           />
           <GameCard
-            img="../img/game-1.png"
+            img="/img/game-1.png"
             title="Broken Realms: Horrek's Dreadlance"
             price={23}
           />
           <GameCard
-            img="../img/game-1.png"
+            img="/img/game-1.png"
             title="Broken Realms: Horrek's Dreadlance"
             price={23}
           />
           <GameCard
-            img="../img/game-1.png"
+            img="/img/game-1.png"
             title="Broken Realms: Horrek's Dreadlance"
             price={23}
           />

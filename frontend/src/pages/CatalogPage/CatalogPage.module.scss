@@ -1,0 +1,158 @@
+.catalog-up {
+  display: flex;
+  justify-content: space-between;
+
+  .sort-by {
+    display: flex;
+    align-items: center;
+
+    p {
+      color: #2a2a2a;
+      font-weight: 500;
+    }
+
+    select {
+      margin-left: 1rem;
+      height: 30px;
+      border-radius: 4px;
+      border: 2px solid gray;
+      color: #2a2a2a;
+      outline: none;
+      font-size: 1rem;
+
+      &:focus {
+        border-color: #f9a43f;
+      }
+    }
+  }
+}
+
+.catalog {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+
+  &__filters {
+    background: white;
+    box-shadow: 5px 6px 16px 0px #2a2a2a29;
+    border-radius: 9px;
+    padding: 1rem 1.5rem;
+    box-sizing: border-box;
+    width: 24%;
+
+    .openedCard {
+      margin-top: 0;
+      margin-bottom: 1rem;
+      padding: 0;
+    }
+
+    h4 {
+      font-size: 1.2rem;
+    }
+
+    .filters {
+      fieldset {
+        margin: 0.5rem 0;
+        border: none;
+        display: flex;
+        padding: 0;
+
+        input {
+          margin-right: 0.7rem;
+        }
+
+        label {
+          margin: 0;
+        }
+
+        .prices {
+          width: 100%;
+
+          & > div {
+            display: flex;
+            justify-content: space-between;
+          }
+
+          & > div:first-child {
+            margin-bottom: 1rem;
+          }
+
+          input {
+            color: rgba(0, 0, 0, 0.38);
+            border: 1px solid rgba(0, 0, 0, 0.38);
+            border-radius: 9px;
+            outline: none;
+            padding: 0.3rem 0.7rem;
+            width: 30%;
+          }
+        }
+      }
+    }
+  }
+
+  &__items {
+    width: 70%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+
+    & > div {
+      width: 28%;
+      margin-bottom: 2rem;
+    }
+  }
+}
+
+.questions {
+  margin-bottom: 5rem;
+  margin-top: 3rem;
+}
+
+@media (max-width: 1200px) {
+  .catalog {
+    &__items {
+      & > div {
+        width: 40%;
+      }
+    }
+  }
+}
+
+@media (max-width: 992px) {
+  .catalog {
+    flex-wrap: wrap;
+    justify-content: center;
+
+    &__filters {
+      width: 50%;
+    }
+
+    &__items {
+      width: 100%;
+      margin-top: 3rem;
+      & > div {
+        width: 40%;
+      }
+    }
+  }
+}
+
+@media (max-width: 620px) {
+  .catalog {
+    &__filters {
+      width: 100%;
+    }
+  }
+}
+
+@media (max-width: 420px) {
+  .catalog {
+    &__items {
+      width: 100%;
+      margin-top: 3rem;
+      & > div {
+        width: 100%;
+      }
+    }
+  }
+}
