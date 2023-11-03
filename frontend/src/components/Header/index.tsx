@@ -1,10 +1,50 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import styles from "./Header.module.scss";
 import { Link, useNavigate } from "react-router-dom";
 
 const Header: React.FC = () => {
   const [isActive, setIsActive] = useState(false);
+  const [isProfileActive, setIsProfileActive] = useState(false);
+  const profileRef = useRef<HTMLUListElement | null>(null);
+  const activeRef = useRef<HTMLLIElement | null>(null);
+
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const handleOutsideClick = (event: MouseEvent) => {
+      if (
+        profileRef.current &&
+        !profileRef.current.contains(event.target as Node)
+      ) {
+        setIsProfileActive(false);
+      }
+
+      if (
+        activeRef.current &&
+        !activeRef.current.contains(event.target as Node)
+      ) {
+        setIsActive(false);
+      }
+    };
+    const handleScroll = () => {
+      setIsProfileActive(false);
+      setIsActive(false);
+    };
+
+    if (isProfileActive || isActive) {
+      document.addEventListener("mousedown", handleOutsideClick);
+      document.addEventListener("scroll", handleScroll);
+    } else {
+      document.removeEventListener("mousedown", handleOutsideClick);
+      document.removeEventListener("scroll", handleScroll);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
+      document.removeEventListener("scroll", handleScroll);
+    };
+  }, [isActive, isProfileActive]);
+
   return (
     <header className={styles.header}>
       <div className={styles["header__container"]}>
@@ -71,8 +111,9 @@ const Header: React.FC = () => {
               <p>+48 730 562 141</p>
             </div>
             <div className={styles["header__icons"]}>
-              <a href="#profile">
+              <span>
                 <svg
+                  onClick={() => setIsProfileActive(!isProfileActive)}
                   xmlns="http://www.w3.org/2000/svg"
                   width="30"
                   height="29"
@@ -84,7 +125,8 @@ const Header: React.FC = () => {
                     fill="white"
                   />
                 </svg>
-              </a>
+              </span>
+
               <Link to="/cart">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -108,13 +150,59 @@ const Header: React.FC = () => {
                 </svg>
               </Link>
             </div>
+            <ul
+              ref={profileRef}
+              className={
+                isProfileActive
+                  ? `${styles["profile"]} ${styles["profile_active"]}`
+                  : styles["profile"]
+              }
+            >
+              <li>
+                <Link to="/profile" onClick={() => setIsProfileActive(false)}>
+                  Profile
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/profile/orders"
+                  onClick={() => setIsProfileActive(false)}
+                >
+                  Orders
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/profile/events"
+                  onClick={() => setIsProfileActive(false)}
+                >
+                  Events
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/profile/dashboard"
+                  onClick={() => setIsProfileActive(false)}
+                >
+                  Admin dashboard
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/profile/settings"
+                  onClick={() => setIsProfileActive(false)}
+                >
+                  Settings
+                </Link>
+              </li>
+            </ul>
           </div>
         </div>
       </div>
       <div className={styles["header__bottom"]}>
         <div className={styles["header__bottom-wrapper"]}>
           <ul>
-            <li onClick={() => setIsActive(!isActive)}>
+            <li ref={activeRef} onClick={() => setIsActive(!isActive)}>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="16"
@@ -317,7 +405,7 @@ const Header: React.FC = () => {
         >
           <ul>
             <li>
-              <a href="1">
+              <Link to="/catalog">
                 Catalog
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -328,7 +416,7 @@ const Header: React.FC = () => {
                 >
                   <path d="M0 12L5 7L0 2L1 0L8 7L1 14L0 12Z" fill="#C8C5C3" />
                 </svg>
-              </a>
+              </Link>
             </li>
             <li>
               <a href="2">
@@ -359,7 +447,7 @@ const Header: React.FC = () => {
               </a>
             </li>
             <li>
-              <a href="4">
+              <Link to="/about-us">
                 About us
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -370,7 +458,7 @@ const Header: React.FC = () => {
                 >
                   <path d="M0 12L5 7L0 2L1 0L8 7L1 14L0 12Z" fill="#C8C5C3" />
                 </svg>
-              </a>
+              </Link>
             </li>
             <li>
               <a href="5">
