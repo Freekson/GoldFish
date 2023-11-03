@@ -1,0 +1,194 @@
+.user {
+  width: 80%;
+  margin: 0 auto;
+
+  &__info {
+    display: flex;
+    justify-content: space-between;
+
+    & > div {
+      display: flex;
+      align-items: center;
+      font-size: 1.2rem;
+
+      img {
+        margin-right: 2rem;
+      }
+
+      .user__status {
+        span {
+          font-weight: bold;
+        }
+      }
+    }
+  }
+
+  &__achievements {
+    .card {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 2rem;
+
+      & > img {
+        width: 50%;
+      }
+
+      .achievements {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+        width: 40%;
+
+        &__item {
+          display: flex;
+          width: 100%;
+          justify-content: space-between;
+          align-items: center;
+          text-align: center;
+          font-size: 1.175rem;
+
+          .name {
+            font-weight: bold;
+
+            span {
+              font-weight: normal;
+            }
+          }
+
+          div {
+            width: 60px;
+            background-color: white;
+            box-shadow: 5px 6px 16px 0px #2a2a2a29;
+            border-radius: 9px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+          }
+        }
+      }
+    }
+
+    .progress {
+      display: flex;
+      justify-content: space-between;
+
+      progress {
+        width: 80%;
+        margin-right: 2rem;
+        height: 20px;
+        appearance: none;
+        border: none;
+        background-color: white;
+        border-radius: 14px;
+        box-shadow: 5px 6px 16px 0px #2a2a2a29;
+      }
+
+      progress::-webkit-progress-bar {
+        background-color: white;
+        border-radius: 14px;
+      }
+
+      progress::-webkit-progress-value {
+        background: linear-gradient(184.53deg, #f9a43f 5.27%, #fb791b 91.78%);
+        border-radius: 14px;
+      }
+    }
+  }
+
+  &__orders {
+    margin-top: 5rem;
+
+    & > a {
+      display: inline-block;
+      margin: 1rem 0;
+      color: #2a2a2a;
+      font-weight: bold;
+      font-size: 1.375rem;
+    }
+
+    & > a:hover {
+      text-decoration: underline;
+    }
+
+    & > div {
+      margin-bottom: 1rem;
+    }
+  }
+
+  &__events {
+    margin-bottom: 4rem;
+
+    & > a {
+      display: inline-block;
+      margin-top: 3rem;
+      margin-bottom: 1rem;
+      color: #2a2a2a;
+      font-weight: bold;
+      font-size: 1.375rem;
+    }
+
+    & > a:hover {
+      text-decoration: underline;
+    }
+
+    & > div {
+      margin-bottom: 1rem;
+    }
+  }
+}
+
+@media (max-width: 1200px) {
+  .user {
+    width: 100%;
+  }
+}
+
+@media (max-width: 992px) {
+  .user {
+    &__achievements {
+      h4 {
+        margin-bottom: 2rem;
+      }
+      .card {
+        flex-wrap: wrap;
+
+        & > img {
+          width: 100%;
+        }
+
+        .achievements {
+          width: 100%;
+          margin-top: 2rem;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 667px) {
+  .user {
+    &__achievements {
+      .card {
+        .achievements {
+          &__item {
+            margin-bottom: 2rem;
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 760px) {
+  .user {
+    &__orders {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+
+      & > a {
+        width: 100%;
+      }
+    }
+  }
+}

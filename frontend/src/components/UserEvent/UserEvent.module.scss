@@ -1,0 +1,42 @@
+.event {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: white;
+  padding: 1rem;
+  border-radius: 9px;
+  box-shadow: 5px 6px 16px 0px #2a2a2a29;
+
+  &__wrapper {
+    display: flex;
+    align-items: center;
+
+    img {
+      margin-right: 2rem;
+      width: 65px;
+      height: 65px;
+      border-radius: 9px;
+    }
+  }
+
+  &__text {
+    .name {
+      font-weight: bold;
+      font-size: 1.375rem;
+      margin-bottom: 0.5rem;
+    }
+
+    p {
+      margin: 0;
+    }
+  }
+}
+
+@media (max-width: 340px) {
+  .event {
+    flex-direction: column;
+    &__wrapper {
+      margin-bottom: 1rem;
+    }
+  }
+}

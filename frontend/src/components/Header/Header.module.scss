@@ -59,6 +59,7 @@
     display: flex;
     align-items: center;
     justify-content: end;
+    position: relative;
   }
 
   &__phone {
@@ -78,9 +79,35 @@
   }
 
   &__icons {
-    a:first-child {
+    span {
       margin-right: 1rem;
+      cursor: pointer;
     }
+  }
+
+  .profile {
+    background-color: white;
+    position: absolute;
+    padding: 0.5rem 1rem;
+    top: 35px;
+    right: 40px;
+    z-index: 10;
+    border-radius: 9px;
+    box-shadow: 5px 6px 16px 0px #2a2a2a29;
+    transition: all 0.2s ease-in;
+    clip-path: polygon(0 0, 100% 0, 100% 0, 0 0);
+
+    li {
+      margin: 0.7rem 0;
+
+      a:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+
+  .profile_active {
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
   }
 
   &__bottom {
@@ -293,6 +320,17 @@
 
     &__input-container {
       display: none;
+    }
+
+    .profile {
+      font-size: 1.5rem;
+      top: 20px;
+      right: 0;
+      box-shadow: 5px 6px 16px 0px #2a2a2a29;
+
+      li {
+        margin: 2rem 2rem;
+      }
     }
   }
 
