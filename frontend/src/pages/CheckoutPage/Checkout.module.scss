@@ -1,0 +1,242 @@
+.checkout {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+
+  &__wrapper {
+    width: 70%;
+
+    .delivery {
+      margin-top: 5rem;
+      margin-bottom: 3rem;
+    }
+
+    .payment {
+      margin-bottom: 5rem;
+    }
+
+    .address,
+    .contact {
+      h4 {
+        margin: 0;
+        margin-bottom: 1rem;
+      }
+      fieldset {
+        border: none;
+        margin: 0;
+        padding: 0;
+      }
+      &__item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-weight: bold;
+
+        input {
+          width: 80%;
+          border-radius: 9px;
+          outline: none;
+          padding: 0.8rem 0.8rem;
+          border: 1px solid #d9d9d963;
+        }
+      }
+
+      &__item:not(:last-child) {
+        margin-bottom: 1rem;
+      }
+
+      .warning {
+        color: rgba(42, 42, 42, 0.44);
+      }
+    }
+
+    .delivery,
+    .payment {
+      &__wrapper {
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+      }
+
+      &__item {
+        width: 40%;
+        display: flex;
+        justify-content: space-between;
+        margin: 1rem 0;
+
+        div {
+          width: 80%;
+          p {
+            margin: 0;
+          }
+        }
+
+        input {
+          display: none;
+        }
+
+        label {
+          position: relative;
+          cursor: pointer;
+          &::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 21px;
+            height: 21px;
+            border: 1px solid #2a2a2a;
+            border-radius: 7px;
+          }
+          &::after {
+            content: "\2713";
+            position: absolute;
+            left: 4px;
+            top: -1px;
+            color: #f9a43f;
+            font-size: 18px;
+            display: none;
+          }
+        }
+
+        input[type="checkbox"]:checked + label::after {
+          display: block;
+        }
+      }
+    }
+
+    .agreements {
+      div {
+        margin: 1rem 0;
+      }
+      input {
+        display: none;
+      }
+
+      label {
+        position: relative;
+        cursor: pointer;
+        padding-left: 35px;
+        line-height: 2rem;
+        &::before {
+          content: "";
+          position: absolute;
+          left: 0;
+          top: 0;
+          width: 21px;
+          height: 21px;
+          border: 1px solid #2a2a2a;
+          border-radius: 7px;
+        }
+        &::after {
+          content: "\2713";
+          position: absolute;
+          left: 4px;
+          top: -1px;
+          color: #f9a43f;
+          font-size: 18px;
+          display: none;
+        }
+      }
+
+      input[type="checkbox"]:checked + label::after {
+        display: block;
+      }
+    }
+
+    .results {
+      margin: 4rem 0;
+      &__wrapper {
+        div {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          font-weight: 500;
+
+          b {
+            font-size: 1.5rem;
+          }
+
+          .total {
+            font-size: 2.2rem;
+          }
+        }
+      }
+    }
+
+    .btn {
+      display: flex;
+      justify-content: end;
+      margin-bottom: 5rem;
+
+      & > div {
+        width: 30%;
+      }
+    }
+  }
+
+  &__total {
+    background-color: white;
+    border-radius: 9px;
+    box-shadow: 5px 6px 16px 0px #2a2a2a29;
+    padding: 1rem;
+    width: 23%;
+
+    .total {
+      font-size: 1.188rem;
+      color: #f9a43f;
+      font-weight: 500;
+    }
+
+    .total__item {
+      .name {
+        font-weight: 500;
+        margin-bottom: 0;
+      }
+
+      p {
+        margin-top: 0;
+        span {
+          margin-left: 1rem;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 760px) {
+  .checkout {
+    flex-wrap: wrap;
+
+    &__total {
+      width: 100%;
+      text-align: center;
+      order: -1;
+      margin-bottom: 4rem;
+    }
+
+    &__wrapper {
+      width: 100%;
+    }
+  }
+}
+
+@media (max-width: 420px) {
+  .checkout {
+    &__wrapper {
+      .delivery,
+      .payment {
+        &__item {
+          width: 100%;
+          margin-right: 2rem;
+        }
+      }
+
+      .btn {
+        & > div {
+          width: 100%;
+        }
+      }
+    }
+  }
+}

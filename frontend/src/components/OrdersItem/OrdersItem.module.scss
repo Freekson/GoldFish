@@ -1,0 +1,51 @@
+.order {
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+  display: flex;
+  background-color: white;
+  padding: 2.5rem 2rem;
+  box-sizing: border-box;
+  border-radius: 9px;
+  box-shadow: 5px 6px 16px 0px #2a2a2a29;
+
+  p {
+    margin: 0;
+  }
+
+  b {
+    display: block;
+    margin-bottom: 1rem;
+  }
+
+  .actions {
+    display: flex;
+
+    a {
+      margin: 0 0.5rem;
+      display: block;
+      background: linear-gradient(184.53deg, #f9a43f 5.27%, #fb791b 91.78%);
+      color: white;
+      padding: 0.5rem 0.75rem;
+      border-radius: 9px;
+    }
+  }
+}
+
+@media (max-width: 760px) {
+  .order {
+    flex-direction: column;
+    padding: 2rem 0;
+
+    & > div {
+      margin-bottom: 1rem;
+    }
+
+    p {
+      text-align: center;
+    }
+    b {
+      margin-bottom: 0;
+    }
+  }
+}

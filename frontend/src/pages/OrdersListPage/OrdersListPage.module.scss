@@ -1,0 +1,9 @@
+.orders {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 3rem;
+
+  & > div {
+    margin-bottom: 1rem;
+  }
+}

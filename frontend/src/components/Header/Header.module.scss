@@ -1,0 +1,359 @@
+.header {
+  background-color: #2a2a2a;
+  position: fixed;
+  z-index: 10;
+  width: 100%;
+
+  &__container {
+    width: 80%;
+    margin: 0 auto;
+  }
+
+  &__top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 5.125rem;
+  }
+
+  &__left {
+    width: 60%;
+    display: flex;
+    align-items: center;
+
+    .mobile-toogle {
+      margin-right: 1rem;
+      cursor: pointer;
+      display: none;
+    }
+  }
+
+  &__logo {
+    margin-right: 3rem;
+  }
+
+  &__input-container {
+    width: 50%;
+    position: relative;
+  }
+
+  &__input {
+    width: 100%;
+    padding: 0.7rem 1rem;
+    padding-right: 2rem;
+    background-color: #f2f2f2;
+    border-radius: 9px;
+    border: 1px #f2f2f2 solid;
+    outline: none;
+  }
+
+  &__input-img {
+    position: absolute;
+    right: -40px;
+    top: 8px;
+    cursor: pointer;
+  }
+
+  &__right {
+    width: 40%;
+    display: flex;
+    align-items: center;
+    justify-content: end;
+    position: relative;
+  }
+
+  &__phone {
+    display: flex;
+    align-items: center;
+    margin-right: 3rem;
+
+    svg {
+      margin-right: 1rem;
+    }
+
+    p {
+      font-size: 1.25rem;
+      font-weight: 500;
+      color: white;
+    }
+  }
+
+  &__icons {
+    span {
+      margin-right: 1rem;
+      cursor: pointer;
+    }
+  }
+
+  .profile {
+    background-color: white;
+    position: absolute;
+    padding: 0.5rem 1rem;
+    top: 35px;
+    right: 40px;
+    z-index: 10;
+    border-radius: 9px;
+    box-shadow: 5px 6px 16px 0px #2a2a2a29;
+    transition: all 0.2s ease-in;
+    clip-path: polygon(0 0, 100% 0, 100% 0, 0 0);
+
+    li {
+      margin: 0.7rem 0;
+
+      a:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+
+  .profile_active {
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+  }
+
+  &__bottom {
+    background-color: #fffbf8;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 3.25rem;
+    box-shadow: 5px 6px 16px 0px #2a2a2a29;
+    position: relative;
+  }
+
+  &__bottom-wrapper {
+    width: 80%;
+    ul {
+      display: flex;
+      margin: 0 auto;
+      align-items: center;
+      justify-content: space-between;
+
+      li {
+        font-weight: 400;
+        font-size: 1.15rem;
+      }
+
+      li:first-child {
+        cursor: pointer;
+        svg {
+          margin-right: 1rem;
+        }
+      }
+    }
+  }
+  &__menu {
+    top: 8.375rem;
+    left: 10%;
+    box-shadow: 10px 10px 15px 0px rgba(251, 121, 27, 0.63);
+    width: 20%;
+    position: absolute;
+    top: 99%;
+    clip-path: polygon(0 0, 100% 0, 100% 0, 0 0);
+    transition: all 0.2s ease-in;
+    ul {
+      margin: 0;
+
+      li {
+        a {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          background-color: #fffbf8;
+          padding: 1rem 2rem;
+          font-weight: 500;
+          border-top: 1px rgba(42, 42, 42, 0.26) solid;
+          border-bottom: 1px rgba(42, 42, 42, 0.26) solid;
+        }
+      }
+    }
+  }
+  &__menu_active {
+    top: 8.375rem;
+    left: 10%;
+    box-shadow: 10px 10px 15px 0px rgba(251, 121, 27, 0.63);
+    width: 20%;
+    position: absolute;
+    top: 99%;
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+    transition: all 0.2s ease-in;
+    ul {
+      margin: 0;
+
+      li {
+        a {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          background-color: #fffbf8;
+          padding: 1rem 2rem;
+          font-weight: 500;
+          border-top: 1px rgba(42, 42, 42, 0.26) solid;
+          border-bottom: 1px rgba(42, 42, 42, 0.26) solid;
+        }
+      }
+    }
+  }
+}
+
+.icons {
+  a:first-child {
+    margin-right: 1rem;
+  }
+}
+
+.mobile-bottom {
+  display: none;
+}
+
+.mobile-menu {
+  width: 90%;
+  position: fixed;
+  top: 5.125rem;
+  box-shadow: 5px 6px 16px 0px #2a2a2a29;
+  position: absolute;
+  clip-path: polygon(0 0, 100% 0, 100% 0, 0 0);
+  transition: all 0.2s ease-in;
+
+  ul {
+    margin: 0;
+  }
+  ul li a {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 2rem;
+    background-color: white;
+    color: #2a2a2a;
+    font-weight: 500;
+    border-top: 1px rgba(42, 42, 42, 0.26) solid;
+    border-bottom: 1px rgba(42, 42, 42, 0.26) solid;
+  }
+}
+
+.mobile-menu_active {
+  width: 90%;
+  position: fixed;
+  top: 5.125rem;
+  box-shadow: 5px 6px 16px 0px #2a2a2a29;
+  position: absolute;
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+  transition: all 0.2s ease-in;
+
+  ul {
+    margin: 0;
+
+    li:last-child {
+      a {
+        border-bottom: 2px rgba(42, 42, 42, 0.26) solid;
+      }
+    }
+  }
+  ul li a {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 2rem;
+    background-color: white;
+    color: #2a2a2a;
+    font-weight: 500;
+    border-top: 1px rgba(42, 42, 42, 0.26) solid;
+    border-bottom: 1px rgba(42, 42, 42, 0.26) solid;
+  }
+}
+
+@media (max-width: 1030px) {
+  .header {
+    &__phone {
+      margin-right: 1rem;
+    }
+  }
+}
+
+@media (max-width: 992px) {
+  .header {
+    &__phone {
+      display: none;
+    }
+
+    &__menu {
+      width: 40%;
+    }
+
+    &__menu_active {
+      width: 40%;
+    }
+  }
+}
+
+@media (max-width: 667px) {
+  .header {
+    &__container {
+      width: 90%;
+      margin: 0 auto;
+    }
+
+    &__bottom {
+      display: none;
+    }
+
+    &__top {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    &__left {
+      width: auto;
+
+      .mobile-toogle {
+        display: inline-block;
+      }
+    }
+
+    &__right {
+      width: auto;
+    }
+
+    &__logo {
+      margin-right: 0;
+    }
+
+    &__input-container {
+      display: none;
+    }
+
+    .profile {
+      font-size: 1.5rem;
+      top: 20px;
+      right: 0;
+      box-shadow: 5px 6px 16px 0px #2a2a2a29;
+
+      li {
+        margin: 2rem 2rem;
+      }
+    }
+  }
+
+  .mobile-bottom {
+    display: block;
+    width: 100%;
+    background-color: #f2f2f2;
+    box-shadow: 5px 6px 16px 0px #2a2a2a29;
+
+    .header__input-container {
+      display: block;
+      width: 90%;
+      margin: 0 auto;
+      padding: 1rem 0;
+
+      svg {
+        right: 10px;
+        top: 18px;
+      }
+    }
+    .header__input {
+      background-color: white;
+      box-sizing: border-box;
+    }
+  }
+}
