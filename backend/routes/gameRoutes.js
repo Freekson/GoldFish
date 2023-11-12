@@ -26,6 +26,52 @@ gameRouter.get(
   })
 );
 
+gameRouter.get(
+  "/top-4",
+  expressAsyncHandler(async (req, res) => {
+    const topGames = await Game.find().sort({ average_rating: -1 }).limit(4);
+    res.send(topGames);
+  })
+);
+
+gameRouter.get(
+  "/discounted-top-4",
+  expressAsyncHandler(async (req, res) => {
+    const discountedTopGames = await Game.find({
+      discount: { $exists: true, $gt: 0 },
+    })
+      .sort({ discount: -1 })
+      .limit(4);
+    res.send(discountedTopGames);
+  })
+);
+
+gameRouter.get(
+  "/combined-top",
+  expressAsyncHandler(async (req, res) => {
+    const combinedTopGames = await Game.aggregate([
+      {
+        $facet: {
+          topRated: [{ $sort: { average_rating: -1 } }, { $limit: 4 }],
+          topDiscounted: [
+            { $match: { discount: { $exists: true, $gt: 0 } } },
+            { $sort: { discount: -1 } },
+            { $limit: 4 },
+          ],
+        },
+      },
+      {
+        $project: {
+          combined: {
+            $concatArrays: ["$topRated", "$topDiscounted"],
+          },
+        },
+      },
+    ]);
+
+    res.send(combinedTopGames[0].combined);
+  })
+);
 //! dynamic routes must be in the end
 gameRouter.get(
   "/:id",

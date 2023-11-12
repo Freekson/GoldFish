@@ -3,14 +3,16 @@ import styles from "./GameCard.module.scss";
 import { Link } from "react-router-dom";
 
 type TProps = {
-  img: string;
+  _id?: string; //TODO: change to required
+  image_link: string;
   title: string;
   price: number;
   isDiscount?: boolean;
   discount?: number;
 };
 const GameCard: React.FC<TProps> = ({
-  img,
+  _id,
+  image_link,
   title,
   price,
   isDiscount = false,
@@ -20,14 +22,16 @@ const GameCard: React.FC<TProps> = ({
   return (
     <div className={styles.card}>
       {isDiscount ? <p className={styles.discount}>{discount}%</p> : ""}
-      <img src={img} alt={title} />
-      <Link to={"/product/123"} className={styles.title}>
+      <Link to={`/product/${_id}`}>
+        <img src={image_link} alt={title} />
+      </Link>
+      <Link to={`/product/${_id}`} className={styles.title}>
         {title}
       </Link>
       {isDiscount && discount ? (
         <p className={styles.price}>
           <span className={styles.old}>${price}</span>
-          <span>${price - (price / 100) * discount}</span>
+          <span>${(price - (price / 100) * discount).toFixed(2)}</span>
         </p>
       ) : (
         <p className={styles.price}>${price}</p>

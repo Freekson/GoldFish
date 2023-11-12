@@ -16,9 +16,6 @@ mongoose
   })
   .catch((err) => console.log(err.message));
 
-app.get("/api/data", (req, res) => {
-  res.json({ message: "Hello World!" });
-});
 app.use("/api/games", gameRouter);
 
 app.use((err, req, res, next) => {
