@@ -407,22 +407,22 @@ const ProductPage: React.FC = () => {
         <h4>Similar:</h4>
         <div className={styles["similar__wrapper"]}>
           <GameCard
-            img="/img/game-1.png"
+            image_link="/img/game-1.png"
             title="Broken Realms: Horrek's Dreadlance"
             price={23}
           />
           <GameCard
-            img="/img/game-1.png"
+            image_link="/img/game-1.png"
             title="Broken Realms: Horrek's Dreadlance"
             price={23}
           />
           <GameCard
-            img="/img/game-1.png"
+            image_link="/img/game-1.png"
             title="Broken Realms: Horrek's Dreadlance"
             price={23}
           />
           <GameCard
-            img="/img/game-1.png"
+            image_link="/img/game-1.png"
             title="Broken Realms: Horrek's Dreadlance"
             price={23}
           />

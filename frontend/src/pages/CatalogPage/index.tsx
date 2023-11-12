@@ -94,32 +94,32 @@ const CatalogPage: React.FC = () => {
         </div>
         <div className={styles["catalog__items"]}>
           <GameCard
-            img="/img/game-1.png"
+            image_link="/img/game-1.png"
             title="Broken Realms: Horrek's Dreadlance"
             price={23}
           />
           <GameCard
-            img="/img/game-1.png"
+            image_link="/img/game-1.png"
             title="Broken Realms: Horrek's Dreadlance"
             price={23}
           />
           <GameCard
-            img="/img/game-1.png"
+            image_link="/img/game-1.png"
             title="Broken Realms: Horrek's Dreadlance"
             price={23}
           />
           <GameCard
-            img="/img/game-1.png"
+            image_link="/img/game-1.png"
             title="Broken Realms: Horrek's Dreadlance"
             price={23}
           />
           <GameCard
-            img="/img/game-1.png"
+            image_link="/img/game-1.png"
             title="Broken Realms: Horrek's Dreadlance"
             price={23}
           />
           <GameCard
-            img="/img/game-1.png"
+            image_link="/img/game-1.png"
             title="Broken Realms: Horrek's Dreadlance"
             price={23}
           />

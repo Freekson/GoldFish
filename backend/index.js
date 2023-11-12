@@ -1,6 +1,7 @@
 import express from "express";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
+import gameRouter from "./routes/gameRoutes.js";
 
 //fetch variables from .env file
 dotenv.config();
@@ -15,9 +16,7 @@ mongoose
   })
   .catch((err) => console.log(err.message));
 
-app.get("/api/data", (req, res) => {
-  res.json({ message: "Hello World!" });
-});
+app.use("/api/games", gameRouter);
 
 app.use((err, req, res, next) => {
   res.status(500).send({ message: err.message });
