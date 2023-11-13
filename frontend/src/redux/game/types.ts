@@ -27,3 +27,7 @@ export interface gameState {
   gameData: IGame[];
   status: Status;
 }
+
+export type GameParamsType = {
+  id: string;
+};

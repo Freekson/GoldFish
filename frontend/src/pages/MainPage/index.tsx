@@ -10,6 +10,7 @@ import { RootState, useAppDispatch } from "../../redux/store";
 import { useSelector } from "react-redux";
 import { fetchHomePageProducts } from "../../redux/game/slice";
 import GameCardSkeleton from "../../components/GameCard/GameCardSkeleton";
+import MessageBox, { MessageTypes } from "../../components/MessageBox";
 
 const MainPage: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -70,7 +71,13 @@ const MainPage: React.FC = () => {
           <h3>Hurry up to buy</h3>
         </Link>
         <div className={styles["hurry-up__wrapper"]}>
-          {status === "loading" ? (
+          {status === "error" ? (
+            <MessageBox
+              message="An error occurred while loading games, we are working on it"
+              type={MessageTypes.DANGER}
+              customStyles={{ marginTop: "1rem" }}
+            />
+          ) : status === "loading" ? (
             <GameCardSkeleton items={4} />
           ) : (
             topRated.map((game) => <GameCard key={game._id} {...game} />)
@@ -82,7 +89,13 @@ const MainPage: React.FC = () => {
           <h3>Special offer</h3>
         </Link>
         <div className={styles["special-offer__wrapper"]}>
-          {status === "loading" ? (
+          {status === "error" ? (
+            <MessageBox
+              message="An error occurred while loading games, we are working on it"
+              type={MessageTypes.DANGER}
+              customStyles={{ marginTop: "1rem" }}
+            />
+          ) : status === "loading" ? (
             <GameCardSkeleton items={4} />
           ) : (
             topDiscounted.map((game) => <GameCard key={game._id} {...game} />)
