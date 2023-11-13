@@ -10,6 +10,7 @@ export interface IGame {
   review_count: number;
   publisher: string;
   discount?: number;
+  quantity?: number;
 }
 
 export interface IGameAll {

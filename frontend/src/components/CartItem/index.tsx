@@ -1,27 +1,44 @@
 import { Link } from "react-router-dom";
 import styles from "./CartItem.module.scss";
+import { addItem, minusItem, deleteItem } from "../../redux/cart/slice";
+import { useDispatch } from "react-redux";
+import { IGame } from "../../types";
 type TProps = {
   img: string;
   name: string;
-  price: string;
+  price: number | string;
+  quantity: number | undefined;
+  game: IGame;
 };
-const CartItem: React.FC<TProps> = ({ img, name, price }) => {
+const CartItem: React.FC<TProps> = ({ img, name, price, quantity, game }) => {
+  const dispatch = useDispatch();
+
+  const addToCart = () => {
+    dispatch(addItem(game));
+  };
+  const minusCartItem = () => {
+    dispatch(minusItem(game));
+  };
+  const deleteCartItem = () => {
+    dispatch(deleteItem(game));
+  };
   return (
     <div className={styles.item}>
-      <Link to="/product/123">
+      <Link to={`/product/${game._id}`}>
         <img src={img} alt={name} />
       </Link>
       <div className={styles["item__info"]}>
-        <Link to="/product/123" className={styles["item__name"]}>
+        <Link to={`/product/${game._id}`} className={styles["item__name"]}>
           {name}
         </Link>
-        <p>${price}</p>
+        <p>${(Number(price) * Number(quantity)).toFixed(2)}</p>
         <div className={styles["item__functional"]}>
-          <span>-</span>
-          <p>1</p>
-          <span>+</span>
+          <span onClick={minusCartItem}>-</span>
+          <p>{quantity}</p>
+          <span onClick={addToCart}>+</span>
         </div>
         <svg
+          onClick={deleteCartItem}
           xmlns="http://www.w3.org/2000/svg"
           width="24"
           height="27"

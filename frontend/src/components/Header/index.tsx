@@ -1,14 +1,25 @@
 import React, { useEffect, useRef, useState } from "react";
 import styles from "./Header.module.scss";
 import { Link, useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { RootState } from "../../redux/store";
 
 const Header: React.FC = () => {
   const [isActive, setIsActive] = useState(false);
   const [isProfileActive, setIsProfileActive] = useState(false);
+  const isMounted = useRef(false);
   const profileRef = useRef<HTMLUListElement | null>(null);
   const activeRef = useRef<HTMLLIElement | null>(null);
+  const { cartItems } = useSelector((state: RootState) => state.cart);
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (isMounted.current) {
+      localStorage.setItem("cartItems", JSON.stringify(cartItems));
+    }
+    isMounted.current = true;
+  }, [cartItems]);
 
   useEffect(() => {
     const handleOutsideClick = (event: MouseEvent) => {
@@ -128,6 +139,15 @@ const Header: React.FC = () => {
               </span>
 
               <Link to="/cart">
+                {cartItems.length > 0 && (
+                  <span className={styles["cart-count"]}>
+                    {cartItems.reduce(
+                      (a, c) => (c.quantity ? a + c.quantity : a),
+                      0
+                    )}
+                  </span>
+                )}
+
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="30"

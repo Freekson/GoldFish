@@ -6,6 +6,17 @@
     padding: 0.5rem;
     border-radius: 9px;
     border: 1px solid #d9d9d963;
+    width: 80%;
+  }
+
+  svg {
+    cursor: pointer;
+  }
+
+  a {
+    display: flex;
+    justify-content: center;
+    text-align: center;
   }
 
   &__info {
@@ -29,6 +40,7 @@
     span {
       font-size: 2rem;
       user-select: none;
+      cursor: pointer;
     }
   }
 
