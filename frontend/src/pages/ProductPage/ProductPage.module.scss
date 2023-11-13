@@ -46,6 +46,22 @@
     font-size: 2.813rem;
     margin: 0.5rem 0;
   }
+
+  &__rating {
+    display: flex;
+    width: 100%;
+    justify-content: flex-start;
+    margin-top: 1rem;
+  }
+
+  &__publisher {
+    width: 100%;
+    text-align: left;
+
+    a:hover {
+      text-decoration: underline;
+    }
+  }
 }
 
 .similar {

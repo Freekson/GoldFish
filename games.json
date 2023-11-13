@@ -62,7 +62,7 @@
     "category": "Shooter",
     "description": "A popular free-to-play battle royale mode in the Call of Duty series.",
     "image_link": "https://cdn.akamai.steamstatic.com/steam/apps/1962663/header.jpg?t=1692298772",
-    "price": 0,
+    "price": 29.99,
     "average_rating": 4.2,
     "review_count": 7000,
     "publisher": "Activision",
@@ -312,7 +312,7 @@
     "category": "Battle Royale",
     "description": "A fast-paced and team-based battle royale shooter.",
     "image_link": "https://cdn.akamai.steamstatic.com/steam/apps/1172470/header.jpg?t=1698958633",
-    "price": 0,
+    "price": 15.99,
     "average_rating": 4.5,
     "review_count": 8000,
     "publisher": "Electronic Arts"

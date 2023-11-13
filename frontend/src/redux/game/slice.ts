@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { gameState, IGame, Status } from "./types";
+import { GameParamsType, gameState, IGame, Status } from "./types";
 import axios from "axios";
 
 const initialState: gameState = {
@@ -22,7 +22,15 @@ const fetchHomePageProducts = createGameAsyncThunk(
   "fetchHomePageProducts",
   "/api/games/combined-top"
 );
-
+export const fetchProductPageGames = createAsyncThunk<IGame[], GameParamsType>(
+  "game/fetchProductPageGames",
+  async ({ id }) => {
+    const { data } = await axios.get<IGame[]>(
+      `/api/games/product-page-combined/${id}`
+    );
+    return data;
+  }
+);
 const gameSlice = createSlice({
   name: "game",
   initialState,
@@ -32,22 +40,25 @@ const gameSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    [fetchAllGames, fetchDiscountedGames, fetchHomePageProducts].forEach(
-      (thunk) => {
-        builder.addCase(thunk.pending, (state) => {
-          state.gameData = [];
-          state.status = Status.LOADING;
-        });
-        builder.addCase(thunk.fulfilled, (state, action) => {
-          state.gameData = action.payload;
-          state.status = Status.SUCCESS;
-        });
-        builder.addCase(thunk.rejected, (state) => {
-          state.gameData = [];
-          state.status = Status.ERROR;
-        });
-      }
-    );
+    [
+      fetchAllGames,
+      fetchDiscountedGames,
+      fetchHomePageProducts,
+      fetchProductPageGames,
+    ].forEach((thunk) => {
+      builder.addCase(thunk.pending, (state) => {
+        state.gameData = [];
+        state.status = Status.LOADING;
+      });
+      builder.addCase(thunk.fulfilled, (state, action) => {
+        state.gameData = action.payload;
+        state.status = Status.SUCCESS;
+      });
+      builder.addCase(thunk.rejected, (state) => {
+        state.gameData = [];
+        state.status = Status.ERROR;
+      });
+    });
   },
 });
 export const { setItems } = gameSlice.actions;
