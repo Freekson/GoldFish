@@ -3,7 +3,7 @@ import Breadcrumbs from "../../components/Breadcrumbs";
 import Layout from "../../components/Layout";
 import GameCard from "../../components/GameCard";
 import styles from "./ProductPage.module.scss";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import OpenedCard from "../../components/OpenedCard";
 import { RootState, useAppDispatch } from "../../redux/store";
 import { fetchProductPageGames } from "../../redux/game/slice";
@@ -13,9 +13,9 @@ import Rating from "../../components/Rating";
 import GameCardSkeleton from "../../components/GameCard/GameCardSkeleton";
 import Skeleton from "react-loading-skeleton";
 import MessageBox, { MessageTypes } from "../../components/MessageBox";
+import { addItem } from "../../redux/cart/slice";
 
 const ProductPage: React.FC = () => {
-  const [inCart, setInCart] = useState(0);
   const dispatch = useAppDispatch();
   const { id } = useParams();
 
@@ -25,8 +25,15 @@ const ProductPage: React.FC = () => {
     };
     fetchData();
   }, [dispatch, id]);
+
+  const addToCart = () => {
+    dispatch(addItem(game));
+  };
   const { gameData, status } = useSelector((state: RootState) => state.game);
-  let game = gameData[0];
+  const { cartItems } = useSelector((state: RootState) => state.cart);
+
+  const currentItem = cartItems.find((item) => item._id === id);
+  const game = gameData[0];
   const similar = gameData.slice(1, 5);
 
   return (
@@ -410,16 +417,17 @@ const ProductPage: React.FC = () => {
                 )}
               </p>
               <div
-                className={inCart === 0 ? styles["buy"] : styles["buy_active"]}
-                onClick={() => {
-                  setInCart(inCart + 1);
-                }}
+                className={!currentItem ? styles["buy"] : styles["buy_active"]}
+                onClick={addToCart}
               >
-                {inCart <= 0 ? (
+                {!currentItem ? (
                   <>Add to Cart</>
                 ) : (
                   <p>
-                    In Cart <span className={styles.quantity}>{inCart}</span>
+                    In Cart{" "}
+                    <span className={styles.quantity}>
+                      {currentItem?.quantity}
+                    </span>
                   </p>
                 )}
               </div>

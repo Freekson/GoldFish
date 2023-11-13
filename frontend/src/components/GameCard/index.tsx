@@ -1,6 +1,9 @@
-import { useState } from "react";
 import styles from "./GameCard.module.scss";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { addItem } from "../../redux/cart/slice";
+import { IGame } from "../../types";
+import { RootState } from "../../redux/store";
 
 type TProps = {
   _id?: string; //TODO: change to required
@@ -9,7 +12,9 @@ type TProps = {
   price: number;
   isDiscount?: boolean;
   discount?: number;
+  game?: IGame;
 };
+
 const GameCard: React.FC<TProps> = ({
   _id,
   image_link,
@@ -17,8 +22,18 @@ const GameCard: React.FC<TProps> = ({
   price,
   isDiscount = false,
   discount,
+  game,
 }) => {
-  const [inCart, setInCart] = useState(0);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const { cartItems } = useSelector((state: RootState) => state.cart);
+  const item = cartItems.find((item) => item._id === _id);
+
+  const addToCart = () => {
+    dispatch(addItem(game));
+  };
+
   return (
     <div className={styles.card}>
       {isDiscount ? <p className={styles.discount}>{discount}%</p> : ""}
@@ -37,12 +52,10 @@ const GameCard: React.FC<TProps> = ({
         <p className={styles.price}>${price}</p>
       )}
       <div
-        className={inCart === 0 ? styles["buy"] : styles["buy_active"]}
-        onClick={() => {
-          setInCart(inCart + 1);
-        }}
+        className={!item ? styles["buy"] : styles["buy_active"]}
+        onClick={addToCart}
       >
-        {inCart <= 0 ? (
+        {!item ? (
           <>
             Add to Cart
             <svg
@@ -68,11 +81,22 @@ const GameCard: React.FC<TProps> = ({
           </>
         ) : (
           <p>
-            In Cart <span className={styles.quantity}>{inCart}</span>
+            In Cart{" "}
+            <span className={styles.quantity}>
+              {item?.quantity && item?.quantity}
+            </span>
           </p>
         )}
       </div>
-      <div className={styles["buy-now"]}>Buy in 1 click</div>
+      <div
+        className={styles["buy-now"]}
+        onClick={() => {
+          navigate("/cart");
+          addToCart();
+        }}
+      >
+        Buy in 1 click
+      </div>
     </div>
   );
 };
