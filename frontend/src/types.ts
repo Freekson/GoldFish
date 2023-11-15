@@ -11,6 +11,7 @@ export interface IGame {
   publisher: string;
   discount?: number;
   quantity?: number;
+  release_year: number;
 }
 
 export interface IGameAll {

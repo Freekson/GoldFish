@@ -51,6 +51,8 @@
     }
 
     .filters {
+      margin-bottom: 2rem;
+
       fieldset {
         margin: 0.5rem 0;
         border: none;
@@ -106,6 +108,70 @@
 .questions {
   margin-bottom: 5rem;
   margin-top: 3rem;
+}
+
+.root {
+  width: 80%;
+  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+  padding-bottom: 50px;
+
+  li {
+    list-style: none;
+
+    p {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #f9a43f;
+      width: 30px;
+      height: 30px;
+      padding: 10px;
+      border: 2px solid #f9a43f;
+      border-radius: 30px;
+      margin-right: 10px;
+      cursor: pointer;
+      transition: all 0.1s ease-in-out;
+      user-select: none;
+
+      &:hover {
+        color: white;
+        background: linear-gradient(184.53deg, #f9a43f 5.27%, #fb791b 91.78%);
+      }
+    }
+  }
+
+  .active {
+    p {
+      color: white;
+      background: linear-gradient(184.53deg, #f9a43f 5.27%, #fb791b 91.78%);
+
+      border: 2px solid #f9a43f;
+    }
+  }
+}
+
+@media (max-width: 620px) {
+  .root {
+    li {
+      p {
+        width: 20px;
+        height: 20px;
+      }
+    }
+  }
+}
+
+@media (max-width: 420px) {
+  .root {
+    li {
+      p {
+        width: 10px;
+        height: 10px;
+      }
+    }
+  }
 }
 
 @media (max-width: 1200px) {

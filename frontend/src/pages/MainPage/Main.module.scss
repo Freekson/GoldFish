@@ -2,12 +2,14 @@ h3 {
   display: inline-block;
 }
 
+a:hover {
+  h3 {
+    text-decoration: underline;
+  }
+}
+
 .catalog {
   margin-bottom: 4rem;
-
-  h3 {
-    margin-bottom: 0.2rem;
-  }
 
   &__wrapper {
     display: flex;

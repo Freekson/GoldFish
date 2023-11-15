@@ -1,5 +1,12 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { GameParamsType, gameState, IGame, Status } from "./types";
+import {
+  FilterRespType,
+  GameFilterParamsType,
+  GameParamsType,
+  gameState,
+  IGame,
+  Status,
+} from "./types";
 import axios from "axios";
 
 const initialState: gameState = {
@@ -31,6 +38,13 @@ export const fetchProductPageGames = createAsyncThunk<IGame[], GameParamsType>(
     return data;
   }
 );
+export const fetchFilteredGames = createAsyncThunk<
+  FilterRespType,
+  GameFilterParamsType
+>("game/fetchFilteredGames", async ({ path }) => {
+  const { data } = await axios.get<FilterRespType>(`/api/games${path}`);
+  return data;
+});
 const gameSlice = createSlice({
   name: "game",
   initialState,
@@ -58,6 +72,18 @@ const gameSlice = createSlice({
         state.gameData = [];
         state.status = Status.ERROR;
       });
+    });
+    builder.addCase(fetchFilteredGames.pending, (state) => {
+      state.gameData = [];
+      state.status = Status.LOADING;
+    });
+    builder.addCase(fetchFilteredGames.fulfilled, (state, action) => {
+      state.filterData = action.payload;
+      state.status = Status.SUCCESS;
+    });
+    builder.addCase(fetchFilteredGames.rejected, (state) => {
+      state.gameData = [];
+      state.status = Status.ERROR;
     });
   },
 });

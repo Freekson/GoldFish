@@ -4,9 +4,247 @@ import styles from "./CatalogPage.module.scss";
 import GameCard from "../../components/GameCard";
 import Breadcrumbs from "../../components/Breadcrumbs";
 import OpenedCard from "../../components/OpenedCard";
-import Pagination from "../../components/Pagination";
+import { ChangeEvent, useEffect, useState } from "react";
+import { RootState, useAppDispatch } from "../../redux/store";
+import { fetchFilteredGames } from "../../redux/game/slice";
+import { useSelector } from "react-redux";
+import Skeleton from "react-loading-skeleton";
+import { Link, useLocation } from "react-router-dom";
 
+type copyParams = {
+  text: string;
+};
 const CatalogPage: React.FC = () => {
+  const CopyToClipboardButton: React.FC<copyParams> = ({ text }) => {
+    const handleCopyClick = async () => {
+      try {
+        await navigator.clipboard.writeText(text);
+        console.log("Text successfully copied to clipboard");
+      } catch (error) {
+        console.error("Error copying text to clipboard:", error);
+      }
+    };
+
+    return <button onClick={handleCopyClick}>Copy Filter</button>;
+  };
+
+  const dispatch = useAppDispatch();
+  const { search } = useLocation();
+
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [selectedPublishers, setSelectedPublishers] = useState<string[]>([]);
+  const [selectedRatings, setSelectedRatings] = useState<number[]>([]);
+  const [isDiscounted, setIsDiscounted] = useState(false);
+  const [minPrice, setMinPrice] = useState(0);
+  const [maxPrice, setMaxPrice] = useState(0);
+  const [sortOption, setSortOption] = useState("newest");
+  const [activePage, setActivePage] = useState(1);
+  const [path, setPath] = useState("");
+  const sortOptions = [
+    { value: "newest", label: "Newest" },
+    { value: "oldest", label: "Oldest" },
+    { value: "lowest", label: "Price: Low to High" },
+    { value: "highest", label: "Price: High to Low" },
+    { value: "toprated", label: "Most Rated" },
+    { value: "lessrated", label: "Less Rated" },
+  ];
+
+  const { filterData, status } = useSelector((state: RootState) => state.game);
+  const games = filterData?.games;
+  const pages = filterData?.totalPages ?? 1;
+
+  useEffect(() => {
+    const sp = new URLSearchParams(search);
+    const categories = sp.get("categories");
+    const publishers = sp.get("publishers");
+    const ratings = sp.get("ratings");
+    const discounted = sp.get("discounted");
+    const min = sp.get("min");
+    const max = sp.get("max");
+    const sort = sp.get("sort");
+    const page = sp.get("page");
+
+    if (categories === null) {
+      setSelectedCategories([]);
+    } else {
+      setSelectedCategories(JSON.parse(decodeURIComponent(categories)));
+    }
+
+    if (publishers === null) {
+      setSelectedPublishers([]);
+    } else {
+      setSelectedPublishers(JSON.parse(decodeURIComponent(publishers)));
+    }
+
+    if (ratings === null) {
+      setSelectedRatings([]);
+    } else {
+      setSelectedRatings(JSON.parse(decodeURIComponent(ratings)));
+    }
+
+    if (discounted === null) {
+      setIsDiscounted(false);
+    } else {
+      setIsDiscounted(true);
+    }
+
+    if (min === null) {
+      setMinPrice(0);
+    } else {
+      setMinPrice(Number(min));
+    }
+
+    if (max === null) {
+      setMaxPrice(0);
+    } else {
+      setMaxPrice(Number(max));
+    }
+
+    if (sort === null) {
+      setSortOption("newest");
+    } else {
+      setSortOption(sort);
+    }
+
+    if (page === null) {
+      setActivePage(1);
+    } else {
+      setActivePage(Number(page));
+    }
+  }, [search]);
+
+  //? updating filters
+
+  useEffect(() => {
+    const queryParams = [];
+
+    if (selectedCategories.length > 0) {
+      queryParams.push(
+        `categories=${encodeURIComponent(JSON.stringify(selectedCategories))}`
+      );
+    }
+
+    if (selectedPublishers.length > 0) {
+      queryParams.push(
+        `publishers=${encodeURIComponent(JSON.stringify(selectedPublishers))}`
+      );
+    }
+
+    if (selectedRatings.length > 0) {
+      queryParams.push(
+        `ratings=${encodeURIComponent(JSON.stringify(selectedRatings))}`
+      );
+    }
+
+    if (isDiscounted) {
+      queryParams.push(`discounted=true`);
+    }
+
+    if (minPrice || maxPrice) {
+      queryParams.push(`min=${minPrice}&max=${maxPrice}`);
+    }
+
+    if (sortOption) {
+      queryParams.push(`sort=${sortOption}`);
+    }
+
+    if (activePage) {
+      queryParams.push(`page=${activePage}`);
+    }
+
+    const queryString = queryParams.join("&");
+    const url = `${queryString ? `?${queryString}` : ""}`;
+    setPath(url);
+    const fetchData = async () => {
+      dispatch(fetchFilteredGames({ path: `/filtered${url}` }));
+    };
+    fetchData();
+  }, [
+    activePage,
+    dispatch,
+    isDiscounted,
+    maxPrice,
+    minPrice,
+    selectedCategories,
+    selectedPublishers,
+    selectedRatings,
+    sortOption,
+  ]);
+
+  //? handlers
+
+  const handleCategoryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const category = event.target.value;
+    const isChecked = event.target.checked;
+
+    setSelectedCategories((prevSelectedCategories) => {
+      if (isChecked) {
+        return [...prevSelectedCategories, category];
+      } else {
+        return prevSelectedCategories.filter(
+          (selectedCategory) => selectedCategory !== category
+        );
+      }
+    });
+  };
+
+  const handlePublisherChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const publisher = event.target.value;
+    const isChecked = event.target.checked;
+
+    setSelectedPublishers((prevSelectedPublisher) => {
+      if (isChecked) {
+        return [...prevSelectedPublisher, publisher];
+      } else {
+        return prevSelectedPublisher.filter(
+          (selectedPublisher) => selectedPublisher !== publisher
+        );
+      }
+    });
+  };
+
+  const handleRatingsChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { value, checked } = event.target;
+    const rating = Number(value);
+
+    setSelectedRatings((prevSelectedRatings) => {
+      if (checked) {
+        return [...prevSelectedRatings, rating];
+      } else {
+        return prevSelectedRatings.filter(
+          (selectedRating) => selectedRating !== rating
+        );
+      }
+    });
+  };
+
+  const handleMaxChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const maxPrice = Number(event.target.value);
+
+    if (isNaN(maxPrice)) {
+      setMaxPrice(0);
+    } else {
+      setMaxPrice(maxPrice);
+    }
+  };
+
+  const handleMinChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const minPrice = Number(event.target.value);
+
+    if (isNaN(minPrice)) {
+      setMinPrice(0);
+    } else {
+      setMinPrice(minPrice);
+    }
+  };
+
+  const handleSortChange = (event: ChangeEvent<HTMLSelectElement>) => {
+    const selectedOption = event.target.value;
+    setSortOption(selectedOption);
+  };
+
   return (
     <Layout>
       <Helmet>
@@ -18,13 +256,12 @@ const CatalogPage: React.FC = () => {
 
         <div className={styles["sort-by"]}>
           <p>Sort By</p>
-          <select>
-            <option value="newest">Newest Arrivals</option>
-            <option value="oldest">Oldest Arrivals</option>
-            <option value="lowest">Price: Low to High</option>
-            <option value="highest">Price: High to Low</option>
-            <option value="toprated">Most Rated</option>
-            <option value="lessrated">Less Rated</option>
+          <select value={sortOption} onChange={handleSortChange}>
+            {sortOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
           </select>
         </div>
       </div>
@@ -36,32 +273,79 @@ const CatalogPage: React.FC = () => {
             description={
               <div className={styles["filters"]}>
                 <fieldset>
-                  <input type="checkbox" /> <label>Category 1</label>
+                  <input
+                    type="checkbox"
+                    value="Party"
+                    onChange={handleCategoryChange}
+                    checked={selectedCategories.includes("Party")}
+                  />{" "}
+                  <label>Party</label>
                 </fieldset>
                 <fieldset>
-                  <input type="checkbox" /> <label>Category 2</label>
+                  <input
+                    type="checkbox"
+                    value="Adventure"
+                    onChange={handleCategoryChange}
+                    checked={selectedCategories.includes("Adventure")}
+                  />{" "}
+                  <label>Adventure</label>
                 </fieldset>
                 <fieldset>
-                  <input type="checkbox" /> <label>Category 3</label>
+                  <input
+                    type="checkbox"
+                    value="Action"
+                    onChange={handleCategoryChange}
+                    checked={selectedCategories.includes("Action")}
+                  />{" "}
+                  <label>Action</label>
                 </fieldset>
+                <p
+                  className={styles["clear-filters-btn"]}
+                  onClick={() => setSelectedCategories([])}
+                >
+                  Clear filter
+                </p>
               </div>
             }
           />
-
           <OpenedCard
             className={styles["openedCard"]}
             title="Game publisher"
             description={
               <div className={styles["filters"]}>
                 <fieldset>
-                  <input type="checkbox" /> <label>Publisher 1</label>
+                  <input
+                    type="checkbox"
+                    value="Rare"
+                    onChange={handlePublisherChange}
+                    checked={selectedPublishers.includes("Rare")}
+                  />{" "}
+                  <label>Rare</label>
                 </fieldset>
                 <fieldset>
-                  <input type="checkbox" /> <label>Publisher 2</label>
+                  <input
+                    type="checkbox"
+                    value="Ubisoft"
+                    onChange={handlePublisherChange}
+                    checked={selectedPublishers.includes("Ubisoft")}
+                  />{" "}
+                  <label>Ubisoft</label>
                 </fieldset>
                 <fieldset>
-                  <input type="checkbox" /> <label>Publisher 3</label>
+                  <input
+                    type="checkbox"
+                    value="FromSoftware"
+                    onChange={handlePublisherChange}
+                    checked={selectedPublishers.includes("FromSoftware")}
+                  />{" "}
+                  <label>FromSoftware</label>
                 </fieldset>
+                <p
+                  className={styles["clear-filters-btn"]}
+                  onClick={() => setSelectedPublishers([])}
+                >
+                  Clear filter
+                </p>
               </div>
             }
           />
@@ -70,62 +354,143 @@ const CatalogPage: React.FC = () => {
             <fieldset>
               <div className={styles["prices"]}>
                 <div>
-                  From: <input type="text" placeholder="0" />
+                  From:{" "}
+                  <input
+                    type="text"
+                    value={minPrice}
+                    onChange={handleMinChange}
+                    placeholder="0"
+                  />
                 </div>
                 <div>
-                  To: <input type="text" placeholder="1000" />
+                  To:{" "}
+                  <input
+                    type="text"
+                    value={maxPrice}
+                    onChange={handleMaxChange}
+                    placeholder="1000"
+                  />
                 </div>
               </div>
             </fieldset>
-            <input type="checkbox" /> Only with discount
+            <input
+              type="checkbox"
+              checked={isDiscounted}
+              onChange={() => setIsDiscounted(!isDiscounted)}
+            />{" "}
+            Only with discount
+            <p
+              className={styles["clear-filters-btn"]}
+              onClick={() => {
+                setMinPrice(0);
+                setMaxPrice(0);
+                setIsDiscounted(false);
+              }}
+            >
+              Clear filter
+            </p>
           </div>
-          <h4>Customer review</h4>
+          <h4>Customer rating</h4>
           <div className={styles["filters"]}>
             <fieldset>
-              <input type="checkbox" /> <label>5 stars</label>
+              <input
+                type="checkbox"
+                value={5}
+                onChange={handleRatingsChange}
+                checked={selectedRatings.includes(5)}
+              />{" "}
+              <label>5 stars</label>
             </fieldset>
             <fieldset>
-              <input type="checkbox" /> <label>4 stars</label>
+              <input
+                type="checkbox"
+                value={4}
+                onChange={handleRatingsChange}
+                checked={selectedRatings.includes(4)}
+              />{" "}
+              <label>4 stars</label>
             </fieldset>
             <fieldset>
-              <input type="checkbox" /> <label>3 stars</label>
+              <input
+                type="checkbox"
+                value={3}
+                onChange={handleRatingsChange}
+                checked={selectedRatings.includes(3)}
+              />{" "}
+              <label>3 stars</label>
             </fieldset>
+            <fieldset>
+              <input
+                type="checkbox"
+                value={2}
+                onChange={handleRatingsChange}
+                checked={selectedRatings.includes(2)}
+              />{" "}
+              <label>2 stars</label>
+            </fieldset>
+            <fieldset>
+              <input
+                type="checkbox"
+                value={1}
+                onChange={handleRatingsChange}
+                checked={selectedRatings.includes(1)}
+              />{" "}
+              <label>1 stars</label>
+            </fieldset>
+            <p
+              className={styles["clear-filters-btn"]}
+              onClick={() => setSelectedRatings([])}
+            >
+              Clear filter
+            </p>
           </div>
+          <Link to={path}>Search</Link> <br />
+          <CopyToClipboardButton text={"/catalog" + path} />
         </div>
         <div className={styles["catalog__items"]}>
-          <GameCard
-            image_link="/img/game-1.png"
-            title="Broken Realms: Horrek's Dreadlance"
-            price={23}
-          />
-          <GameCard
-            image_link="/img/game-1.png"
-            title="Broken Realms: Horrek's Dreadlance"
-            price={23}
-          />
-          <GameCard
-            image_link="/img/game-1.png"
-            title="Broken Realms: Horrek's Dreadlance"
-            price={23}
-          />
-          <GameCard
-            image_link="/img/game-1.png"
-            title="Broken Realms: Horrek's Dreadlance"
-            price={23}
-          />
-          <GameCard
-            image_link="/img/game-1.png"
-            title="Broken Realms: Horrek's Dreadlance"
-            price={23}
-          />
-          <GameCard
-            image_link="/img/game-1.png"
-            title="Broken Realms: Horrek's Dreadlance"
-            price={23}
-          />
+          {games &&
+            games.map((game) => (
+              <GameCard
+                key={game._id}
+                {...game}
+                isDiscount={game.discount !== undefined}
+                discount={game.discount}
+                game={game}
+              />
+            ))}
         </div>
       </section>
-      <Pagination pages={5} />
+      {status === "loading" ? (
+        <Skeleton />
+      ) : (
+        <ul className={styles.root}>
+          <li
+            onClick={() =>
+              setActivePage(activePage > 1 ? activePage - 1 : activePage)
+            }
+          >
+            <p>&#60;</p>
+          </li>
+          {[...new Array(pages)].map((_, number) => (
+            <li
+              key={number + 1}
+              className={activePage === number + 1 ? styles.active : ""}
+              onClick={() => {
+                setActivePage(number + 1);
+              }}
+            >
+              <p>{number + 1}</p>
+            </li>
+          ))}
+          <li
+            onClick={() =>
+              setActivePage(activePage < pages ? activePage + 1 : activePage)
+            }
+          >
+            <p>&#62;</p>
+          </li>
+        </ul>
+      )}
       <section className={styles["questions"]}>
         <OpenedCard
           title="How to choose a game?"
