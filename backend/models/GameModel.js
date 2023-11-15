@@ -12,6 +12,7 @@ const gameSchema = new mongoose.Schema(
     review_count: { type: Number, required: true },
     publisher: { type: String, required: true },
     discount: { type: Number, required: false },
+    release_year: { type: Number, required: true },
   },
   {
     timestamps: true,
