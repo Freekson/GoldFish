@@ -65,6 +65,33 @@ gameRouter.get(
   })
 );
 
+gameRouter.get(
+  "/ratings-count",
+  expressAsyncHandler(async (req, res) => {
+    try {
+      const ratingsCount = await Game.aggregate([
+        {
+          $group: {
+            _id: { $floor: "$average_rating" },
+            count: { $sum: 1 },
+          },
+        },
+        {
+          $sort: { _id: 1 },
+        },
+      ]);
+
+      res.send(ratingsCount);
+    } catch (error) {
+      res.status(500).send({
+        message:
+          "Произошла ошибка при получении количества игр для каждой оценки.",
+        error: error.message,
+      });
+    }
+  })
+);
+
 //! dynamic routes
 gameRouter.get(
   "/filtered",
@@ -111,7 +138,6 @@ gameRouter.get(
         query.price = { $gte: minPrice, $lte: maxPrice };
       }
 
-      // Задаем параметр сортировки в зависимости от выбранной опции
       let sortOptionQuery = {};
       switch (sortOption) {
         case "newest":
@@ -136,10 +162,8 @@ gameRouter.get(
           sortOptionQuery = { release_year: -1 };
       }
 
-      // Запрос для подсчета общего количества отфильтрованных игр
       const totalGamesCount = await Game.countDocuments(query);
 
-      // Запрос для поиска, фильтрации и сортировки отфильтрованных игр
       const gamesWithFilters = await Game.find(query)
         .sort(sortOptionQuery)
         .skip((page - 1) * pageSize)
@@ -148,13 +172,13 @@ gameRouter.get(
       res.send({
         games: gamesWithFilters,
         totalGames: totalGamesCount,
-        totalPages: Math.ceil(totalGamesCount / pageSize),
+        totalPages: Math.max(Math.ceil(totalGamesCount / pageSize), 1),
         currentPage: page,
       });
     } catch (error) {
       res.status(400).send({
         message:
-          "Неверный формат массивов категорий, издателей, оценок, discounted, параметров цены или сортировки.",
+          "Incorrect format for arrays of categories, publishers, ratings, discounted, price or sort options",
       });
     }
   })

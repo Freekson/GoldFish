@@ -32,6 +32,10 @@
   justify-content: space-between;
   align-items: start;
 
+  h4 {
+    font-weight: 500;
+  }
+
   &__filters {
     background: white;
     box-shadow: 5px 6px 16px 0px #2a2a2a29;
@@ -51,7 +55,7 @@
     }
 
     .filters {
-      margin-bottom: 2rem;
+      margin-bottom: 0;
 
       fieldset {
         margin: 0.5rem 0;
@@ -96,11 +100,14 @@
     width: 70%;
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-between;
 
     & > div {
-      width: 28%;
+      width: 27%;
       margin-bottom: 2rem;
+
+      &:not(:nth-child(3n)) {
+        margin-right: 2%;
+      }
     }
   }
 }
@@ -108,6 +115,33 @@
 .questions {
   margin-bottom: 5rem;
   margin-top: 3rem;
+}
+
+.clear-filters-btn,
+.clear-btn {
+  color: #2a2a2a;
+  margin: 0;
+  margin-top: 1rem;
+  text-align: right;
+  cursor: pointer;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.clear-btn {
+  text-align: left;
+  font-weight: bold;
+}
+
+.price {
+  margin-top: 0;
+}
+
+.filters_padding {
+  padding: 0 10px;
+  margin-top: 1rem;
 }
 
 .root {
@@ -177,8 +211,14 @@
 @media (max-width: 1200px) {
   .catalog {
     &__items {
+      justify-content: space-between;
+
       & > div {
         width: 40%;
+
+        &:not(:nth-child(3n)) {
+          margin-right: 0;
+        }
       }
     }
   }

@@ -21,4 +21,13 @@
   background-color: #cce5ff;
   border: 1px solid #b8daff;
   color: #004085;
+
+  b {
+    color: #004085;
+    cursor: pointer;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
 }

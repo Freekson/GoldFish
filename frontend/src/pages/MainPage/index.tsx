@@ -67,7 +67,7 @@ const MainPage: React.FC = () => {
         </div>
       </section>
       <section className={styles["hurry-up"]}>
-        <Link to="/catalog">
+        <Link to="/catalog/?sort=toprated">
           <h3>Hurry up to buy</h3>
         </Link>
         <div className={styles["hurry-up__wrapper"]}>
@@ -87,7 +87,7 @@ const MainPage: React.FC = () => {
         </div>
       </section>
       <section className={styles["special-offer"]}>
-        <Link to="/catalog">
+        <Link to="/catalog/?discounted=true">
           <h3>Special offer</h3>
         </Link>
         <div className={styles["special-offer__wrapper"]}>

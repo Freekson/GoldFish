@@ -52,7 +52,11 @@ const ProductPage: React.FC = () => {
           {game ? (
             <Breadcrumbs
               items={["Home", "Catalog", game?.category]}
-              pathes={["/", "/catalog", `/catalog/?category=${game?.category}`]}
+              pathes={[
+                "/",
+                "/catalog",
+                `/catalog/?categories=%5B"${game?.category}"%5D`,
+              ]}
               last={game?.title}
             />
           ) : (

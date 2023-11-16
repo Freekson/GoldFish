@@ -7,7 +7,7 @@ export enum MessageTypes {
   WARNING = "warning",
 }
 interface IMessageProps {
-  message: string;
+  message: React.ReactNode;
   type: MessageTypes;
   customStyles?: CSSProperties;
 }

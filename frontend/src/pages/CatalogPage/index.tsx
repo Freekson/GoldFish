@@ -9,25 +9,12 @@ import { RootState, useAppDispatch } from "../../redux/store";
 import { fetchFilteredGames } from "../../redux/game/slice";
 import { useSelector } from "react-redux";
 import Skeleton from "react-loading-skeleton";
-import { Link, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
+import MessageBox, { MessageTypes } from "../../components/MessageBox";
+import GameCardSkeleton from "../../components/GameCard/GameCardSkeleton";
+import { fetchRatingCount } from "../../redux/count/slice";
 
-type copyParams = {
-  text: string;
-};
 const CatalogPage: React.FC = () => {
-  const CopyToClipboardButton: React.FC<copyParams> = ({ text }) => {
-    const handleCopyClick = async () => {
-      try {
-        await navigator.clipboard.writeText(text);
-        console.log("Text successfully copied to clipboard");
-      } catch (error) {
-        console.error("Error copying text to clipboard:", error);
-      }
-    };
-
-    return <button onClick={handleCopyClick}>Copy Filter</button>;
-  };
-
   const dispatch = useAppDispatch();
   const { search } = useLocation();
 
@@ -37,9 +24,10 @@ const CatalogPage: React.FC = () => {
   const [isDiscounted, setIsDiscounted] = useState(false);
   const [minPrice, setMinPrice] = useState(0);
   const [maxPrice, setMaxPrice] = useState(0);
+  const [debouncedMinPrice, setDebouncedMinPrice] = useState(minPrice);
+  const [debouncedMaxPrice, setDebouncedMaxPrice] = useState(maxPrice);
   const [sortOption, setSortOption] = useState("newest");
   const [activePage, setActivePage] = useState(1);
-  const [path, setPath] = useState("");
   const sortOptions = [
     { value: "newest", label: "Newest" },
     { value: "oldest", label: "Oldest" },
@@ -50,8 +38,18 @@ const CatalogPage: React.FC = () => {
   ];
 
   const { filterData, status } = useSelector((state: RootState) => state.game);
+  const { ratingCount } = useSelector((state: RootState) => state.count);
   const games = filterData?.games;
   const pages = filterData?.totalPages ?? 1;
+
+  useEffect(() => {
+    const fetchData = async () => {
+      dispatch(fetchRatingCount());
+    };
+    fetchData();
+  }, [dispatch]);
+
+  //? fetch data from url
 
   useEffect(() => {
     const sp = new URLSearchParams(search);
@@ -113,6 +111,28 @@ const CatalogPage: React.FC = () => {
     }
   }, [search]);
 
+  //? waiting 1s before upd price filters
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedMinPrice(minPrice);
+    }, 1000);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [minPrice]);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedMaxPrice(maxPrice);
+    }, 1000);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [maxPrice]);
+
   //? updating filters
 
   useEffect(() => {
@@ -140,8 +160,8 @@ const CatalogPage: React.FC = () => {
       queryParams.push(`discounted=true`);
     }
 
-    if (minPrice || maxPrice) {
-      queryParams.push(`min=${minPrice}&max=${maxPrice}`);
+    if (debouncedMinPrice || debouncedMaxPrice) {
+      queryParams.push(`min=${debouncedMinPrice}&max=${debouncedMaxPrice}`);
     }
 
     if (sortOption) {
@@ -149,22 +169,36 @@ const CatalogPage: React.FC = () => {
     }
 
     if (activePage) {
-      queryParams.push(`page=${activePage}`);
+      if (activePage === 0) {
+        setActivePage(1);
+      } else if (activePage > pages) {
+        queryParams.push(`page=${pages}`);
+        setActivePage(pages);
+      } else {
+        queryParams.push(`page=${activePage}`);
+      }
     }
 
     const queryString = queryParams.join("&");
     const url = `${queryString ? `?${queryString}` : ""}`;
-    setPath(url);
+
+    const newUrl = `/catalog/${url}`;
+    window.history.pushState({}, "", newUrl);
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
     const fetchData = async () => {
       dispatch(fetchFilteredGames({ path: `/filtered${url}` }));
     };
     fetchData();
   }, [
     activePage,
+    debouncedMaxPrice,
+    debouncedMinPrice,
     dispatch,
     isDiscounted,
-    maxPrice,
-    minPrice,
+    pages,
     selectedCategories,
     selectedPublishers,
     selectedRatings,
@@ -243,6 +277,17 @@ const CatalogPage: React.FC = () => {
   const handleSortChange = (event: ChangeEvent<HTMLSelectElement>) => {
     const selectedOption = event.target.value;
     setSortOption(selectedOption);
+  };
+
+  const clearFilters = () => {
+    setSelectedCategories([]);
+    setSelectedPublishers([]);
+    setMinPrice(0);
+    setMaxPrice(0);
+    setIsDiscounted(false);
+    setSelectedRatings([]);
+    setSortOption(sortOptions[0].value);
+    setActivePage(1);
   };
 
   return (
@@ -349,8 +394,8 @@ const CatalogPage: React.FC = () => {
               </div>
             }
           />
-          <h4>Price</h4>
-          <div className={styles["filters"]}>
+          <h4 className={styles["price"]}>Price</h4>
+          <div className={`${styles["filters"]} ${styles["filters_padding"]}`}>
             <fieldset>
               <div className={styles["prices"]}>
                 <div>
@@ -391,7 +436,7 @@ const CatalogPage: React.FC = () => {
             </p>
           </div>
           <h4>Customer rating</h4>
-          <div className={styles["filters"]}>
+          <div className={`${styles["filters"]} ${styles["filters_padding"]}`}>
             <fieldset>
               <input
                 type="checkbox"
@@ -399,7 +444,9 @@ const CatalogPage: React.FC = () => {
                 onChange={handleRatingsChange}
                 checked={selectedRatings.includes(5)}
               />{" "}
-              <label>5 stars</label>
+              <label>
+                5 stars ({ratingCount.length > 1 ? ratingCount[4].count : 0})
+              </label>
             </fieldset>
             <fieldset>
               <input
@@ -408,7 +455,9 @@ const CatalogPage: React.FC = () => {
                 onChange={handleRatingsChange}
                 checked={selectedRatings.includes(4)}
               />{" "}
-              <label>4 stars</label>
+              <label>
+                4 stars ({ratingCount.length > 1 ? ratingCount[3].count : 0})
+              </label>
             </fieldset>
             <fieldset>
               <input
@@ -417,7 +466,9 @@ const CatalogPage: React.FC = () => {
                 onChange={handleRatingsChange}
                 checked={selectedRatings.includes(3)}
               />{" "}
-              <label>3 stars</label>
+              <label>
+                3 stars ({ratingCount.length > 1 ? ratingCount[2].count : 0})
+              </label>
             </fieldset>
             <fieldset>
               <input
@@ -426,7 +477,9 @@ const CatalogPage: React.FC = () => {
                 onChange={handleRatingsChange}
                 checked={selectedRatings.includes(2)}
               />{" "}
-              <label>2 stars</label>
+              <label>
+                2 stars ({ratingCount.length > 1 ? ratingCount[1].count : 0})
+              </label>
             </fieldset>
             <fieldset>
               <input
@@ -435,7 +488,9 @@ const CatalogPage: React.FC = () => {
                 onChange={handleRatingsChange}
                 checked={selectedRatings.includes(1)}
               />{" "}
-              <label>1 stars</label>
+              <label>
+                1 stars ({ratingCount.length > 1 ? ratingCount[0].count : 0})
+              </label>
             </fieldset>
             <p
               className={styles["clear-filters-btn"]}
@@ -444,11 +499,19 @@ const CatalogPage: React.FC = () => {
               Clear filter
             </p>
           </div>
-          <Link to={path}>Search</Link> <br />
-          <CopyToClipboardButton text={"/catalog" + path} />
+          <p className={styles["clear-btn"]} onClick={clearFilters}>
+            Clear all filters
+          </p>
         </div>
         <div className={styles["catalog__items"]}>
-          {games &&
+          {status === "loading" ? (
+            <GameCardSkeleton items={9} />
+          ) : status === "error" ? (
+            <MessageBox
+              message="There is a problem on the server, we are already working on it"
+              type={MessageTypes.DANGER}
+            />
+          ) : games && games.length > 0 ? (
             games.map((game) => (
               <GameCard
                 key={game._id}
@@ -457,11 +520,24 @@ const CatalogPage: React.FC = () => {
                 discount={game.discount}
                 game={game}
               />
-            ))}
+            ))
+          ) : (
+            <MessageBox
+              message={
+                <p>
+                  No games found, change filter or{" "}
+                  <b onClick={clearFilters}>Clear filters</b>
+                </p>
+              }
+              type={MessageTypes.INFO}
+            />
+          )}
         </div>
       </section>
       {status === "loading" ? (
-        <Skeleton />
+        <Skeleton height={70} />
+      ) : games && games?.length <= 0 ? (
+        ""
       ) : (
         <ul className={styles.root}>
           <li
