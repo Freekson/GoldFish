@@ -105,6 +105,9 @@ gameRouter.get(
     const page = parseInt(req.query.page) || 1;
     const pageSize = 9;
     const sortOption = req.query.sort || "newest";
+    const searchQuery = req.query.search
+      ? new RegExp(req.query.search, "i")
+      : null;
 
     try {
       let query = {};
@@ -136,6 +139,10 @@ gameRouter.get(
 
       if (!isNaN(minPrice) && !isNaN(maxPrice)) {
         query.price = { $gte: minPrice, $lte: maxPrice };
+      }
+
+      if (searchQuery) {
+        query.$or = [{ title: searchQuery }, { description: searchQuery }];
       }
 
       let sortOptionQuery = {};

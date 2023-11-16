@@ -1,18 +1,39 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { ChangeEvent, useEffect, useRef, useState } from "react";
 import styles from "./Header.module.scss";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
 
 const Header: React.FC = () => {
+  const navigate = useNavigate();
+  const { search } = useLocation();
+  const [updatedUrl, setUpdatedUrl] = useState("");
+
+  //? make custom url
+
+  useEffect(() => {
+    const currentUrl = new URL(window.location.href);
+
+    if (currentUrl.pathname.startsWith("/catalog")) {
+      const searchParams = new URLSearchParams(currentUrl.search);
+      searchParams.delete("search");
+
+      const newUpdatedUrl = `${currentUrl.pathname}?${searchParams}${currentUrl.hash}`;
+      setUpdatedUrl(newUpdatedUrl);
+    } else {
+      const newUpdatedUrl = `/catalog${currentUrl.search}?${currentUrl.hash}`;
+      setUpdatedUrl(newUpdatedUrl);
+    }
+  }, []);
+
   const [isActive, setIsActive] = useState(false);
   const [isProfileActive, setIsProfileActive] = useState(false);
+  const [searchValue, setSearchValue] = useState("");
+
   const isMounted = useRef(false);
   const profileRef = useRef<HTMLUListElement | null>(null);
   const activeRef = useRef<HTMLLIElement | null>(null);
   const { cartItems } = useSelector((state: RootState) => state.cart);
-
-  const navigate = useNavigate();
 
   useEffect(() => {
     if (isMounted.current) {
@@ -20,6 +41,17 @@ const Header: React.FC = () => {
     }
     isMounted.current = true;
   }, [cartItems]);
+
+  useEffect(() => {
+    const sp = new URLSearchParams(search);
+
+    const searchUrl = sp.get("search");
+    if (searchUrl === null) {
+      setSearchValue("");
+    } else {
+      setSearchValue(searchUrl);
+    }
+  }, [search]);
 
   useEffect(() => {
     const handleOutsideClick = (event: MouseEvent) => {
@@ -56,6 +88,16 @@ const Header: React.FC = () => {
     };
   }, [isActive, isProfileActive]);
 
+  const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const search = event.target.value;
+    setSearchValue(search);
+  };
+  const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter") {
+      navigate(updatedUrl + "&search=" + searchValue);
+    }
+  };
+
   return (
     <header className={styles.header}>
       <div className={styles["header__container"]}>
@@ -83,12 +125,15 @@ const Header: React.FC = () => {
             </Link>
             <div className={styles["header__input-container"]}>
               <input
+                value={searchValue}
+                onChange={handleInputChange}
                 className={styles["header__input"]}
                 type="text"
                 placeholder="Find game"
+                onKeyDown={handleKeyPress}
               />
               <svg
-                onClick={() => navigate("/catalog")}
+                onClick={() => navigate(updatedUrl + "&search=" + searchValue)}
                 className={styles["header__input-img"]}
                 xmlns="http://www.w3.org/2000/svg"
                 width="21"
@@ -398,11 +443,15 @@ const Header: React.FC = () => {
       <div className={styles["mobile-bottom"]}>
         <div className={styles["header__input-container"]}>
           <input
+            value={searchValue}
+            onChange={handleInputChange}
+            onKeyDown={handleKeyPress}
             className={styles["header__input"]}
             type="text"
             placeholder="Find game"
           />
           <svg
+            onClick={() => navigate(updatedUrl + "&search=" + searchValue)}
             className={styles["header__input-img"]}
             xmlns="http://www.w3.org/2000/svg"
             width="21"

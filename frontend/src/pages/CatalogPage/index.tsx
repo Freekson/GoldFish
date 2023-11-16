@@ -9,13 +9,14 @@ import { RootState, useAppDispatch } from "../../redux/store";
 import { fetchFilteredGames } from "../../redux/game/slice";
 import { useSelector } from "react-redux";
 import Skeleton from "react-loading-skeleton";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import MessageBox, { MessageTypes } from "../../components/MessageBox";
 import GameCardSkeleton from "../../components/GameCard/GameCardSkeleton";
 import { fetchRatingCount } from "../../redux/count/slice";
 
 const CatalogPage: React.FC = () => {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const { search } = useLocation();
 
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
@@ -28,6 +29,7 @@ const CatalogPage: React.FC = () => {
   const [debouncedMaxPrice, setDebouncedMaxPrice] = useState(maxPrice);
   const [sortOption, setSortOption] = useState("newest");
   const [activePage, setActivePage] = useState(1);
+  const [searchValue, setSearchValue] = useState("");
   const sortOptions = [
     { value: "newest", label: "Newest" },
     { value: "oldest", label: "Oldest" },
@@ -61,6 +63,7 @@ const CatalogPage: React.FC = () => {
     const max = sp.get("max");
     const sort = sp.get("sort");
     const page = sp.get("page");
+    const searchUrl = sp.get("search");
 
     if (categories === null) {
       setSelectedCategories([]);
@@ -108,6 +111,12 @@ const CatalogPage: React.FC = () => {
       setActivePage(1);
     } else {
       setActivePage(Number(page));
+    }
+
+    if (searchUrl === null) {
+      setSearchValue("");
+    } else {
+      setSearchValue(searchUrl);
     }
   }, [search]);
 
@@ -179,6 +188,10 @@ const CatalogPage: React.FC = () => {
       }
     }
 
+    if (searchValue) {
+      queryParams.push(`search=${searchValue}`);
+    }
+
     const queryString = queryParams.join("&");
     const url = `${queryString ? `?${queryString}` : ""}`;
 
@@ -199,6 +212,7 @@ const CatalogPage: React.FC = () => {
     dispatch,
     isDiscounted,
     pages,
+    searchValue,
     selectedCategories,
     selectedPublishers,
     selectedRatings,
@@ -288,6 +302,20 @@ const CatalogPage: React.FC = () => {
     setSelectedRatings([]);
     setSortOption(sortOptions[0].value);
     setActivePage(1);
+    onClickDelete();
+  };
+
+  const onClickDelete = () => {
+    setSearchValue("");
+    const currentUrl = new URL(window.location.href);
+
+    const searchParams = new URLSearchParams(currentUrl.search);
+    searchParams.delete("search");
+
+    const updatedUrl = `${currentUrl.pathname}?${searchParams}${currentUrl.hash}`;
+
+    console.log(updatedUrl);
+    navigate(updatedUrl);
   };
 
   return (
@@ -300,6 +328,19 @@ const CatalogPage: React.FC = () => {
         <h3>Catalog</h3>
 
         <div className={styles["sort-by"]}>
+          {searchValue && (
+            <p className={styles["search"]}>
+              Search request: <span>{searchValue}</span>
+              <svg
+                onClick={onClickDelete}
+                xmlns="http://www.w3.org/2000/svg"
+                height="1em"
+                viewBox="0 0 512 512"
+              >
+                <path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM175 175c9.4-9.4 24.6-9.4 33.9 0l47 47 47-47c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9l-47 47 47 47c9.4 9.4 9.4 24.6 0 33.9s-24.6 9.4-33.9 0l-47-47-47 47c-9.4 9.4-24.6 9.4-33.9 0s-9.4-24.6 0-33.9l47-47-47-47c-9.4-9.4-9.4-24.6 0-33.9z" />
+              </svg>
+            </p>
+          )}
           <p>Sort By</p>
           <select value={sortOption} onChange={handleSortChange}>
             {sortOptions.map((option) => (
