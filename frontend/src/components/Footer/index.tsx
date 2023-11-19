@@ -1,9 +1,14 @@
-import React from "react";
 import styles from "./Footer.module.scss";
 import Button from "../Button";
 import { Link } from "react-router-dom";
+import { RootState } from "../../redux/store";
+import { useSelector } from "react-redux";
 
 const Footer: React.FC = () => {
+  const { categoryData, status } = useSelector(
+    (state: RootState) => state.category
+  );
+
   return (
     <div className={styles["footer__wrapper"]}>
       <footer className={styles.footer}>
@@ -21,21 +26,19 @@ const Footer: React.FC = () => {
                   <b>Catalog</b>
                 </Link>
               </li>
-              <li>
-                <Link to="/catalog/?category=1">Category 1</Link>
-              </li>
-              <li>
-                <Link to="/catalog/?category=2">Category 2</Link>
-              </li>
-              <li>
-                <Link to="/catalog/?category=3">Category 3</Link>
-              </li>
-              <li>
-                <Link to="/catalog/?category=4">Category 4</Link>
-              </li>
-              <li>
-                <Link to="/catalog/?category=5">Category 5</Link>
-              </li>
+              {status === "loading" ? (
+                <li>
+                  <Link to="/catalog">Category</Link>
+                </li>
+              ) : (
+                categoryData.map((category) => (
+                  <li key={category._id}>
+                    <Link to={`/catalog/?categories=%5B"${category._id}"%5D`}>
+                      {category._id}
+                    </Link>
+                  </li>
+                ))
+              )}
             </ul>
           </li>
           <li>

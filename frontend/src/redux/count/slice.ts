@@ -1,48 +1,90 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { countState, IGameCount, Status } from "./types";
+import { countState, ICountItem, Status } from "./types";
 import axios from "axios";
 
 const initialState: countState = {
   ratingCount: [],
+  categoryCount: [],
+  publishersCount: [],
   status: Status.LOADING,
 };
 
-const createGameAsyncThunk = (name: string, url: string) =>
-  createAsyncThunk<IGameCount[]>(`game/${name}`, async () => {
-    const { data } = await axios.get<IGameCount[]>(url);
+export const fetchRatingCount = createAsyncThunk(
+  "count/fetchRatingCount",
+  async () => {
+    const { data } = await axios.get<ICountItem[]>(`/api/games/ratings-count`);
     return data;
-  });
+  }
+);
 
-const fetchRatingCount = createGameAsyncThunk(
-  "fetchRatingCount",
-  "/api/games/ratings-count"
+export const fetchCategoryCount = createAsyncThunk(
+  "count/fetchCategoryCount",
+  async () => {
+    const { data } = await axios.get<ICountItem[]>(
+      `/api/games/categories-count`
+    );
+    return data;
+  }
+);
+
+export const fetchPublisherCount = createAsyncThunk(
+  "count/fetchPublisherCount",
+  async () => {
+    const { data } = await axios.get<ICountItem[]>(
+      `/api/games/publishers-count`
+    );
+    return data;
+  }
 );
 
 const countSlice = createSlice({
   name: "count",
   initialState,
   reducers: {
-    setItems(state, action: PayloadAction<IGameCount[]>) {
+    setItems(state, action: PayloadAction<ICountItem[]>) {
       state.ratingCount = action.payload;
     },
   },
   extraReducers: (builder) => {
-    [fetchRatingCount].forEach((thunk) => {
-      builder.addCase(thunk.pending, (state) => {
-        state.ratingCount = [];
-        state.status = Status.LOADING;
-      });
-      builder.addCase(thunk.fulfilled, (state, action) => {
-        state.ratingCount = action.payload;
-        state.status = Status.SUCCESS;
-      });
-      builder.addCase(thunk.rejected, (state) => {
-        state.ratingCount = [];
-        state.status = Status.ERROR;
-      });
+    builder.addCase(fetchRatingCount.pending, (state) => {
+      state.ratingCount = [];
+      state.status = Status.LOADING;
+    });
+    builder.addCase(fetchRatingCount.fulfilled, (state, action) => {
+      state.ratingCount = action.payload;
+      state.status = Status.SUCCESS;
+    });
+    builder.addCase(fetchRatingCount.rejected, (state) => {
+      state.ratingCount = [];
+      state.status = Status.ERROR;
+    });
+
+    builder.addCase(fetchCategoryCount.pending, (state) => {
+      state.categoryCount = [];
+      state.status = Status.LOADING;
+    });
+    builder.addCase(fetchCategoryCount.fulfilled, (state, action) => {
+      state.categoryCount = action.payload;
+      state.status = Status.SUCCESS;
+    });
+    builder.addCase(fetchCategoryCount.rejected, (state) => {
+      state.categoryCount = [];
+      state.status = Status.ERROR;
+    });
+
+    builder.addCase(fetchPublisherCount.pending, (state) => {
+      state.publishersCount = [];
+      state.status = Status.LOADING;
+    });
+    builder.addCase(fetchPublisherCount.fulfilled, (state, action) => {
+      state.publishersCount = action.payload;
+      state.status = Status.SUCCESS;
+    });
+    builder.addCase(fetchPublisherCount.rejected, (state) => {
+      state.publishersCount = [];
+      state.status = Status.ERROR;
     });
   },
 });
 export const { setItems } = countSlice.actions;
-export { fetchRatingCount };
 export default countSlice.reducer;

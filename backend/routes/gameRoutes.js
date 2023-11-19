@@ -66,6 +66,42 @@ gameRouter.get(
 );
 
 gameRouter.get(
+  "/top-categories",
+  expressAsyncHandler(async (req, res) => {
+    const topCategories = await Game.aggregate([
+      {
+        $group: {
+          _id: "$category",
+          count: { $sum: 1 },
+          games: { $push: "$$ROOT" },
+        },
+      },
+      { $sort: { count: -1 } },
+      { $limit: 5 },
+      {
+        $project: {
+          _id: 1,
+          count: 1,
+          game: { $arrayElemAt: ["$games", 0] },
+        },
+      },
+    ]);
+
+    if (topCategories && topCategories.length > 0) {
+      const formattedTopCategories = topCategories.map((category) => ({
+        _id: category._id,
+        count: category.count,
+        image_link: category.game.image_link,
+      }));
+
+      res.send(formattedTopCategories);
+    } else {
+      res.status(404).send({ message: "Categories not found" });
+    }
+  })
+);
+
+gameRouter.get(
   "/ratings-count",
   expressAsyncHandler(async (req, res) => {
     try {
@@ -87,6 +123,38 @@ gameRouter.get(
         message: "Error while fetching ratings count",
         error: error.message,
       });
+    }
+  })
+);
+
+gameRouter.get(
+  "/categories-count",
+  expressAsyncHandler(async (req, res) => {
+    const allCategories = await Game.aggregate([
+      { $group: { _id: "$category", count: { $sum: 1 } } },
+      { $sort: { _id: 1 } },
+    ]);
+
+    if (allCategories && allCategories.length > 0) {
+      res.send(allCategories);
+    } else {
+      res.status(404).send({ message: "Categories not found" });
+    }
+  })
+);
+
+gameRouter.get(
+  "/publishers-count",
+  expressAsyncHandler(async (req, res) => {
+    const allPublishers = await Game.aggregate([
+      { $group: { _id: "$publisher", count: { $sum: 1 } } },
+      { $sort: { _id: 1 } },
+    ]);
+
+    if (allPublishers && allPublishers.length > 0) {
+      res.send(allPublishers);
+    } else {
+      res.status(404).send({ message: "Publishers not found" });
     }
   })
 );
@@ -141,7 +209,6 @@ gameRouter.get(
         query.price = { $gte: minPrice, $lte: maxPrice };
       }
 
-      // Добавляем условие для поиска по строке, если передан параметр search
       if (searchQuery) {
         const searchCondition = {
           $or: [
@@ -151,7 +218,6 @@ gameRouter.get(
           ],
         };
 
-        // Если уже есть другие условия, добавляем их в $and
         if (Object.keys(query).length > 0) {
           query = { $and: [query, searchCondition] };
         } else {

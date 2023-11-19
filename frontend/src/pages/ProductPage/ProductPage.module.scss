@@ -54,13 +54,18 @@
     margin-top: 1rem;
   }
 
-  &__publisher {
+  &__publisher,
+  &__category {
     width: 100%;
     text-align: left;
 
     a:hover {
       text-decoration: underline;
     }
+  }
+
+  &__category {
+    margin-top: 0;
   }
 }
 
@@ -139,6 +144,10 @@ h4 {
 
 hr {
   width: 99%;
+}
+
+.description-link {
+  text-decoration: underline;
 }
 
 @media (max-width: 1200px) {

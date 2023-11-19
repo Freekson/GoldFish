@@ -4,12 +4,14 @@ export enum Status {
   SUCCESS = "success",
 }
 
-export interface IGameCount {
-  _id: number;
+export interface ICountItem {
+  _id: string;
   count: number;
 }
 
 export interface countState {
-  ratingCount: IGameCount[];
+  ratingCount: ICountItem[];
+  categoryCount: ICountItem[];
+  publishersCount: ICountItem[];
   status: Status;
 }

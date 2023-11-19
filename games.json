@@ -550,18 +550,6 @@
     "release_year": 2010
   },
   {
-    "title": "Civilization VI",
-    "slug": "civilization-vi",
-    "category": "Strategy",
-    "description": "Build your civilization and lead it to victory in this classic strategy game.",
-    "image_link": "https://cdn.akamai.steamstatic.com/steam/apps/289070/header.jpg?t=1680898825",
-    "price": 29.99,
-    "average_rating": 4.6,
-    "review_count": 9100,
-    "publisher": "Firaxis Games",
-    "release_year": 2020
-  },
-  {
     "title": "Elder Scrolls IV: Oblivion",
     "slug": "elder-scrolls-iv-oblivion",
     "category": "Role-playing",

@@ -12,7 +12,11 @@ import Skeleton from "react-loading-skeleton";
 import { useLocation, useNavigate } from "react-router-dom";
 import MessageBox, { MessageTypes } from "../../components/MessageBox";
 import GameCardSkeleton from "../../components/GameCard/GameCardSkeleton";
-import { fetchRatingCount } from "../../redux/count/slice";
+import {
+  fetchCategoryCount,
+  fetchPublisherCount,
+  fetchRatingCount,
+} from "../../redux/count/slice";
 
 const CatalogPage: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -40,13 +44,20 @@ const CatalogPage: React.FC = () => {
   ];
 
   const { filterData, status } = useSelector((state: RootState) => state.game);
-  const { ratingCount } = useSelector((state: RootState) => state.count);
+  const {
+    ratingCount,
+    categoryCount,
+    publishersCount,
+    status: countStatus,
+  } = useSelector((state: RootState) => state.count);
   const games = filterData?.games;
   const pages = filterData?.totalPages ?? 1;
 
   useEffect(() => {
     const fetchData = async () => {
       dispatch(fetchRatingCount());
+      dispatch(fetchCategoryCount());
+      dispatch(fetchPublisherCount());
     };
     fetchData();
   }, [dispatch]);
@@ -358,33 +369,23 @@ const CatalogPage: React.FC = () => {
             title="Category"
             description={
               <div className={styles["filters"]}>
-                <fieldset>
-                  <input
-                    type="checkbox"
-                    value="Party"
-                    onChange={handleCategoryChange}
-                    checked={selectedCategories.includes("Party")}
-                  />{" "}
-                  <label>Party</label>
-                </fieldset>
-                <fieldset>
-                  <input
-                    type="checkbox"
-                    value="Adventure"
-                    onChange={handleCategoryChange}
-                    checked={selectedCategories.includes("Adventure")}
-                  />{" "}
-                  <label>Adventure</label>
-                </fieldset>
-                <fieldset>
-                  <input
-                    type="checkbox"
-                    value="Action"
-                    onChange={handleCategoryChange}
-                    checked={selectedCategories.includes("Action")}
-                  />{" "}
-                  <label>Action</label>
-                </fieldset>
+                {countStatus === "loading" ? (
+                  <Skeleton height={300} />
+                ) : (
+                  categoryCount.map((category, index) => (
+                    <fieldset key={index}>
+                      <input
+                        type="checkbox"
+                        value={category._id}
+                        onChange={handleCategoryChange}
+                        checked={selectedCategories.includes(category._id)}
+                      />{" "}
+                      <label>
+                        {category._id} ({categoryCount[index].count})
+                      </label>
+                    </fieldset>
+                  ))
+                )}
                 <p
                   className={styles["clear-filters-btn"]}
                   onClick={() => setSelectedCategories([])}
@@ -399,33 +400,23 @@ const CatalogPage: React.FC = () => {
             title="Game publisher"
             description={
               <div className={styles["filters"]}>
-                <fieldset>
-                  <input
-                    type="checkbox"
-                    value="Rare"
-                    onChange={handlePublisherChange}
-                    checked={selectedPublishers.includes("Rare")}
-                  />{" "}
-                  <label>Rare</label>
-                </fieldset>
-                <fieldset>
-                  <input
-                    type="checkbox"
-                    value="Ubisoft"
-                    onChange={handlePublisherChange}
-                    checked={selectedPublishers.includes("Ubisoft")}
-                  />{" "}
-                  <label>Ubisoft</label>
-                </fieldset>
-                <fieldset>
-                  <input
-                    type="checkbox"
-                    value="FromSoftware"
-                    onChange={handlePublisherChange}
-                    checked={selectedPublishers.includes("FromSoftware")}
-                  />{" "}
-                  <label>FromSoftware</label>
-                </fieldset>
+                {countStatus === "loading" ? (
+                  <Skeleton height={300} />
+                ) : (
+                  publishersCount.map((publisher, index) => (
+                    <fieldset key={index}>
+                      <input
+                        type="checkbox"
+                        value={publisher._id}
+                        onChange={handlePublisherChange}
+                        checked={selectedPublishers.includes(publisher._id)}
+                      />{" "}
+                      <label>
+                        {publisher._id} ({publishersCount[index].count})
+                      </label>
+                    </fieldset>
+                  ))
+                )}
                 <p
                   className={styles["clear-filters-btn"]}
                   onClick={() => setSelectedPublishers([])}
@@ -546,10 +537,15 @@ const CatalogPage: React.FC = () => {
         </div>
         <div className={styles["catalog__items"]}>
           {status === "loading" ? (
-            <GameCardSkeleton items={9} />
+            <GameCardSkeleton items={12} />
           ) : status === "error" ? (
             <MessageBox
-              message="There is a problem on the server, we are already working on it"
+              message="There is a problem with connection to DB, check your internet conection"
+              type={MessageTypes.DANGER}
+            />
+          ) : countStatus === "error" ? (
+            <MessageBox
+              message="Erorr while loading categories or publishers, its problem on server side, we are already working on it"
               type={MessageTypes.DANGER}
             />
           ) : games && games.length > 0 ? (

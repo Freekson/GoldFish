@@ -15,12 +15,13 @@ a:hover {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    height: 500px;
+    height: 400px;
   }
 
   &__left {
     width: 48%;
   }
+
   &__right {
     width: 48%;
     display: flex;
@@ -194,10 +195,18 @@ a:hover {
 @media (max-width: 1728px) {
   .catalog {
     &__wrapper {
-      height: 450px;
+      height: 400px;
     }
     &__right {
       align-content: space-around;
+    }
+  }
+}
+
+@media (max-width: 1400px) {
+  .catalog {
+    &__wrapper {
+      height: 350px;
     }
   }
 }
@@ -210,12 +219,28 @@ a:hover {
       width: 100%;
     }
   }
+
+  .catalog {
+    &__wrapper {
+      height: 300px;
+    }
+  }
 }
 
 @media (max-width: 1080px) {
   .catalog {
     &__wrapper {
-      height: 300px;
+      flex-wrap: wrap;
+      height: auto;
+    }
+
+    &__left {
+      width: 100%;
+      margin-bottom: 2rem;
+    }
+
+    &__right {
+      width: 100%;
     }
   }
 
@@ -234,22 +259,6 @@ a:hover {
 }
 
 @media (max-width: 992px) {
-  .catalog {
-    &__wrapper {
-      flex-wrap: wrap;
-      height: auto;
-    }
-
-    &__left {
-      width: 100%;
-      margin-bottom: 2rem;
-    }
-
-    &__right {
-      width: 100%;
-    }
-  }
-
   .upcoming-events {
     &__events {
       flex-wrap: wrap;
