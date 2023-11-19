@@ -84,8 +84,7 @@ gameRouter.get(
       res.send(ratingsCount);
     } catch (error) {
       res.status(500).send({
-        message:
-          "Произошла ошибка при получении количества игр для каждой оценки.",
+        message: "Error while fetching ratings count",
         error: error.message,
       });
     }
@@ -93,6 +92,7 @@ gameRouter.get(
 );
 
 //! dynamic routes
+
 gameRouter.get(
   "/filtered",
   expressAsyncHandler(async (req, res) => {

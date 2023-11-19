@@ -39,6 +39,7 @@ const CartItem: React.FC<TProps> = ({ img, name, price, quantity, game }) => {
         </div>
         <svg
           onClick={deleteCartItem}
+          data-testid="delete-button"
           xmlns="http://www.w3.org/2000/svg"
           width="24"
           height="27"
