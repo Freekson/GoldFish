@@ -2,12 +2,34 @@ import React, { ChangeEvent, useEffect, useRef, useState } from "react";
 import styles from "./Header.module.scss";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { RootState } from "../../redux/store";
+import { RootState, useAppDispatch } from "../../redux/store";
+import { fetchHomeCategories } from "../../redux/category/slice";
+import Skeleton from "react-loading-skeleton";
 
 const Header: React.FC = () => {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   const { search } = useLocation();
   const [updatedUrl, setUpdatedUrl] = useState("");
+
+  const [isActive, setIsActive] = useState(false);
+  const [isProfileActive, setIsProfileActive] = useState(false);
+  const [searchValue, setSearchValue] = useState("");
+
+  const isMounted = useRef(false);
+  const profileRef = useRef<HTMLUListElement | null>(null);
+  const activeRef = useRef<HTMLLIElement | null>(null);
+  const { cartItems } = useSelector((state: RootState) => state.cart);
+  const { categoryData, status } = useSelector(
+    (state: RootState) => state.category
+  );
+
+  useEffect(() => {
+    const fetchData = async () => {
+      dispatch(fetchHomeCategories());
+    };
+    fetchData();
+  }, [dispatch]);
 
   //? make custom url
 
@@ -25,15 +47,6 @@ const Header: React.FC = () => {
       setUpdatedUrl(newUpdatedUrl);
     }
   }, []);
-
-  const [isActive, setIsActive] = useState(false);
-  const [isProfileActive, setIsProfileActive] = useState(false);
-  const [searchValue, setSearchValue] = useState("");
-
-  const isMounted = useRef(false);
-  const profileRef = useRef<HTMLUListElement | null>(null);
-  const activeRef = useRef<HTMLLIElement | null>(null);
-  const { cartItems } = useSelector((state: RootState) => state.cart);
 
   useEffect(() => {
     if (isMounted.current) {
@@ -182,7 +195,6 @@ const Header: React.FC = () => {
                   />
                 </svg>
               </span>
-
               <Link to="/cart">
                 {cartItems.length > 0 && (
                   <span className={styles["cart-count"]}>
@@ -352,91 +364,32 @@ const Header: React.FC = () => {
           }
         >
           <ul>
-            <li>
-              <Link
-                to="/catalog/?category=1"
-                onClick={() => setIsActive(false)}
-              >
-                Category 1
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="8"
-                  height="14"
-                  viewBox="0 0 8 14"
-                  fill="none"
-                >
-                  <path d="M0 12L5 7L0 2L1 0L8 7L1 14L0 12Z" fill="#C8C5C3" />
-                </svg>
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/catalog/?category=2"
-                onClick={() => setIsActive(false)}
-              >
-                Category 2
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="8"
-                  height="14"
-                  viewBox="0 0 8 14"
-                  fill="none"
-                >
-                  <path d="M0 12L5 7L0 2L1 0L8 7L1 14L0 12Z" fill="#C8C5C3" />
-                </svg>
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/catalog/?category=3"
-                onClick={() => setIsActive(false)}
-              >
-                Category 3
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="8"
-                  height="14"
-                  viewBox="0 0 8 14"
-                  fill="none"
-                >
-                  <path d="M0 12L5 7L0 2L1 0L8 7L1 14L0 12Z" fill="#C8C5C3" />
-                </svg>
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/catalog/?category=4"
-                onClick={() => setIsActive(false)}
-              >
-                Category 4
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="8"
-                  height="14"
-                  viewBox="0 0 8 14"
-                  fill="none"
-                >
-                  <path d="M0 12L5 7L0 2L1 0L8 7L1 14L0 12Z" fill="#C8C5C3" />
-                </svg>
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/catalog/?category=5"
-                onClick={() => setIsActive(false)}
-              >
-                Category 5
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="8"
-                  height="14"
-                  viewBox="0 0 8 14"
-                  fill="none"
-                >
-                  <path d="M0 12L5 7L0 2L1 0L8 7L1 14L0 12Z" fill="#C8C5C3" />
-                </svg>
-              </Link>
-            </li>
+            {status === "loading" ? (
+              <Skeleton height={270} />
+            ) : (
+              categoryData.map((category) => (
+                <li key={category._id}>
+                  <Link
+                    to={`/catalog/?categories=%5B"${category._id}"%5D`}
+                    onClick={() => setIsActive(false)}
+                  >
+                    {category._id}
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="8"
+                      height="14"
+                      viewBox="0 0 8 14"
+                      fill="none"
+                    >
+                      <path
+                        d="M0 12L5 7L0 2L1 0L8 7L1 14L0 12Z"
+                        fill="#C8C5C3"
+                      />
+                    </svg>
+                  </Link>
+                </li>
+              ))
+            )}
           </ul>
         </div>
       </div>

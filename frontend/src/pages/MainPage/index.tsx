@@ -11,6 +11,7 @@ import { useSelector } from "react-redux";
 import { fetchHomePageProducts } from "../../redux/game/slice";
 import GameCardSkeleton from "../../components/GameCard/GameCardSkeleton";
 import MessageBox, { MessageTypes } from "../../components/MessageBox";
+import Skeleton from "react-loading-skeleton";
 
 const MainPage: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -22,8 +23,13 @@ const MainPage: React.FC = () => {
     fetchData();
   }, [dispatch]);
   const { gameData, status } = useSelector((state: RootState) => state.game);
+  const { categoryData, status: CategoryStatus } = useSelector(
+    (state: RootState) => state.category
+  );
+
   const topRated = gameData.slice(0, 4);
   const topDiscounted = gameData.slice(4, 8);
+  const categories = categoryData.slice(1, 5);
 
   return (
     <Layout>
@@ -35,35 +41,56 @@ const MainPage: React.FC = () => {
           <h3>Catalog</h3>
         </Link>
         <div className={styles["catalog__wrapper"]}>
-          <div className={styles["catalog__left"]}>
-            <ImageText
-              img="./img/catalog-1.png"
-              imgAlt="board-games"
-              text="Board Games"
+          {CategoryStatus === "error" ? (
+            <MessageBox
+              message="An error occurred while loading categories, we are working on it"
+              type={MessageTypes.DANGER}
+              customStyles={{ marginTop: "1rem" }}
             />
-          </div>
-          <div className={styles["catalog__right"]}>
-            <ImageText
-              img="./img/catalog-1.png"
-              imgAlt="board-games"
-              text="Board Games"
-            />
-            <ImageText
-              img="./img/catalog-1.png"
-              imgAlt="board-games"
-              text="Board Games"
-            />
-            <ImageText
-              img="./img/catalog-1.png"
-              imgAlt="board-games"
-              text="Board Games"
-            />
-            <ImageText
-              img="./img/catalog-1.png"
-              imgAlt="board-games"
-              text="Board Games"
-            />
-          </div>
+          ) : (
+            <>
+              <div className={styles["catalog__left"]}>
+                {CategoryStatus === "loading" ? (
+                  <Skeleton height={400} />
+                ) : (
+                  <ImageText
+                    img={categoryData[0].image_link ?? ""}
+                    imgAlt={categoryData[0]._id}
+                    text={categoryData[0]._id}
+                    link={categoryData[0]._id}
+                  />
+                )}
+              </div>
+              <div className={styles["catalog__right"]}>
+                {CategoryStatus === "loading" ? (
+                  <>
+                    <div style={{ width: "49%" }}>
+                      <Skeleton height={150} />
+                    </div>
+                    <div style={{ width: "49%" }}>
+                      <Skeleton height={150} />
+                    </div>
+                    <div style={{ width: "49%" }}>
+                      <Skeleton height={150} />
+                    </div>
+                    <div style={{ width: "49%" }}>
+                      <Skeleton height={150} />
+                    </div>
+                  </>
+                ) : (
+                  categories.map((category) => (
+                    <ImageText
+                      key={category._id}
+                      img={category.image_link ?? ""}
+                      imgAlt={category._id}
+                      text={category._id}
+                      link={category._id}
+                    />
+                  ))
+                )}
+              </div>
+            </>
+          )}
         </div>
       </section>
       <section className={styles["hurry-up"]}>

@@ -66,6 +66,42 @@ gameRouter.get(
 );
 
 gameRouter.get(
+  "/top-categories",
+  expressAsyncHandler(async (req, res) => {
+    const topCategories = await Game.aggregate([
+      {
+        $group: {
+          _id: "$category",
+          count: { $sum: 1 },
+          games: { $push: "$$ROOT" },
+        },
+      },
+      { $sort: { count: -1 } },
+      { $limit: 5 },
+      {
+        $project: {
+          _id: 1,
+          count: 1,
+          game: { $arrayElemAt: ["$games", 0] },
+        },
+      },
+    ]);
+
+    if (topCategories && topCategories.length > 0) {
+      const formattedTopCategories = topCategories.map((category) => ({
+        _id: category._id,
+        count: category.count,
+        image_link: category.game.image_link,
+      }));
+
+      res.send(formattedTopCategories);
+    } else {
+      res.status(404).send({ message: "Categories not found" });
+    }
+  })
+);
+
+gameRouter.get(
   "/ratings-count",
   expressAsyncHandler(async (req, res) => {
     try {
@@ -84,15 +120,47 @@ gameRouter.get(
       res.send(ratingsCount);
     } catch (error) {
       res.status(500).send({
-        message:
-          "Произошла ошибка при получении количества игр для каждой оценки.",
+        message: "Error while fetching ratings count",
         error: error.message,
       });
     }
   })
 );
 
+gameRouter.get(
+  "/categories-count",
+  expressAsyncHandler(async (req, res) => {
+    const allCategories = await Game.aggregate([
+      { $group: { _id: "$category", count: { $sum: 1 } } },
+      { $sort: { _id: 1 } },
+    ]);
+
+    if (allCategories && allCategories.length > 0) {
+      res.send(allCategories);
+    } else {
+      res.status(404).send({ message: "Categories not found" });
+    }
+  })
+);
+
+gameRouter.get(
+  "/publishers-count",
+  expressAsyncHandler(async (req, res) => {
+    const allPublishers = await Game.aggregate([
+      { $group: { _id: "$publisher", count: { $sum: 1 } } },
+      { $sort: { _id: 1 } },
+    ]);
+
+    if (allPublishers && allPublishers.length > 0) {
+      res.send(allPublishers);
+    } else {
+      res.status(404).send({ message: "Publishers not found" });
+    }
+  })
+);
+
 //! dynamic routes
+
 gameRouter.get(
   "/filtered",
   expressAsyncHandler(async (req, res) => {
@@ -103,7 +171,7 @@ gameRouter.get(
     const minPrice = parseFloat(req.query.min);
     const maxPrice = parseFloat(req.query.max);
     const page = parseInt(req.query.page) || 1;
-    const pageSize = 9;
+    const pageSize = 12;
     const sortOption = req.query.sort || "newest";
     const searchQuery = req.query.search
       ? new RegExp(req.query.search, "i")
@@ -142,7 +210,19 @@ gameRouter.get(
       }
 
       if (searchQuery) {
-        query.$or = [{ title: searchQuery }, { description: searchQuery }];
+        const searchCondition = {
+          $or: [
+            { title: searchQuery },
+            { description: searchQuery },
+            { publisher: searchQuery },
+          ],
+        };
+
+        if (Object.keys(query).length > 0) {
+          query = { $and: [query, searchCondition] };
+        } else {
+          query = searchCondition;
+        }
       }
 
       let sortOptionQuery = {};
@@ -179,7 +259,7 @@ gameRouter.get(
       res.send({
         games: gamesWithFilters,
         totalGames: totalGamesCount,
-        totalPages: Math.max(Math.ceil(totalGamesCount / pageSize), 1),
+        totalPages: Math.ceil(totalGamesCount / pageSize),
         currentPage: page,
       });
     } catch (error) {

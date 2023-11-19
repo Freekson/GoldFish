@@ -82,13 +82,19 @@ const ProductPage: React.FC = () => {
                     Description: {game?.description || <Skeleton width={200} />}{" "}
                     <br />
                     <br />
-                    Category: {game?.category || <Skeleton width={200} />}{" "}
+                    Category: {game?.category || <Skeleton width={200} />}
                     <br /> <br />
-                    Publisher: {game?.publisher || (
-                      <Skeleton width={200} />
-                    )}{" "}
+                    Publisher: {game?.publisher || <Skeleton width={200} />}
                     <br /> <br />
-                    Rating: {game?.average_rating || <Skeleton width={200} />}
+                    Rating:{" "}
+                    <Link
+                      to={`/catalog/?ratings=%5B${Math.floor(
+                        game?.average_rating
+                      )}%5D`}
+                      className={styles["description-link"]}
+                    >
+                      {game?.average_rating || <Skeleton width={200} />}
+                    </Link>
                   </>
                 }
               />
@@ -409,8 +415,16 @@ const ProductPage: React.FC = () => {
               <p className={styles["product__publisher"]}>
                 Publisher:{" "}
                 <b>
-                  <Link to="/publisher/1">
+                  <Link to={`/catalog/?publishers=%5B"${game?.publisher}"%5D`}>
                     {game?.publisher || <Skeleton width={100} />}
+                  </Link>
+                </b>
+              </p>
+              <p className={styles["product__category"]}>
+                Category:{" "}
+                <b>
+                  <Link to={`/catalog/?categories=%5B"${game?.category}"%5D`}>
+                    {game?.category || <Skeleton width={100} />}
                   </Link>
                 </b>
               </p>
