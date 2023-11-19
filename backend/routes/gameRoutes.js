@@ -103,7 +103,7 @@ gameRouter.get(
     const minPrice = parseFloat(req.query.min);
     const maxPrice = parseFloat(req.query.max);
     const page = parseInt(req.query.page) || 1;
-    const pageSize = 9;
+    const pageSize = 12;
     const sortOption = req.query.sort || "newest";
     const searchQuery = req.query.search
       ? new RegExp(req.query.search, "i")
@@ -141,8 +141,22 @@ gameRouter.get(
         query.price = { $gte: minPrice, $lte: maxPrice };
       }
 
+      // Добавляем условие для поиска по строке, если передан параметр search
       if (searchQuery) {
-        query.$or = [{ title: searchQuery }, { description: searchQuery }];
+        const searchCondition = {
+          $or: [
+            { title: searchQuery },
+            { description: searchQuery },
+            { publisher: searchQuery },
+          ],
+        };
+
+        // Если уже есть другие условия, добавляем их в $and
+        if (Object.keys(query).length > 0) {
+          query = { $and: [query, searchCondition] };
+        } else {
+          query = searchCondition;
+        }
       }
 
       let sortOptionQuery = {};
@@ -179,7 +193,7 @@ gameRouter.get(
       res.send({
         games: gamesWithFilters,
         totalGames: totalGamesCount,
-        totalPages: Math.max(Math.ceil(totalGamesCount / pageSize), 1),
+        totalPages: Math.ceil(totalGamesCount / pageSize),
         currentPage: page,
       });
     } catch (error) {

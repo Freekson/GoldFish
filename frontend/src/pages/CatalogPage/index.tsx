@@ -302,7 +302,8 @@ const CatalogPage: React.FC = () => {
     setSelectedRatings([]);
     setSortOption(sortOptions[0].value);
     setActivePage(1);
-    onClickDelete();
+    setSearchValue("");
+    navigate(`/catalog/?sort=newest&page=1`);
   };
 
   const onClickDelete = () => {
@@ -314,7 +315,6 @@ const CatalogPage: React.FC = () => {
 
     const updatedUrl = `${currentUrl.pathname}?${searchParams}${currentUrl.hash}`;
 
-    console.log(updatedUrl);
     navigate(updatedUrl);
   };
 
