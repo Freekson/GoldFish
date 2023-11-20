@@ -4,107 +4,139 @@ import ImageText from "../../components/ImageText";
 import GameCard from "../../components/GameCard";
 import Button from "../../components/Button";
 import { Helmet } from "react-helmet-async";
+import { useEffect } from "react";
+import { Link } from "react-router-dom";
+import { RootState, useAppDispatch } from "../../redux/store";
+import { useSelector } from "react-redux";
+import { fetchHomePageProducts } from "../../redux/game/slice";
+import GameCardSkeleton from "../../components/GameCard/GameCardSkeleton";
+import MessageBox, { MessageTypes } from "../../components/MessageBox";
+import Skeleton from "react-loading-skeleton";
 
 const MainPage: React.FC = () => {
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      dispatch(fetchHomePageProducts());
+    };
+    fetchData();
+  }, [dispatch]);
+  const { gameData, status } = useSelector((state: RootState) => state.game);
+  const { categoryData, status: CategoryStatus } = useSelector(
+    (state: RootState) => state.category
+  );
+
+  const topRated = gameData.slice(0, 4);
+  const topDiscounted = gameData.slice(4, 8);
+  const categories = categoryData.slice(1, 5);
+
   return (
     <Layout>
       <Helmet>
         <title>GoldFish</title>
       </Helmet>
       <section className={styles["catalog"]}>
-        <h3>Catalog</h3>
+        <Link to="/catalog">
+          <h3>Catalog</h3>
+        </Link>
         <div className={styles["catalog__wrapper"]}>
-          <div className={styles["catalog__left"]}>
-            <ImageText
-              img="./img/catalog-1.png"
-              imgAlt="board-games"
-              text="Board Games"
+          {CategoryStatus === "error" ? (
+            <MessageBox
+              message="An error occurred while loading categories, we are working on it"
+              type={MessageTypes.DANGER}
+              customStyles={{ marginTop: "1rem" }}
             />
-          </div>
-          <div className={styles["catalog__right"]}>
-            <ImageText
-              img="./img/catalog-1.png"
-              imgAlt="board-games"
-              text="Board Games"
-            />
-            <ImageText
-              img="./img/catalog-1.png"
-              imgAlt="board-games"
-              text="Board Games"
-            />
-            <ImageText
-              img="./img/catalog-1.png"
-              imgAlt="board-games"
-              text="Board Games"
-            />
-            <ImageText
-              img="./img/catalog-1.png"
-              imgAlt="board-games"
-              text="Board Games"
-            />
-          </div>
+          ) : (
+            <>
+              <div className={styles["catalog__left"]}>
+                {CategoryStatus === "loading" ? (
+                  <Skeleton height={400} />
+                ) : (
+                  <ImageText
+                    img={categoryData[0].image_link ?? ""}
+                    imgAlt={categoryData[0]._id}
+                    text={categoryData[0]._id}
+                    link={categoryData[0]._id}
+                  />
+                )}
+              </div>
+              <div className={styles["catalog__right"]}>
+                {CategoryStatus === "loading" ? (
+                  <>
+                    <div style={{ width: "49%" }}>
+                      <Skeleton height={150} />
+                    </div>
+                    <div style={{ width: "49%" }}>
+                      <Skeleton height={150} />
+                    </div>
+                    <div style={{ width: "49%" }}>
+                      <Skeleton height={150} />
+                    </div>
+                    <div style={{ width: "49%" }}>
+                      <Skeleton height={150} />
+                    </div>
+                  </>
+                ) : (
+                  categories.map((category) => (
+                    <ImageText
+                      key={category._id}
+                      img={category.image_link ?? ""}
+                      imgAlt={category._id}
+                      text={category._id}
+                      link={category._id}
+                    />
+                  ))
+                )}
+              </div>
+            </>
+          )}
         </div>
       </section>
       <section className={styles["hurry-up"]}>
-        <h3>Hurry up to buy</h3>
+        <Link to="/catalog/?sort=toprated">
+          <h3>Hurry up to buy</h3>
+        </Link>
         <div className={styles["hurry-up__wrapper"]}>
-          <GameCard
-            img="./img/game-1.png"
-            title="Broken Realms: Horrek's Dreadlance"
-            price={23}
-          />
-          <GameCard
-            img="./img/game-1.png"
-            title="Broken Realms: Horrek's Dreadlance"
-            price={23}
-          />
-          <GameCard
-            img="./img/game-1.png"
-            title="Broken Realms: Horrek's Dreadlance"
-            price={23}
-          />
-          <GameCard
-            img="./img/game-1.png"
-            title="Broken Realms: Horrek's Dreadlance"
-            price={23}
-          />
+          {status === "error" ? (
+            <MessageBox
+              message="An error occurred while loading games, we are working on it"
+              type={MessageTypes.DANGER}
+              customStyles={{ marginTop: "1rem" }}
+            />
+          ) : status === "loading" ? (
+            <GameCardSkeleton items={4} />
+          ) : (
+            topRated.map((game) => (
+              <GameCard key={game._id} {...game} game={game} />
+            ))
+          )}
         </div>
       </section>
       <section className={styles["special-offer"]}>
-        <h3>Special offer</h3>
+        <Link to="/catalog/?discounted=true">
+          <h3>Special offer</h3>
+        </Link>
         <div className={styles["special-offer__wrapper"]}>
-          <GameCard
-            img="./img/game-1.png"
-            title="Broken Realms: Horrek's Dreadlance"
-            price={23}
-            isDiscount
-            discount={15}
-          />
-          <GameCard
-            img="./img/game-1.png"
-            title="Broken Realms: Horrek's Dreadlance"
-            price={23}
-            isDiscount
-            discount={20}
-          />
-          <GameCard
-            img="./img/game-1.png"
-            title="Broken Realms: Horrek's Dreadlance"
-            price={23}
-            isDiscount
-            discount={10}
-          />
-          <GameCard
-            img="./img/game-1.png"
-            title="Broken Realms: Horrek's Dreadlance"
-            price={23}
-            isDiscount
-            discount={5}
-          />
+          {status === "error" ? (
+            <MessageBox
+              message="An error occurred while loading games, we are working on it"
+              type={MessageTypes.DANGER}
+              customStyles={{ marginTop: "1rem" }}
+            />
+          ) : status === "loading" ? (
+            <GameCardSkeleton items={4} />
+          ) : (
+            topDiscounted.map((game) => (
+              <GameCard key={game._id} {...game} game={game} isDiscount />
+            ))
+          )}
         </div>
       </section>
       <section className={styles["upcoming-events"]}>
-        <h3>Upcoming events</h3>
+        <Link to="/events">
+          <h3>Upcoming events</h3>
+        </Link>
         <div className={styles["upcoming-events__wrapper"]}>
           <div className={styles["upcoming-events__events"]}>
             <ImageText
@@ -146,7 +178,9 @@ const MainPage: React.FC = () => {
         </div>
       </section>
       <section className={styles["more-info"]}>
-        <h3>More interesting information</h3>
+        <Link to="/blog">
+          <h3>More interesting information</h3>
+        </Link>
         <div className={styles["more-info__wrapper"]}>
           <div className={styles["more-info__blog"]}>
             <ImageText
@@ -192,7 +226,9 @@ const MainPage: React.FC = () => {
         </div>
       </section>
       <section className={styles["about"]}>
-        <h3>About the gaming shop "GoldFish"</h3>
+        <Link to="/about-us">
+          <h3>About the gaming shop "GoldFish"</h3>
+        </Link>
         <div className={styles["about__wrapper"]}>
           <div className={styles["about__text"]}>
             <p>

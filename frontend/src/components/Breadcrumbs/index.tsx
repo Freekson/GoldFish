@@ -9,7 +9,7 @@ type TProps = {
 
 const Breadcrumbs: React.FC<TProps> = ({
   items = ["Home"],
-  last,
+  last = "Last",
   pathes = ["/"],
   to = ".",
 }) => {

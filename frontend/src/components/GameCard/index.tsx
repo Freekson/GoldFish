@@ -1,44 +1,61 @@
-import { useState } from "react";
 import styles from "./GameCard.module.scss";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { addItem } from "../../redux/cart/slice";
+import { IGame } from "../../types";
+import { RootState } from "../../redux/store";
 
 type TProps = {
-  img: string;
+  _id?: string; //TODO: change to required
+  image_link: string;
   title: string;
   price: number;
   isDiscount?: boolean;
   discount?: number;
+  game?: IGame;
 };
+
 const GameCard: React.FC<TProps> = ({
-  img,
+  _id,
+  image_link,
   title,
   price,
   isDiscount = false,
   discount,
+  game,
 }) => {
-  const [inCart, setInCart] = useState(0);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const { cartItems } = useSelector((state: RootState) => state.cart);
+  const item = cartItems.find((item) => item._id === _id);
+
+  const addToCart = () => {
+    dispatch(addItem(game));
+  };
+
   return (
     <div className={styles.card}>
       {isDiscount ? <p className={styles.discount}>{discount}%</p> : ""}
-      <img src={img} alt={title} />
-      <Link to={"/product/123"} className={styles.title}>
+      <Link to={`/product/${_id}`}>
+        <img src={image_link} alt={title} />
+      </Link>
+      <Link to={`/product/${_id}`} className={styles.title}>
         {title}
       </Link>
       {isDiscount && discount ? (
         <p className={styles.price}>
           <span className={styles.old}>${price}</span>
-          <span>${price - (price / 100) * discount}</span>
+          <span>${(price - (price / 100) * discount).toFixed(2)}</span>
         </p>
       ) : (
         <p className={styles.price}>${price}</p>
       )}
       <div
-        className={inCart === 0 ? styles["buy"] : styles["buy_active"]}
-        onClick={() => {
-          setInCart(inCart + 1);
-        }}
+        className={!item ? styles["buy"] : styles["buy_active"]}
+        onClick={addToCart}
       >
-        {inCart <= 0 ? (
+        {!item ? (
           <>
             Add to Cart
             <svg
@@ -64,11 +81,22 @@ const GameCard: React.FC<TProps> = ({
           </>
         ) : (
           <p>
-            In Cart <span className={styles.quantity}>{inCart}</span>
+            In Cart{" "}
+            <span className={styles.quantity}>
+              {item?.quantity && item?.quantity}
+            </span>
           </p>
         )}
       </div>
-      <div className={styles["buy-now"]}>Buy in 1 click</div>
+      <div
+        className={styles["buy-now"]}
+        onClick={() => {
+          navigate("/cart");
+          addToCart();
+        }}
+      >
+        Buy in 1 click
+      </div>
     </div>
   );
 };

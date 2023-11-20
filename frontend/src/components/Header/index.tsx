@@ -1,14 +1,70 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { ChangeEvent, useEffect, useRef, useState } from "react";
 import styles from "./Header.module.scss";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { RootState, useAppDispatch } from "../../redux/store";
+import { fetchHomeCategories } from "../../redux/category/slice";
+import Skeleton from "react-loading-skeleton";
 
 const Header: React.FC = () => {
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const { search } = useLocation();
+  const [updatedUrl, setUpdatedUrl] = useState("");
+
   const [isActive, setIsActive] = useState(false);
   const [isProfileActive, setIsProfileActive] = useState(false);
+  const [searchValue, setSearchValue] = useState("");
+
+  const isMounted = useRef(false);
   const profileRef = useRef<HTMLUListElement | null>(null);
   const activeRef = useRef<HTMLLIElement | null>(null);
+  const { cartItems } = useSelector((state: RootState) => state.cart);
+  const { categoryData, status } = useSelector(
+    (state: RootState) => state.category
+  );
 
-  const navigate = useNavigate();
+  useEffect(() => {
+    const fetchData = async () => {
+      dispatch(fetchHomeCategories());
+    };
+    fetchData();
+  }, [dispatch]);
+
+  //? make custom url
+
+  useEffect(() => {
+    const currentUrl = new URL(window.location.href);
+
+    if (currentUrl.pathname.startsWith("/catalog")) {
+      const searchParams = new URLSearchParams(currentUrl.search);
+      searchParams.delete("search");
+
+      const newUpdatedUrl = `${currentUrl.pathname}?${searchParams}${currentUrl.hash}`;
+      setUpdatedUrl(newUpdatedUrl);
+    } else {
+      const newUpdatedUrl = `/catalog${currentUrl.search}?${currentUrl.hash}`;
+      setUpdatedUrl(newUpdatedUrl);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (isMounted.current) {
+      localStorage.setItem("cartItems", JSON.stringify(cartItems));
+    }
+    isMounted.current = true;
+  }, [cartItems]);
+
+  useEffect(() => {
+    const sp = new URLSearchParams(search);
+
+    const searchUrl = sp.get("search");
+    if (searchUrl === null) {
+      setSearchValue("");
+    } else {
+      setSearchValue(searchUrl);
+    }
+  }, [search]);
 
   useEffect(() => {
     const handleOutsideClick = (event: MouseEvent) => {
@@ -45,6 +101,16 @@ const Header: React.FC = () => {
     };
   }, [isActive, isProfileActive]);
 
+  const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const search = event.target.value;
+    setSearchValue(search);
+  };
+  const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter") {
+      navigate(updatedUrl + "&search=" + searchValue);
+    }
+  };
+
   return (
     <header className={styles.header}>
       <div className={styles["header__container"]}>
@@ -72,12 +138,15 @@ const Header: React.FC = () => {
             </Link>
             <div className={styles["header__input-container"]}>
               <input
+                value={searchValue}
+                onChange={handleInputChange}
                 className={styles["header__input"]}
                 type="text"
                 placeholder="Find game"
+                onKeyDown={handleKeyPress}
               />
               <svg
-                onClick={() => navigate("/catalog")}
+                onClick={() => navigate(updatedUrl + "&search=" + searchValue)}
                 className={styles["header__input-img"]}
                 xmlns="http://www.w3.org/2000/svg"
                 width="21"
@@ -126,8 +195,16 @@ const Header: React.FC = () => {
                   />
                 </svg>
               </span>
-
               <Link to="/cart">
+                {cartItems.length > 0 && (
+                  <span className={styles["cart-count"]}>
+                    {cartItems.reduce(
+                      (a, c) => (c.quantity ? a + c.quantity : a),
+                      0
+                    )}
+                  </span>
+                )}
+
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="30"
@@ -287,102 +364,47 @@ const Header: React.FC = () => {
           }
         >
           <ul>
-            <li>
-              <Link
-                to="/catalog/?category=1"
-                onClick={() => setIsActive(false)}
-              >
-                Category 1
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="8"
-                  height="14"
-                  viewBox="0 0 8 14"
-                  fill="none"
-                >
-                  <path d="M0 12L5 7L0 2L1 0L8 7L1 14L0 12Z" fill="#C8C5C3" />
-                </svg>
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/catalog/?category=2"
-                onClick={() => setIsActive(false)}
-              >
-                Category 2
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="8"
-                  height="14"
-                  viewBox="0 0 8 14"
-                  fill="none"
-                >
-                  <path d="M0 12L5 7L0 2L1 0L8 7L1 14L0 12Z" fill="#C8C5C3" />
-                </svg>
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/catalog/?category=3"
-                onClick={() => setIsActive(false)}
-              >
-                Category 3
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="8"
-                  height="14"
-                  viewBox="0 0 8 14"
-                  fill="none"
-                >
-                  <path d="M0 12L5 7L0 2L1 0L8 7L1 14L0 12Z" fill="#C8C5C3" />
-                </svg>
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/catalog/?category=4"
-                onClick={() => setIsActive(false)}
-              >
-                Category 4
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="8"
-                  height="14"
-                  viewBox="0 0 8 14"
-                  fill="none"
-                >
-                  <path d="M0 12L5 7L0 2L1 0L8 7L1 14L0 12Z" fill="#C8C5C3" />
-                </svg>
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/catalog/?category=5"
-                onClick={() => setIsActive(false)}
-              >
-                Category 5
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="8"
-                  height="14"
-                  viewBox="0 0 8 14"
-                  fill="none"
-                >
-                  <path d="M0 12L5 7L0 2L1 0L8 7L1 14L0 12Z" fill="#C8C5C3" />
-                </svg>
-              </Link>
-            </li>
+            {status === "loading" ? (
+              <Skeleton height={270} />
+            ) : (
+              categoryData.map((category) => (
+                <li key={category._id}>
+                  <Link
+                    to={`/catalog/?categories=%5B"${category._id}"%5D`}
+                    onClick={() => setIsActive(false)}
+                  >
+                    {category._id}
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="8"
+                      height="14"
+                      viewBox="0 0 8 14"
+                      fill="none"
+                    >
+                      <path
+                        d="M0 12L5 7L0 2L1 0L8 7L1 14L0 12Z"
+                        fill="#C8C5C3"
+                      />
+                    </svg>
+                  </Link>
+                </li>
+              ))
+            )}
           </ul>
         </div>
       </div>
       <div className={styles["mobile-bottom"]}>
         <div className={styles["header__input-container"]}>
           <input
+            value={searchValue}
+            onChange={handleInputChange}
+            onKeyDown={handleKeyPress}
             className={styles["header__input"]}
             type="text"
             placeholder="Find game"
           />
           <svg
+            onClick={() => navigate(updatedUrl + "&search=" + searchValue)}
             className={styles["header__input-img"]}
             xmlns="http://www.w3.org/2000/svg"
             width="21"

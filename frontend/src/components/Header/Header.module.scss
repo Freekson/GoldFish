@@ -93,7 +93,6 @@
     right: 40px;
     z-index: 10;
     border-radius: 9px;
-    box-shadow: 5px 6px 16px 0px #2a2a2a29;
     transition: all 0.2s ease-in;
     clip-path: polygon(0 0, 100% 0, 100% 0, 0 0);
 
@@ -171,7 +170,6 @@
   &__menu_active {
     top: 8.375rem;
     left: 10%;
-    box-shadow: 10px 10px 15px 0px rgba(251, 121, 27, 0.63);
     width: 20%;
     position: absolute;
     top: 99%;
@@ -193,6 +191,21 @@
         }
       }
     }
+  }
+
+  .cart-count {
+    position: absolute;
+    right: -30px;
+    top: 5px;
+    background: #f9a43f;
+    color: white;
+    width: 20px;
+    height: 20px;
+    padding: 0.2rem;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 }
 
@@ -282,6 +295,11 @@
 
     &__menu_active {
       width: 40%;
+    }
+
+    .cart-count {
+      top: -10px;
+      right: -25px;
     }
   }
 }

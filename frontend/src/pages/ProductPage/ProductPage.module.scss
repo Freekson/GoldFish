@@ -46,6 +46,27 @@
     font-size: 2.813rem;
     margin: 0.5rem 0;
   }
+
+  &__rating {
+    display: flex;
+    width: 100%;
+    justify-content: flex-start;
+    margin-top: 1rem;
+  }
+
+  &__publisher,
+  &__category {
+    width: 100%;
+    text-align: left;
+
+    a:hover {
+      text-decoration: underline;
+    }
+  }
+
+  &__category {
+    margin-top: 0;
+  }
 }
 
 .similar {
@@ -123,6 +144,10 @@ h4 {
 
 hr {
   width: 99%;
+}
+
+.description-link {
+  text-decoration: underline;
 }
 
 @media (max-width: 1200px) {

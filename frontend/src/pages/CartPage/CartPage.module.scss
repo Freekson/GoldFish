@@ -110,6 +110,35 @@
   cursor: pointer;
   user-select: none;
   height: 45px;
+
+  &:hover {
+    border: 2px solid #f9a43f;
+    background: white;
+    color: #f9a43f;
+  }
+}
+
+.clear {
+  margin-top: 1rem;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #f9a43f;
+  font-weight: 500;
+  background: white;
+  padding: 0.5rem 1rem;
+  border: 2px solid #f9a43f;
+  border-radius: 9px;
+  cursor: pointer;
+  user-select: none;
+  height: 45px;
+  transition: all 0.1s ease-in;
+
+  &:hover {
+    background: linear-gradient(184.53deg, #f9a43f 5.27%, #fb791b 91.78%);
+    color: white;
+  }
 }
 
 .quantity {
@@ -125,7 +154,7 @@
   padding: 0.2rem;
 }
 
-@media (max-width: 992px) {
+@media (max-width: 1200px) {
   .cart {
     flex-wrap: wrap;
     justify-content: center;

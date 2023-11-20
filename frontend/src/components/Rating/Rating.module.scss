@@ -1,0 +1,16 @@
+.rating {
+  display: flex;
+  align-items: center;
+  font-size: 1.3rem;
+  svg {
+    path {
+      fill: #f9a43f;
+    }
+  }
+}
+
+.reviews {
+  margin-left: 0.5rem;
+  color: #2a2a2a;
+  font-size: 1rem;
+}
