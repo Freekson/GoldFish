@@ -81,6 +81,31 @@
       }
     }
   }
+
+  .toggle-password-btn {
+    text-align: right;
+    padding: 0 12px;
+    margin: 0 0 1rem 0;
+
+    span {
+      color: #2a2a2a;
+      cursor: pointer;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+
+  .forgot-password {
+    margin-bottom: 1rem;
+
+    a {
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
 }
 
 @media (max-width: 992px) {

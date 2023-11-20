@@ -81,14 +81,20 @@
       }
     }
   }
-  .message {
-    color: #ff0000;
-    background-color: #ffe5e5;
-    padding: 10px;
-    border: 1px solid #ff0000;
-    border-radius: 9px;
-    text-align: center;
-    margin: 10px;
+
+  .toggle-password-btn {
+    text-align: right;
+    padding: 0 12px;
+    margin: 1rem 0;
+
+    span {
+      cursor: pointer;
+      color: #2a2a2a;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
   }
 }
 
