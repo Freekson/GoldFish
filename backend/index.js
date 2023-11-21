@@ -2,12 +2,10 @@ import express from "express";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
 import gameRouter from "./routes/gameRoutes.js";
+import userRouter from "./routes/userRoutes.js";
 
 //fetch variables from .env file
 dotenv.config();
-
-const app = express();
-const port = process.env.PORT || 5000;
 
 mongoose
   .connect(process.env.MONGODB_URI)
@@ -16,12 +14,18 @@ mongoose
   })
   .catch((err) => console.log(err.message));
 
+const app = express();
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
 app.use("/api/games", gameRouter);
+app.use("/api/users", userRouter);
 
 app.use((err, req, res, next) => {
   res.status(500).send({ message: err.message });
 });
 
+const port = process.env.PORT || 5000;
 app.listen(port, () => {
   console.log(`Server at http://localhost:${port}`);
 });

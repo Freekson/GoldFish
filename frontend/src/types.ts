@@ -18,3 +18,14 @@ export interface IGameAll {
   games: IGame[];
   gameCount: number;
 }
+
+export type TUser = {
+  _id: string;
+  name: string;
+  email: string;
+  password: string;
+  isAdmin: boolean;
+  isAuthor: boolean;
+  experience: number;
+  token?: string;
+};

@@ -5,6 +5,9 @@ import { useSelector } from "react-redux";
 import { RootState, useAppDispatch } from "../../redux/store";
 import { fetchHomeCategories } from "../../redux/category/slice";
 import Skeleton from "react-loading-skeleton";
+import { logout } from "../../redux/user/slice";
+import { showToast } from "../../redux/toast/slice";
+import { toastStatus } from "../../redux/toast/types";
 
 const Header: React.FC = () => {
   const navigate = useNavigate();
@@ -23,6 +26,7 @@ const Header: React.FC = () => {
   const { categoryData, status } = useSelector(
     (state: RootState) => state.category
   );
+  const { userData } = useSelector((state: RootState) => state.user);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -235,43 +239,85 @@ const Header: React.FC = () => {
                   : styles["profile"]
               }
             >
-              <li>
-                <Link to="/profile" onClick={() => setIsProfileActive(false)}>
-                  Profile
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/profile/orders"
-                  onClick={() => setIsProfileActive(false)}
-                >
-                  Orders
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/profile/events"
-                  onClick={() => setIsProfileActive(false)}
-                >
-                  Events
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/profile/dashboard"
-                  onClick={() => setIsProfileActive(false)}
-                >
-                  Admin dashboard
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/profile/settings"
-                  onClick={() => setIsProfileActive(false)}
-                >
-                  Settings
-                </Link>
-              </li>
+              {userData ? (
+                <>
+                  {" "}
+                  <li>
+                    <Link
+                      to="/profile"
+                      onClick={() => setIsProfileActive(false)}
+                    >
+                      Profile
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="/profile/orders"
+                      onClick={() => setIsProfileActive(false)}
+                    >
+                      Orders
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="/profile/events"
+                      onClick={() => setIsProfileActive(false)}
+                    >
+                      Events
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="/profile/dashboard"
+                      onClick={() => setIsProfileActive(false)}
+                    >
+                      Admin dashboard
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="/profile/settings"
+                      onClick={() => setIsProfileActive(false)}
+                    >
+                      Settings
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="/"
+                      onClick={() => {
+                        setIsProfileActive(false);
+                        dispatch(logout());
+                        localStorage.removeItem("userInfo");
+                        dispatch(
+                          showToast({
+                            toastText: "You logged out successfully",
+                            toastType: toastStatus.SUCCESS,
+                          })
+                        );
+                      }}
+                    >
+                      Logout
+                    </Link>
+                  </li>
+                </>
+              ) : (
+                <>
+                  <li>
+                    <Link to="/login" onClick={() => setIsProfileActive(false)}>
+                      Login
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="/register"
+                      onClick={() => setIsProfileActive(false)}
+                    >
+                      Register
+                    </Link>
+                  </li>
+                </>
+              )}
             </ul>
           </div>
         </div>

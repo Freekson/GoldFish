@@ -16,16 +16,17 @@ import Skeleton from "react-loading-skeleton";
 const MainPage: React.FC = () => {
   const dispatch = useAppDispatch();
 
+  const { gameData, status } = useSelector((state: RootState) => state.game);
+  const { categoryData, status: CategoryStatus } = useSelector(
+    (state: RootState) => state.category
+  );
+
   useEffect(() => {
     const fetchData = async () => {
       dispatch(fetchHomePageProducts());
     };
     fetchData();
   }, [dispatch]);
-  const { gameData, status } = useSelector((state: RootState) => state.game);
-  const { categoryData, status: CategoryStatus } = useSelector(
-    (state: RootState) => state.category
-  );
 
   const topRated = gameData.slice(0, 4);
   const topDiscounted = gameData.slice(4, 8);
@@ -36,6 +37,7 @@ const MainPage: React.FC = () => {
       <Helmet>
         <title>GoldFish</title>
       </Helmet>
+
       <section className={styles["catalog"]}>
         <Link to="/catalog">
           <h3>Catalog</h3>
