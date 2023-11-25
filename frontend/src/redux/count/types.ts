@@ -1,8 +1,4 @@
-export enum Status {
-  LOADING = "loading",
-  ERROR = "error",
-  SUCCESS = "success",
-}
+import { Status } from "../../types";
 
 export interface ICountItem {
   _id: string;

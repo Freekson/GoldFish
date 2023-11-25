@@ -27,5 +27,12 @@ export type TUser = {
   isAdmin: boolean;
   isAuthor: boolean;
   experience: number;
-  token?: string;
+  token: string;
+  image?: string;
 };
+
+export enum Status {
+  LOADING = "loading",
+  ERROR = "error",
+  SUCCESS = "success",
+}
