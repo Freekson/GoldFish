@@ -5,9 +5,9 @@ import {
   GameParamsType,
   gameState,
   IGame,
-  Status,
 } from "./types";
 import axios from "axios";
+import { Status } from "../../types";
 
 const initialState: gameState = {
   gameData: [],

@@ -2,7 +2,7 @@ import express from "express";
 import bcrypt from "bcryptjs";
 import expressAsyncHandler from "express-async-handler";
 import User from "../models/UserModel.js";
-import { generateToken } from "../utils.js";
+import { generateToken, isAuth } from "../utils.js";
 
 const userRouter = express.Router();
 
@@ -56,12 +56,37 @@ userRouter.post(
         experience: user.experience,
         isAdmin: user.isAdmin,
         isAuthor: user.isAuthor,
-        token: generateToken(user),
+        token: user.token,
       });
+      return;
     } catch (error) {
       res
         .status(500)
         .send({ message: "An error occurred while registering the user" });
+    }
+  })
+);
+
+userRouter.get(
+  "/profile",
+  isAuth,
+  expressAsyncHandler(async (req, res) => {
+    const userId = req.user._id;
+
+    const user = await User.findById(userId);
+
+    if (user) {
+      res.send({
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        experience: user.experience,
+        isAdmin: user.isAdmin,
+        isAuthor: user.isAuthor,
+        token: generateToken(user),
+      });
+    } else {
+      res.status(404).send({ message: "User not found" });
     }
   })
 );

@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { categoryState, ICategory, Status } from "./types";
+import { categoryState, ICategory } from "./types";
 import axios from "axios";
+import { Status } from "../../types";
 
 const initialState: categoryState = {
   categoryData: [],

@@ -16,12 +16,12 @@ type TProps = {
 
 const Layout: React.FC<TProps> = ({ children }) => {
   const dispatch = useAppDispatch();
-  const { toastText, toastType } = useSelector(
+  const { toastText, toastType, showToast } = useSelector(
     (state: RootState) => state.toast
   );
 
   useEffect(() => {
-    if (toastText !== "") {
+    if (showToast) {
       let toastId: any;
       if (toastType === toastStatus.SUCCESS) {
         toastId = toast.success(toastText);
@@ -38,7 +38,7 @@ const Layout: React.FC<TProps> = ({ children }) => {
       }, 5000);
       return () => clearTimeout(timerId);
     }
-  }, [dispatch, toastText, toastType]);
+  }, [dispatch, showToast, toastText, toastType]);
 
   return (
     <div className={styles.container}>

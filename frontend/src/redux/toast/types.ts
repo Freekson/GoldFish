@@ -1,6 +1,7 @@
 export interface toastState {
   toastText: string;
   toastType: toastStatus;
+  showToast: boolean;
 }
 
 export enum toastStatus {

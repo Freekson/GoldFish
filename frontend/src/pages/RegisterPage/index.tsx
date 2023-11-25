@@ -100,6 +100,7 @@ const RegisterPage: React.FC = () => {
             toastType: toastStatus.SUCCESS,
           })
         );
+
         localStorage.setItem("userInfo", JSON.stringify(data));
         navigate(redirect || "/");
       } catch (err: any) {
