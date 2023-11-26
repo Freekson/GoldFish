@@ -57,3 +57,28 @@ export interface IUserOrder {
   paymentMethod: string;
   deliveryMethod: string;
 }
+
+export interface IOrder {
+  _id: string;
+  orderItems: IGame[];
+  address: TUserAdress;
+  contact: TUserContact;
+  paymentMethod: string;
+  deliveryMethod: string;
+  itemsPrice: number;
+  deliveryPrice: number;
+  totalPrice: number;
+  userDiscount: number;
+  user: string;
+  isPaid: boolean;
+  paidAt?: string;
+  isDelivered: boolean;
+  deliveredAt?: string;
+  paymentResult?: {
+    id: string;
+    status: string;
+    update_time: string;
+    email_address: string;
+  };
+  createdAt: string;
+}
