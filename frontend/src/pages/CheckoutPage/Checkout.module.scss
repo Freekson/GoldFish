@@ -132,7 +132,7 @@
           content: "\2713";
           position: absolute;
           left: 4px;
-          top: -1px;
+          top: -3px;
           color: #f9a43f;
           font-size: 18px;
           display: none;
@@ -168,10 +168,6 @@
       display: flex;
       justify-content: end;
       margin-bottom: 5rem;
-
-      & > div {
-        width: 30%;
-      }
     }
   }
 
@@ -179,8 +175,9 @@
     background-color: white;
     border-radius: 9px;
     box-shadow: 5px 6px 16px 0px #2a2a2a29;
-    padding: 1rem;
-    width: 23%;
+    padding: 1rem 2rem;
+    box-sizing: border-box;
+    width: 27%;
 
     .total {
       font-size: 1.188rem;
@@ -189,9 +186,12 @@
     }
 
     .total__item {
+      margin: 2rem 0;
+
       .name {
         font-weight: 500;
         margin-bottom: 0;
+        margin-bottom: 0.5rem;
       }
 
       p {
@@ -202,9 +202,33 @@
       }
     }
   }
+
+  .active-btn {
+    font-family: "Fira Sans", sans-serif;
+    text-align: center;
+    display: block;
+    width: 30%;
+    color: white;
+    font-weight: 500;
+    border-radius: 9px;
+    padding: 1rem 2rem;
+    box-sizing: border-box;
+    transition: 0.1s ease-in;
+    border: 2px #f9a43f solid;
+    transition: all 0.1s linears;
+    background: linear-gradient(184.53deg, #f9a43f 5.27%, #fb791b 91.78%);
+    cursor: pointer;
+    font-weight: 500;
+
+    &:hover {
+      border: 2px #f9a43f solid;
+      background: transparent;
+      color: black;
+    }
+  }
 }
 
-@media (max-width: 760px) {
+@media (max-width: 1200px) {
   .checkout {
     flex-wrap: wrap;
 

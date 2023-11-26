@@ -1,13 +1,17 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { Status, TUser } from "../../types";
+import { IUserOrder, Status, TUser } from "../../types";
 import { userState } from "./types";
 import axios from "axios";
 
 const data = localStorage.getItem("userInfo");
 const userLS: TUser = data ? JSON.parse(data) : null;
 
+const orderData = localStorage.getItem("userOrderData");
+const orderDataLS: IUserOrder = orderData ? JSON.parse(orderData) : null;
+
 const initialState: userState = {
   userData: userLS,
+  orderData: orderDataLS,
   status: Status.SUCCESS,
 };
 
@@ -30,6 +34,10 @@ const userSlice = createSlice({
     },
     logout(state) {
       state.userData = null;
+      state.orderData = null;
+    },
+    setOrderData(state, action) {
+      state.orderData = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -47,5 +55,5 @@ const userSlice = createSlice({
     });
   },
 });
-export const { login, logout } = userSlice.actions;
+export const { login, logout, setOrderData } = userSlice.actions;
 export default userSlice.reducer;

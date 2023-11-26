@@ -6,6 +6,7 @@ const { cartItems } = getCartFromLS();
 
 const initialState: CartState = {
   cartItems,
+  isPromoActive: false,
 };
 const cartSlice = createSlice({
   name: "cart",

@@ -91,7 +91,7 @@ const GameCard: React.FC<TProps> = ({
       <div
         className={styles["buy-now"]}
         onClick={() => {
-          navigate("/cart");
+          navigate("/checkout");
           addToCart();
         }}
       >

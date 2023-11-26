@@ -29,6 +29,8 @@ const Layout: React.FC<TProps> = ({ children }) => {
         toastId = toast.error(toastText);
       } else if (toastType === toastStatus.WARNING) {
         toastId = toast.warning(toastText);
+      } else if (toastType === toastStatus.INFO) {
+        toastId = toast.info(toastText);
       } else if (toastType === toastStatus.DEFAULT || "") {
         toastId = toast(toastText);
       }
