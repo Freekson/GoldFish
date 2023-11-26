@@ -1,3 +1,9 @@
+export enum Status {
+  LOADING = "loading",
+  ERROR = "error",
+  SUCCESS = "success",
+}
+
 export interface IGame {
   _id: string;
   title: string;
@@ -31,8 +37,23 @@ export type TUser = {
   image?: string;
 };
 
-export enum Status {
-  LOADING = "loading",
-  ERROR = "error",
-  SUCCESS = "success",
+export type TUserAdress = {
+  country: string;
+  city: string;
+  street: string;
+  house: string;
+  flat: string;
+};
+
+export type TUserContact = {
+  name: string;
+  surname: string;
+  email: string;
+  phone: string;
+};
+export interface IUserOrder {
+  address: TUserAdress;
+  contact: TUserContact;
+  paymentMethod: string;
+  deliveryMethod: string;
 }

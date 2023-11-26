@@ -28,7 +28,7 @@ const ProtectedRoute: React.FC<TProps> = ({ children }) => {
   useEffect(() => {
     if (status === "loading") {
     } else if (status === "success" && userData) {
-    } else if (status === "error" || !userData) {
+    } else if (status === "error" && !userData) {
       dispatch(
         showToast({
           toastText: "You must be logged in to visit this route",

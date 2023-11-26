@@ -14,7 +14,7 @@ const RegisterPage: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
-  const [fullName, setFullName] = useState("");
+  const [userLogin, setUserLogin] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -23,8 +23,10 @@ const RegisterPage: React.FC = () => {
   const redicretUrl = new URLSearchParams(search).get("redirect");
   const redirect = redicretUrl ? redicretUrl : "/";
 
-  const handleFullNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setFullName(event.target.value);
+  const handleUserLoginChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setUserLogin(event.target.value);
   };
 
   const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -89,7 +91,7 @@ const RegisterPage: React.FC = () => {
     if (isValid) {
       try {
         const { data } = await axios.post("/api/users/register", {
-          name: fullName,
+          name: userLogin,
           email,
           password,
         });
@@ -124,13 +126,13 @@ const RegisterPage: React.FC = () => {
           <h3>Register</h3>
           <form onSubmit={handleRegister}>
             <fieldset>
-              <label htmlFor="fullName">Full Name:</label>
+              <label htmlFor="fullName">Login:</label>
               <input
                 type="text"
-                id="fullName"
-                placeholder="Full Name"
-                value={fullName}
-                onChange={handleFullNameChange}
+                id="login"
+                placeholder="Login"
+                value={userLogin}
+                onChange={handleUserLoginChange}
                 required
               />
             </fieldset>
