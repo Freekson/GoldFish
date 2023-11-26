@@ -10,6 +10,8 @@ import { showToast } from "../../redux/toast/slice";
 import { toastStatus } from "../../redux/toast/types";
 import { useNavigate } from "react-router";
 import { setOrderData } from "../../redux/user/slice";
+import axios from "axios";
+import { clear } from "../../redux/cart/slice";
 
 const CheckoutPage: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -18,8 +20,7 @@ const CheckoutPage: React.FC = () => {
   const { cartItems, isPromoActive, promo } = useSelector(
     (state: RootState) => state.cart
   );
-  const { userData } = useSelector((state: RootState) => state.user);
-
+  const { userData, orderData } = useSelector((state: RootState) => state.user);
   const totalPrice = cartItems
     .reduce(
       (a, c) =>
@@ -40,9 +41,14 @@ const CheckoutPage: React.FC = () => {
       : (userData?.experience ?? 0) >= 10000
       ? 15
       : 0;
+  const totalDiscount = userDiscount + (isPromoActive ? promo ?? 0 : 0);
 
-  const [selectedDelivery, setSelectedDelivery] = useState("pickup");
-  const [selectedPayment, setSelectedPayment] = useState("paypal");
+  const [selectedDelivery, setSelectedDelivery] = useState(
+    orderData?.deliveryMethod ?? "pickup"
+  );
+  const [selectedPayment, setSelectedPayment] = useState(
+    orderData?.paymentMethod ?? "paypal"
+  );
   const [isPublicOffer, setIsPublicOffer] = useState(false);
   const [isPersonalData, setIsPersonalData] = useState(false);
 
@@ -56,18 +62,18 @@ const CheckoutPage: React.FC = () => {
       : 0;
 
   const [address, setAddress] = useState<TUserAdress>({
-    country: "",
-    city: "",
-    street: "",
-    house: "",
-    flat: "",
+    country: orderData?.address.country ?? "",
+    city: orderData?.address.city ?? "",
+    street: orderData?.address.street ?? "",
+    house: orderData?.address.house ?? "",
+    flat: orderData?.address.flat ?? "",
   });
 
   const [contactData, setContactData] = useState<TUserContact>({
-    name: "",
-    surname: "",
-    email: userData?.email || "",
-    phone: "",
+    name: orderData?.contact.name ?? "",
+    surname: orderData?.contact.surname ?? "",
+    email: userData?.email || (orderData?.contact.email ?? ""),
+    phone: orderData?.contact.phone ?? "",
   });
 
   const handleDeliveryChange = (deliveryType: string) => {
@@ -111,9 +117,38 @@ const CheckoutPage: React.FC = () => {
       );
       return;
     }
-
+    console.log({
+      orderItems: cartItems,
+      address: address,
+      contact: contactData,
+      paymentMethod: selectedPayment,
+      deliveryMethod: selectedDelivery,
+      itemsPrice: totalPrice,
+      deliveryPrice: deliveryCost,
+      totalPrice: totalPrice + deliveryCost,
+      userDiscount: totalDiscount,
+    });
     try {
-      //const { data } = await axios.post("/api/users/login", {}); //TODO change to order route
+      const { data } = await axios.post(
+        "/api/orders",
+        {
+          orderItems: cartItems,
+          address: address,
+          contact: contactData,
+          paymentMethod: selectedPayment,
+          deliveryMethod: selectedDelivery,
+          itemsPrice: totalPrice,
+          deliveryPrice: deliveryCost,
+          totalPrice: totalPrice + deliveryCost,
+          userDiscount: totalDiscount,
+        },
+        {
+          headers: {
+            authorization: `Bearer ${userData?.token}`,
+          },
+        }
+      );
+      console.log(data);
       const orderData = {
         address,
         contact: contactData,
@@ -125,16 +160,25 @@ const CheckoutPage: React.FC = () => {
 
       dispatch(
         showToast({
-          toastText: "You have successfully logged in",
+          toastText: "Order Created Successfuly",
           toastType: toastStatus.SUCCESS,
         })
       );
-    } catch (error) {}
+      dispatch(clear());
+    } catch (error) {
+      dispatch(
+        showToast({
+          toastText: `Error wile creating order: ${error}`,
+          toastType: toastStatus.ERROR,
+        })
+      );
+    }
 
+    //TODO update routes
     if (selectedPayment === "paypal") {
-      navigate("/payment");
+      navigate("/");
     } else if (selectedPayment === "cash") {
-      navigate("/order");
+      navigate("/");
     }
   };
 

@@ -30,7 +30,7 @@ const Header: React.FC = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      dispatch(fetchHomeCategories());
+      await dispatch(fetchHomeCategories());
     };
     fetchData();
   }, [dispatch]);
@@ -289,6 +289,7 @@ const Header: React.FC = () => {
                         setIsProfileActive(false);
                         dispatch(logout());
                         localStorage.removeItem("userInfo");
+                        localStorage.removeItem("userOrderData");
                         dispatch(
                           showToast({
                             toastText: "You logged out successfully",

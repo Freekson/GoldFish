@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import mongoose from "mongoose";
 import gameRouter from "./routes/gameRoutes.js";
 import userRouter from "./routes/userRoutes.js";
+import orderRouter from "./routes/orderRoute.js";
 
 //fetch variables from .env file
 dotenv.config();
@@ -20,6 +21,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use("/api/games", gameRouter);
 app.use("/api/users", userRouter);
+app.use("/api/orders", orderRouter);
 
 app.use((err, req, res, next) => {
   res.status(500).send({ message: err.message });
