@@ -6,11 +6,17 @@ import styles from "./ProfilePage.module.scss";
 import UserEvent from "../../components/UserEvent";
 import UserOrder from "../../components/UserOrder";
 import { Link } from "react-router-dom";
-import { RootState } from "../../redux/store";
+import { RootState, useAppDispatch } from "../../redux/store";
 import { useSelector } from "react-redux";
+import { fetchLastThreeOrders } from "../../redux/order/slice";
+import Skeleton from "react-loading-skeleton";
+import { Status } from "../../types";
+import MessageBox, { MessageTypes } from "../../components/MessageBox";
 
 const ProfilePage: React.FC = () => {
+  const dispatch = useAppDispatch();
   const { userData } = useSelector((state: RootState) => state.user);
+  const { lastOrders, status } = useSelector((state: RootState) => state.order);
   const [currentLevel, setCurrentLevel] = useState(0);
 
   const currentExp = userData?.experience ?? 0;
@@ -32,6 +38,10 @@ const ProfilePage: React.FC = () => {
       setCurrentLevel(10000);
     }
   }, [currentExp]);
+
+  useEffect(() => {
+    dispatch(fetchLastThreeOrders({ token: userData?.token ?? "" }));
+  }, [dispatch, userData?.token]);
 
   return (
     <Layout>
@@ -150,9 +160,25 @@ const ProfilePage: React.FC = () => {
         </div>
         <div className={styles["user__orders"]}>
           <Link to="/profile/orders">My orders</Link>
-          <UserOrder />
-          <UserOrder />
-          <UserOrder />
+          {status === Status.ERROR ? (
+            <MessageBox
+              message="An error occurred while loading orders, we are working on it"
+              type={MessageTypes.DANGER}
+              customStyles={{ marginTop: "1rem" }}
+            />
+          ) : status === Status.LOADING ? (
+            <Skeleton height={100} count={3} style={{ marginBlock: ".7rem" }} />
+          ) : (
+            lastOrders &&
+            lastOrders.map((item) => (
+              <UserOrder
+                key={item._id}
+                status={item.status}
+                id={item._id}
+                date={item.date}
+              />
+            ))
+          )}
         </div>
         <div className={styles["user__events"]}>
           <Link to="/profile/events">My events</Link>

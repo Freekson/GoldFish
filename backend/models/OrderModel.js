@@ -47,6 +47,7 @@ const orderSchema = new mongoose.Schema(
     totalPrice: { type: Number, required: true },
     userDiscount: { type: Number, required: true },
     user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+    status: { type: String, required: true },
     isPaid: { type: Boolean, default: false },
     paidAt: { type: Date },
     deliveryMethod: { type: String, required: true },

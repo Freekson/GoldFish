@@ -12,6 +12,7 @@ import { fetchHomePageProducts } from "../../redux/game/slice";
 import GameCardSkeleton from "../../components/GameCard/GameCardSkeleton";
 import MessageBox, { MessageTypes } from "../../components/MessageBox";
 import Skeleton from "react-loading-skeleton";
+import { Status } from "../../types";
 
 const MainPage: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -100,13 +101,13 @@ const MainPage: React.FC = () => {
           <h3>Hurry up to buy</h3>
         </Link>
         <div className={styles["hurry-up__wrapper"]}>
-          {status === "error" ? (
+          {status === Status.ERROR ? (
             <MessageBox
               message="An error occurred while loading games, we are working on it"
               type={MessageTypes.DANGER}
               customStyles={{ marginTop: "1rem" }}
             />
-          ) : status === "loading" ? (
+          ) : status === Status.LOADING ? (
             <GameCardSkeleton items={4} />
           ) : (
             topRated.map((game) => (
@@ -120,13 +121,13 @@ const MainPage: React.FC = () => {
           <h3>Special offer</h3>
         </Link>
         <div className={styles["special-offer__wrapper"]}>
-          {status === "error" ? (
+          {status === Status.ERROR ? (
             <MessageBox
               message="An error occurred while loading games, we are working on it"
               type={MessageTypes.DANGER}
               customStyles={{ marginTop: "1rem" }}
             />
-          ) : status === "loading" ? (
+          ) : status === Status.LOADING ? (
             <GameCardSkeleton items={4} />
           ) : (
             topDiscounted.map((game) => (

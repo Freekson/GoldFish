@@ -117,19 +117,8 @@ const CheckoutPage: React.FC = () => {
       );
       return;
     }
-    console.log({
-      orderItems: cartItems,
-      address: address,
-      contact: contactData,
-      paymentMethod: selectedPayment,
-      deliveryMethod: selectedDelivery,
-      itemsPrice: totalPrice,
-      deliveryPrice: deliveryCost,
-      totalPrice: totalPrice + deliveryCost,
-      userDiscount: totalDiscount,
-    });
     try {
-      const { data } = await axios.post(
+      await axios.post(
         "/api/orders",
         {
           orderItems: cartItems,
@@ -137,10 +126,14 @@ const CheckoutPage: React.FC = () => {
           contact: contactData,
           paymentMethod: selectedPayment,
           deliveryMethod: selectedDelivery,
-          itemsPrice: totalPrice,
+          itemsPrice: Number(totalPrice),
           deliveryPrice: deliveryCost,
-          totalPrice: totalPrice + deliveryCost,
+          totalPrice: (Number(totalPrice) + deliveryCost).toFixed(2),
           userDiscount: totalDiscount,
+          status:
+            selectedPayment === "paypal"
+              ? "Waiting for payment"
+              : "Waiting for delivery",
         },
         {
           headers: {
@@ -148,7 +141,6 @@ const CheckoutPage: React.FC = () => {
           },
         }
       );
-      console.log(data);
       const orderData = {
         address,
         contact: contactData,

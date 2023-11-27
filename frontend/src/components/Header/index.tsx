@@ -268,20 +268,22 @@ const Header: React.FC = () => {
                   </li>
                   <li>
                     <Link
-                      to="/profile/dashboard"
-                      onClick={() => setIsProfileActive(false)}
-                    >
-                      Admin dashboard
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
                       to="/profile/settings"
                       onClick={() => setIsProfileActive(false)}
                     >
                       Settings
                     </Link>
                   </li>
+                  {userData.isAdmin && (
+                    <li>
+                      <Link
+                        to="/profile/dashboard"
+                        onClick={() => setIsProfileActive(false)}
+                      >
+                        Admin dashboard
+                      </Link>
+                    </li>
+                  )}
                   <li>
                     <Link
                       to="/"
