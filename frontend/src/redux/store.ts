@@ -5,6 +5,7 @@ import countReducer from "./count/slice";
 import categoryReduces from "./category/slice";
 import userReduces from "./user/slice";
 import toastReduces from "./toast/slice";
+import orderReduces from "./order/slice";
 
 import { useDispatch } from "react-redux";
 
@@ -16,6 +17,7 @@ export const store = configureStore({
     category: categoryReduces,
     user: userReduces,
     toast: toastReduces,
+    order: orderReduces,
   },
 });
 

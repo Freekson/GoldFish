@@ -70,6 +70,7 @@ export interface IOrder {
   totalPrice: number;
   userDiscount: number;
   user: string;
+  status: string;
   isPaid: boolean;
   paidAt?: string;
   isDelivered: boolean;
@@ -81,4 +82,12 @@ export interface IOrder {
     email_address: string;
   };
   createdAt: string;
+}
+
+export interface DateTimeFormatOptions {
+  year?: "numeric" | "2-digit";
+  month?: "numeric" | "2-digit" | "long" | "short" | "narrow";
+  day?: "numeric" | "2-digit";
+  hour?: "numeric" | "2-digit";
+  minute?: "numeric" | "2-digit";
 }

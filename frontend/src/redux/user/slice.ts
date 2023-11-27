@@ -16,7 +16,7 @@ const initialState: userState = {
 };
 
 export const fetchUser = createAsyncThunk<TUser, { token: string }>(
-  "user",
+  "user/fetchUser",
   async ({ token }) => {
     const { data } = await axios.get<TUser>(`/api/users/profile`, {
       headers: { Authorization: `Bearer ${token}` },

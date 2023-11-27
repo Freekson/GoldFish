@@ -21,7 +21,6 @@ function App() {
         <Route path="/cart" element={<CartPage />}></Route>
         <Route path="/about-us" element={<AboutUsPage />}></Route>
         <Route path="/catalog" element={<CatalogPage />}></Route>
-        <Route path="/profile/orders" element={<OrdersListPage />}></Route>
         <Route path="/profile/orders/:id" element={<OrderTrackPage />}></Route>
         <Route path="/login" element={<LoginPage />}></Route>
         <Route path="/register" element={<RegisterPage />}></Route>
@@ -38,6 +37,14 @@ function App() {
           element={
             <ProtectedRoute>
               <ProfilePage />
+            </ProtectedRoute>
+          }
+        ></Route>
+        <Route
+          path="/profile/orders"
+          element={
+            <ProtectedRoute>
+              <OrdersListPage />
             </ProtectedRoute>
           }
         ></Route>
