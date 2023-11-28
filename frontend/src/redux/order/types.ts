@@ -1,8 +1,9 @@
-import { Status } from "../../types";
+import { IOrder, Status } from "../../types";
 
 export interface orderState {
   lastOrders: TOrderProfilePage[] | null;
   userOrders: TOrderList[] | null;
+  userOrder: IOrder | null
   status: Status;
 }
 

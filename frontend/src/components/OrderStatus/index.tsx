@@ -8,8 +8,8 @@ const OrderStatus: React.FC<TProps> = ({ step }) => {
   const steps = [
     "Waiting for payment",
     "Paid",
-    "Waiting for confirmation",
-    "Purchased",
+    "Waiting for delivery",
+    "Delivered",
   ];
   return (
     <div className={styles["order-status"]}>
