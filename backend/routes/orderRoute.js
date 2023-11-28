@@ -81,4 +81,19 @@ orderRouter.delete(
   })
 );
 
+orderRouter.get(
+  "/:id",
+  isAuth,
+  expressAsyncHandler(async (req, res) => {
+    const orderId = req.params.id;
+    const order = await Order.findOne({ _id: orderId, user: req.user._id });
+
+    if (order) {
+      res.send(order);
+    } else {
+      res.status(404).send({ message: "Order not found" });
+    }
+  })
+);
+
 export default orderRouter;
