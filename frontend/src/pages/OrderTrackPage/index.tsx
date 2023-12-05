@@ -2,16 +2,19 @@ import { Helmet } from "react-helmet-async";
 import Layout from "../../components/Layout";
 import Breadcrumbs from "../../components/Breadcrumbs";
 import styles from "./OrderTackPage.module.scss";
-import OrderStatus from "../../components/OrderStatus";
+import OrderStatus, { EStatusType } from "../../components/OrderStatus";
 import OrderProduct from "../../components/OrderProduct";
 import { RootState, useAppDispatch } from "../../redux/store";
 import { useSelector } from "react-redux";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { fetchOrder } from "../../redux/order/slice";
 import { useParams } from "react-router-dom";
 import MessageBox, { MessageTypes } from "../../components/MessageBox";
 import { Status } from "../../types";
 import Skeleton from "react-loading-skeleton";
+import { formatDate } from "../../utils/formatDate";
+import { capitalizeFirstLetter } from "../../utils/capitalizeFirstLetter";
+import OpenedCard from "../../components/OpenedCard";
 
 const OrderTrackPage: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -19,9 +22,84 @@ const OrderTrackPage: React.FC = () => {
   const { userOrder, status } = useSelector((state: RootState) => state.order);
   const { id } = useParams();
 
+  const [orderStatus, setOrderStatus] = useState<EStatusType>(EStatusType.post);
+  const [orderStep, setOrderStep] = useState(0);
+  const [orderDate, setOrderDate] = useState("");
+  const [deliveryDate, setDeliveryDate] = useState("");
+  const [deliveryMethod, setDeliveryMethod] = useState("");
+
+  useEffect(() => {
+    if (userOrder?.deliveryMethod) {
+      let deliveryMethodText = "";
+
+      switch (userOrder.deliveryMethod) {
+        case "expressDelivery":
+          deliveryMethodText = "Express Delivery";
+          break;
+        case "pickupLocations":
+          deliveryMethodText = "Pick up from our partners";
+          break;
+        case "pickup":
+          deliveryMethodText = "Pick up from our store";
+          break;
+        case "mailDelivery":
+          deliveryMethodText = "Mail Delivery";
+          break;
+        default:
+          break;
+      }
+
+      setDeliveryMethod(deliveryMethodText);
+    }
+  }, [userOrder?.deliveryMethod]);
+
+  useEffect(() => {
+    if (userOrder?.createdAt) {
+      const newDate = new Date(userOrder.createdAt);
+      setOrderDate(formatDate(newDate));
+    }
+    if (userOrder?.deliveredAt) {
+      const newDate = new Date(userOrder.createdAt);
+      setDeliveryDate(formatDate(newDate));
+    }
+  }, [userOrder?.createdAt, userOrder?.deliveredAt]);
+
   useEffect(() => {
     dispatch(fetchOrder({ token: userData?.token ?? "", id: id ?? "" }));
   }, [dispatch, id, userData?.token]);
+
+  useEffect(() => {
+    if (
+      userOrder?.deliveryMethod === "pickup" ||
+      userOrder?.deliveryMethod === "pickupLocations"
+    ) {
+      setOrderStatus(EStatusType.store);
+
+      if (userOrder.status === "Waiting for pick up") {
+        setOrderStep(1);
+      } else if (userOrder.status === "Picked up") {
+        setOrderStep(3);
+      }
+    } else if (userOrder?.paymentMethod === "paypal") {
+      setOrderStatus(EStatusType.post);
+
+      if (userOrder.status === "Waiting for payment") {
+        setOrderStep(1);
+      } else if (userOrder.status === "Waiting for delivery") {
+        setOrderStep(3);
+      } else if (userOrder.status === "Delivered") {
+        setOrderStep(5);
+      }
+    } else {
+      setOrderStatus(EStatusType.cash);
+      if (userOrder?.status === "Waiting for delivery") {
+        setOrderStep(1);
+      } else if (userOrder?.status === "Delivered") {
+        setOrderStep(5);
+      }
+    }
+  }, [userOrder?.deliveryMethod, userOrder?.paymentMethod, userOrder?.status]);
+
   return (
     <Layout>
       <Helmet>
@@ -75,9 +153,7 @@ const OrderTrackPage: React.FC = () => {
                   <Skeleton height={300} />
                 </div>
               ) : (
-                <OrderStatus
-                  step={userOrder?.status === "Waiting for delivery" ? 3 : 1}
-                />
+                <OrderStatus step={orderStep} statusType={orderStatus} />
               )}
             </div>
             {status === Status.LOADING ? (
@@ -86,71 +162,93 @@ const OrderTrackPage: React.FC = () => {
               </div>
             ) : (
               <>
-                <h4 className={styles["order__header"]}>Address</h4>
-                <div className={styles["info"]}>
-                  <p>
-                    Country: <span>{userOrder?.address.country}</span>
-                  </p>
-                  <p>
-                    City: <span>{userOrder?.address.city}</span>
-                  </p>
-                  <p>
-                    Street: <span>{userOrder?.address.street}</span>
-                  </p>
-                  <p>
-                    House: <span>{userOrder?.address.house}</span>
-                  </p>
-                  {userOrder?.address.flat && (
-                    <p>
-                      Flat: <span>{userOrder?.address.flat}</span>
-                    </p>
-                  )}
-                </div>
-                <h4 className={styles["order__header"]}>Contact Info</h4>
-                <div className={styles["info"]}>
-                  <p>
-                    Name: <span>{userOrder?.contact.name}</span>
-                  </p>
-                  <p>
-                    Surname: <span>{userOrder?.contact.surname}</span>
-                  </p>
-                  <p>
-                    Email: <span>{userOrder?.contact.email}</span>
-                  </p>
-                  <p>
-                    Phone: <span>{userOrder?.contact.phone}</span>
-                  </p>
-                </div>
-                <h4 className={styles["order__header"]}>Total Info</h4>
-                <div className={styles["info"]}>
-                  <p>
-                    Items price: <span>${userOrder?.itemsPrice}</span>
-                  </p>
-                  <p>
-                    Delivery price: <span>${userOrder?.deliveryPrice}</span>
-                  </p>
-                  <p>
-                    Your discount: <span>{userOrder?.userDiscount}%</span>
-                  </p>
-                  <p>
-                    Total price: <span>${userOrder?.totalPrice}</span>
-                  </p>
-                  <p>
-                    Payment Method: <span>{userOrder?.paymentMethod}</span>
-                  </p>
-                  <p>
-                    Delivery Method: <span>{userOrder?.deliveryMethod}</span>
-                  </p>
-                  <p>
-                    Ordered at: <span>{userOrder?.createdAt}</span>
-                  </p>
-                  {userOrder?.deliveredAt && (
-                    <p>
-                      Delivered at: <span>{userOrder?.deliveredAt}</span>
-                    </p>
-                  )}
-                  <p></p>
-                </div>
+                <OpenedCard
+                  title="Order Info"
+                  description={
+                    <div className={styles["info"]}>
+                      <p>
+                        Items price: <span>${userOrder?.itemsPrice}</span>
+                      </p>
+                      <p>
+                        Delivery price: <span>${userOrder?.deliveryPrice}</span>
+                      </p>
+                      <p>
+                        Your discount: <span>{userOrder?.userDiscount}%</span>
+                      </p>
+                      <p>
+                        Total price: <span>${userOrder?.totalPrice}</span>
+                      </p>
+                      <p>
+                        Payment Method:{" "}
+                        <span>
+                          {capitalizeFirstLetter(
+                            userOrder?.paymentMethod
+                              ? userOrder?.paymentMethod
+                              : ""
+                          )}
+                        </span>
+                      </p>
+                      <p>
+                        Delivery Method: <span>{deliveryMethod}</span>
+                      </p>
+                      <p>
+                        Ordered at: <span>{orderDate}</span>
+                      </p>
+                      {userOrder?.deliveredAt && (
+                        <p>
+                          Delivered at: <span>{deliveryDate}</span>
+                        </p>
+                      )}
+                      <p></p>
+                    </div>
+                  }
+                />
+                <hr className={styles["hr"]} />
+                <OpenedCard
+                  title="Address"
+                  description={
+                    <div className={styles["info"]}>
+                      <p>
+                        Country: <span>{userOrder?.address.country}</span>
+                      </p>
+                      <p>
+                        City: <span>{userOrder?.address.city}</span>
+                      </p>
+                      <p>
+                        Street: <span>{userOrder?.address.street}</span>
+                      </p>
+                      <p>
+                        House: <span>{userOrder?.address.house}</span>
+                      </p>
+                      {userOrder?.address.flat && (
+                        <p>
+                          Flat: <span>{userOrder?.address.flat}</span>
+                        </p>
+                      )}
+                    </div>
+                  }
+                />
+                <hr className={styles["hr"]} />
+                <OpenedCard
+                  title="Contact Info"
+                  description={
+                    <div className={styles["info"]}>
+                      <p>
+                        Name: <span>{userOrder?.contact.name}</span>
+                      </p>
+                      <p>
+                        Surname: <span>{userOrder?.contact.surname}</span>
+                      </p>
+                      <p>
+                        Email: <span>{userOrder?.contact.email}</span>
+                      </p>
+                      <p>
+                        Phone: <span>{userOrder?.contact.phone}</span>
+                      </p>
+                    </div>
+                  }
+                />
+                <hr className={styles["hr"]} />
               </>
             )}
           </div>

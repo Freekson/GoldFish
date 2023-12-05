@@ -4,7 +4,7 @@ import styles from "./Checkout.module.scss";
 import Breadcrumbs from "../../components/Breadcrumbs";
 import { useSelector } from "react-redux";
 import { RootState, useAppDispatch } from "../../redux/store";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { TUserAdress, TUserContact } from "../../types";
 import { showToast } from "../../redux/toast/slice";
 import { toastStatus } from "../../redux/toast/types";
@@ -16,6 +16,7 @@ import { clear } from "../../redux/cart/slice";
 const CheckoutPage: React.FC = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const [status, setStatus] = useState("");
 
   const { cartItems, isPromoActive, promo } = useSelector(
     (state: RootState) => state.cart
@@ -130,10 +131,7 @@ const CheckoutPage: React.FC = () => {
           deliveryPrice: deliveryCost,
           totalPrice: (Number(totalPrice) + deliveryCost).toFixed(2),
           userDiscount: totalDiscount,
-          status:
-            selectedPayment === "paypal"
-              ? "Waiting for payment"
-              : "Waiting for delivery",
+          status: status,
         },
         {
           headers: {
@@ -174,6 +172,18 @@ const CheckoutPage: React.FC = () => {
     }
   };
 
+  useEffect(() => {
+    if (
+      selectedDelivery === "pickup" ||
+      selectedDelivery === "pickupLocations"
+    ) {
+      setStatus("Waiting for pick up");
+    } else if (selectedPayment === "paypal") {
+      setStatus("Waiting for payment");
+    } else {
+      setStatus("Waiting for delivery");
+    }
+  }, [selectedDelivery, selectedPayment]);
   return (
     <Layout>
       <Helmet>

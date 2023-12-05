@@ -8,6 +8,7 @@ import Skeleton from "react-loading-skeleton";
 import { logout } from "../../redux/user/slice";
 import { showToast } from "../../redux/toast/slice";
 import { toastStatus } from "../../redux/toast/types";
+import { clear } from "../../redux/cart/slice";
 
 const Header: React.FC = () => {
   const navigate = useNavigate();
@@ -291,7 +292,9 @@ const Header: React.FC = () => {
                         setIsProfileActive(false);
                         dispatch(logout());
                         localStorage.removeItem("userInfo");
+                        localStorage.removeItem("cartItems");
                         localStorage.removeItem("userOrderData");
+                        dispatch(clear());
                         dispatch(
                           showToast({
                             toastText: "You logged out successfully",

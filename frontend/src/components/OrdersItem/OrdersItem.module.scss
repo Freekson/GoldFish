@@ -21,6 +21,8 @@
 
   .actions {
     display: flex;
+    justify-content: flex-end;
+    width: 12%;
 
     a,
     p {
@@ -32,6 +34,14 @@
       color: white;
       padding: 0.5rem 0.75rem;
       border-radius: 9px;
+    }
+  }
+}
+
+@media (max-width: 1350px) and (min-width: 1200px) {
+  .order {
+    .actions {
+      width: auto;
     }
   }
 }
@@ -53,8 +63,13 @@
     p {
       text-align: center;
     }
+
     b {
       margin-bottom: 0;
+    }
+
+    .actions {
+      justify-content: center;
     }
   }
 }

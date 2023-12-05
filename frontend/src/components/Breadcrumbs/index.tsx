@@ -14,7 +14,7 @@ const Breadcrumbs: React.FC<TProps> = ({
   to = ".",
 }) => {
   return (
-    <div>
+    <div className={styles["wrapper"]}>
       {items.map((item, index) => (
         <span key={index}>
           <Link to={pathes[index]} className={styles.link}>

@@ -15,6 +15,13 @@
     }
   }
 
+  hr {
+    border: none;
+    height: 2px;
+    background-color: #2a2a2a1f;
+    margin-top: 0;
+  }
+
   &__description {
     width: 30%;
     background-color: white;
@@ -27,11 +34,6 @@
     overflow: hidden;
     padding: 10px 20px;
     box-sizing: border-box;
-
-    hr {
-      width: 100%;
-      border: 2px solid #2a2a2a1f;
-    }
   }
 
   &__code {
