@@ -46,7 +46,14 @@ export const fetchOrder = createAsyncThunk<
 const orderSlice = createSlice({
   name: "order",
   initialState,
-  reducers: {},
+  reducers: {
+    setIsPaid(state) {
+      if (state.userOrder) {
+        state.userOrder.isPaid = true;
+        state.userOrder.status = "Waiting for delivery";
+      }
+    },
+  },
   extraReducers: (builder) => {
     //? last three orders
     builder.addCase(fetchLastThreeOrders.pending, (state) => {
@@ -91,4 +98,6 @@ const orderSlice = createSlice({
     });
   },
 });
+
+export const { setIsPaid } = orderSlice.actions;
 export default orderSlice.reducer;

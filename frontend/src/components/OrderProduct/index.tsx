@@ -24,7 +24,7 @@ const OrderProduct: React.FC<TProps> = ({
         </p>
         <p>${price}</p>
         <p>{quantity} pcs.</p>
-        <p>Total: ${price * quantity}</p>
+        <p>Total: ${(price * quantity).toFixed(2)}</p>
       </div>
     </div>
   );

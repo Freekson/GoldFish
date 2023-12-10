@@ -1,3 +1,7 @@
+.wrapper {
+  display: flex;
+  flex-wrap: wrap;
+}
 .link,
 .span,
 .link-last {
@@ -17,6 +21,12 @@
   user-select: none;
 }
 
+.items {
+  margin-bottom: 0.5rem;
+}
 .link-last {
   opacity: 0.4;
+}
+
+@media (max-width: 420px) {
 }

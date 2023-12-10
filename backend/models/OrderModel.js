@@ -15,6 +15,7 @@ const orderSchema = new mongoose.Schema(
         publisher: { type: String, required: true },
         discount: { type: Number, required: false },
         release_year: { type: Number, required: true },
+        quantity: { type: String, required: false },
         game: {
           type: mongoose.Schema.Types.ObjectId,
           ref: "Game",

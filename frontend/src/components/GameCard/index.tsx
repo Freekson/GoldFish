@@ -6,7 +6,7 @@ import { IGame } from "../../types";
 import { RootState } from "../../redux/store";
 
 type TProps = {
-  _id?: string; //TODO: change to required
+  _id: string;
   image_link: string;
   title: string;
   price: number;

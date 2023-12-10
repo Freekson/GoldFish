@@ -1,7 +1,7 @@
 .cart {
   display: flex;
   justify-content: space-between;
-  align-items: start;
+  align-items: flexstart;
   margin-bottom: 5rem;
 
   &__items {

@@ -1,7 +1,7 @@
 .checkout {
   display: flex;
   justify-content: space-between;
-  align-items: start;
+  align-items: flex-start;
 
   &__wrapper {
     width: 70%;
@@ -166,7 +166,7 @@
 
     .btn {
       display: flex;
-      justify-content: end;
+      justify-content: flex-end;
       margin-bottom: 5rem;
     }
   }

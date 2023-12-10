@@ -1,7 +1,7 @@
 .product {
   display: flex;
   justify-content: space-between;
-  align-items: start;
+  align-items: flex-start;
 
   &__img {
     width: 60%;
@@ -13,6 +13,13 @@
       min-width: 50%;
       margin-bottom: 3rem;
     }
+  }
+
+  hr {
+    border: none;
+    height: 2px;
+    background-color: #2a2a2a1f;
+    margin-top: 0;
   }
 
   &__description {
@@ -27,11 +34,6 @@
     overflow: hidden;
     padding: 10px 20px;
     box-sizing: border-box;
-
-    hr {
-      width: 100%;
-      border: 2px solid #2a2a2a1f;
-    }
   }
 
   &__code {
