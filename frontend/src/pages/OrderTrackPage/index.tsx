@@ -7,7 +7,7 @@ import OrderProduct from "../../components/OrderProduct";
 import { RootState, useAppDispatch } from "../../redux/store";
 import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
-import { fetchOrder } from "../../redux/order/slice";
+import { fetchOrder, setIsPaid } from "../../redux/order/slice";
 import { useParams } from "react-router-dom";
 import MessageBox, { MessageTypes } from "../../components/MessageBox";
 import { Status } from "../../types";
@@ -15,16 +15,28 @@ import Skeleton from "react-loading-skeleton";
 import { formatDate } from "../../utils/formatDate";
 import { capitalizeFirstLetter } from "../../utils/capitalizeFirstLetter";
 import OpenedCard from "../../components/OpenedCard";
+import {
+  PayPalButtons,
+  ReactPayPalScriptOptions,
+  SCRIPT_LOADING_STATE,
+  usePayPalScriptReducer,
+} from "@paypal/react-paypal-js";
+import axios from "axios";
+import { ThreeDots } from "react-loader-spinner";
+import { showToast } from "../../redux/toast/slice";
+import { toastStatus } from "../../redux/toast/types";
 
 const OrderTrackPage: React.FC = () => {
   const dispatch = useAppDispatch();
   const { userData } = useSelector((state: RootState) => state.user);
   const { userOrder, status } = useSelector((state: RootState) => state.order);
   const { id } = useParams();
+  const [{ isPending }, paypalDispatch] = usePayPalScriptReducer();
 
   const [orderStatus, setOrderStatus] = useState<EStatusType>(EStatusType.post);
   const [orderStep, setOrderStep] = useState(0);
   const [orderDate, setOrderDate] = useState("");
+  const [paidDate, setPaidDate] = useState("");
   const [deliveryDate, setDeliveryDate] = useState("");
   const [deliveryMethod, setDeliveryMethod] = useState("");
 
@@ -58,15 +70,44 @@ const OrderTrackPage: React.FC = () => {
       const newDate = new Date(userOrder.createdAt);
       setOrderDate(formatDate(newDate));
     }
+    if (userOrder?.paidAt) {
+      const newDate = new Date(userOrder.paidAt);
+      setPaidDate(formatDate(newDate));
+    }
     if (userOrder?.deliveredAt) {
       const newDate = new Date(userOrder.createdAt);
       setDeliveryDate(formatDate(newDate));
     }
-  }, [userOrder?.createdAt, userOrder?.deliveredAt]);
+  }, [
+    userOrder,
+    userOrder?.createdAt,
+    userOrder?.deliveredAt,
+    userOrder?.paidAt,
+  ]);
 
   useEffect(() => {
     dispatch(fetchOrder({ token: userData?.token ?? "", id: id ?? "" }));
-  }, [dispatch, id, userData?.token]);
+
+    const loadPaypalScript = async () => {
+      const { data: clientId } = await axios.get("/api/keys/paypal", {
+        headers: { authorization: `Bearer ${userData?.token}` },
+      });
+      const paypalOptions: ReactPayPalScriptOptions = {
+        currency: "USD",
+        clientId: clientId,
+      };
+      paypalDispatch({
+        type: "resetOptions",
+        value: paypalOptions,
+      });
+      paypalDispatch({
+        type: "setLoadingStatus",
+        value: "pending" as SCRIPT_LOADING_STATE,
+      });
+    };
+
+    loadPaypalScript();
+  }, [dispatch, id, paypalDispatch, userData?.token]);
 
   useEffect(() => {
     if (
@@ -100,6 +141,54 @@ const OrderTrackPage: React.FC = () => {
     }
   }, [userOrder?.deliveryMethod, userOrder?.paymentMethod, userOrder?.status]);
 
+  const createOrder = (data: any, actions: any) => {
+    return actions.order
+      .create({
+        purchase_units: [
+          {
+            amount: { value: userOrder?.totalPrice },
+          },
+        ],
+      })
+      .then((orderId: string) => {
+        return orderId;
+      });
+  };
+
+  const onApprove = (data: any, actions: any) => {
+    return actions.order.capture().then(async function (details: any) {
+      try {
+        await axios.put(`/api/orders/${userOrder?._id}/pay`, details, {
+          headers: { authorization: `Bearer ${userData?.token}` },
+        });
+
+        dispatch(setIsPaid());
+        dispatch(
+          showToast({
+            toastText: "Order successfuly paid",
+            toastType: toastStatus.SUCCESS,
+          })
+        );
+      } catch (err: any) {
+        dispatch(
+          showToast({
+            toastText: String(err),
+            toastType: toastStatus.ERROR,
+          })
+        );
+      }
+    });
+  };
+
+  const onError = (err: any) => {
+    dispatch(
+      showToast({
+        toastText: String(err),
+        toastType: toastStatus.ERROR,
+      })
+    );
+  };
+
   return (
     <Layout>
       <Helmet>
@@ -117,7 +206,7 @@ const OrderTrackPage: React.FC = () => {
             <h4>Order Items</h4>
             {status === Status.ERROR ? (
               <MessageBox
-                message="An error occurred while loading order items, we are working on it"
+                message="Order not found"
                 type={MessageTypes.DANGER}
                 customStyles={{ marginTop: "1rem" }}
               />
@@ -146,17 +235,54 @@ const OrderTrackPage: React.FC = () => {
             )}
           </div>
           <div className={styles["order__info"]}>
-            <div className={styles["order__status"]}>
-              <h4>Order Status</h4>
-              {status === Status.LOADING ? (
-                <div style={{ width: "100%", paddingBottom: "1rem" }}>
-                  <Skeleton height={300} />
-                </div>
-              ) : (
-                <OrderStatus step={orderStep} statusType={orderStatus} />
-              )}
-            </div>
-            {status === Status.LOADING ? (
+            {status === Status.ERROR ? (
+              <></>
+            ) : (
+              <div className={styles["order__status"]}>
+                <h4>Order Status</h4>
+                {status === Status.LOADING ? (
+                  <div style={{ width: "100%", paddingBottom: "1rem" }}>
+                    <Skeleton height={300} />
+                  </div>
+                ) : (
+                  <OrderStatus
+                    step={userOrder?.isPaid ? 3 : orderStep}
+                    statusType={orderStatus}
+                  />
+                )}
+              </div>
+            )}
+            {!userOrder?.isPaid &&
+            (userOrder?.deliveryMethod === "expressDelivery" ||
+              userOrder?.deliveryMethod === "mailDelivery") &&
+            userOrder.paymentMethod === "paypal" ? (
+              <div>
+                {isPending ? (
+                  <ThreeDots
+                    height="80"
+                    width="80"
+                    radius="9"
+                    color="#fb791b"
+                    ariaLabel="three-dots-loading"
+                    wrapperStyle={{}}
+                    visible={true}
+                  />
+                ) : (
+                  <div>
+                    <PayPalButtons
+                      createOrder={createOrder}
+                      onApprove={onApprove}
+                      onError={onError}
+                    />
+                  </div>
+                )}
+              </div>
+            ) : (
+              ""
+            )}
+            {status === Status.ERROR ? (
+              <></>
+            ) : status === Status.LOADING ? (
               <div style={{ width: "100%", paddingBottom: "1rem" }}>
                 <Skeleton height={300} />
               </div>
@@ -188,6 +314,11 @@ const OrderTrackPage: React.FC = () => {
                           )}
                         </span>
                       </p>
+                      {userOrder?.paidAt && (
+                        <p>
+                          Paid at: <span>{paidDate}</span>
+                        </p>
+                      )}
                       <p>
                         Delivery Method: <span>{deliveryMethod}</span>
                       </p>

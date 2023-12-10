@@ -168,6 +168,12 @@ const ProfilePage: React.FC = () => {
             />
           ) : status === Status.LOADING ? (
             <Skeleton height={100} count={3} style={{ marginBlock: ".7rem" }} />
+          ) : (lastOrders?.length ?? 0) <= 0 ? (
+            <MessageBox
+              message="You dont have orders yet"
+              type={MessageTypes.INFO}
+              customStyles={{ marginTop: "1rem" }}
+            />
           ) : (
             lastOrders &&
             lastOrders.map((item) => (

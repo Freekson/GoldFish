@@ -119,7 +119,7 @@ const CheckoutPage: React.FC = () => {
       return;
     }
     try {
-      await axios.post(
+      const { data } = await axios.post(
         "/api/orders",
         {
           orderItems: cartItems,
@@ -155,6 +155,7 @@ const CheckoutPage: React.FC = () => {
         })
       );
       dispatch(clear());
+      navigate(`/profile/orders/${data.orderId}`);
     } catch (error) {
       dispatch(
         showToast({
@@ -162,13 +163,6 @@ const CheckoutPage: React.FC = () => {
           toastType: toastStatus.ERROR,
         })
       );
-    }
-
-    //TODO update routes
-    if (selectedPayment === "paypal") {
-      navigate("/");
-    } else if (selectedPayment === "cash") {
-      navigate("/");
     }
   };
 
@@ -587,8 +581,16 @@ const CheckoutPage: React.FC = () => {
             <div className={styles["total__item"]} key={item._id}>
               <p className={styles["name"]}>{item.title}</p>
               <p>
-                {item.quantity} pcs. <span>${item.price} each</span>
-                <span>${item.price * (item.quantity ?? 0)} in total</span>
+                {item.quantity} pcs.{" "}
+                <span>
+                  $
+                  {(
+                    item.price -
+                    (item.price / 100) * (item?.discount ?? 1)
+                  ).toFixed(2)}{" "}
+                  each
+                </span>
+                <span>${item.price * (item.quantity ?? 1)} in total</span>
               </p>
             </div>
           ))}

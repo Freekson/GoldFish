@@ -24,7 +24,7 @@ const OrderStatus: React.FC<TProps> = ({ step, statusType }) => {
     } else if (statusType === EStatusType.cash) {
       setSteps(["Waiting for delivery", "Delivered and Paid"]);
     } else if (statusType === EStatusType.store) {
-      setSteps(["Waiting for pick up", "Picked up"]);
+      setSteps(["Waiting for pick up", "Picked up and paid"]);
     }
   }, [statusType]);
   return (
