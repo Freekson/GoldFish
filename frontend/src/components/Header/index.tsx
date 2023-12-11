@@ -278,10 +278,10 @@ const Header: React.FC = () => {
                   {userData.isAdmin && (
                     <li>
                       <Link
-                        to="/profile/dashboard"
+                        to="/profile/admin-panel"
                         onClick={() => setIsProfileActive(false)}
                       >
-                        Admin dashboard
+                        Admin Panel
                       </Link>
                     </li>
                   )}
@@ -294,6 +294,8 @@ const Header: React.FC = () => {
                         localStorage.removeItem("userInfo");
                         localStorage.removeItem("cartItems");
                         localStorage.removeItem("userOrderData");
+                        localStorage.removeItem("Promocode");
+                        localStorage.removeItem("IsPromoActive");
                         dispatch(clear());
                         dispatch(
                           showToast({

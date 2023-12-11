@@ -84,6 +84,14 @@ export interface IOrder {
   createdAt: string;
 }
 
+export interface IPromoCode {
+  _id: string;
+  code: string;
+  discount: number;
+  expiresAt: string;
+  isActive: boolean;
+}
+
 export interface DateTimeFormatOptions {
   year?: "numeric" | "2-digit";
   month?: "numeric" | "2-digit" | "long" | "short" | "narrow";
