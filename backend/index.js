@@ -4,6 +4,7 @@ import mongoose from "mongoose";
 import gameRouter from "./routes/gameRoutes.js";
 import userRouter from "./routes/userRoutes.js";
 import orderRouter from "./routes/orderRoute.js";
+import promoCodeRouter from "./routes/promoCodeRoutes.js";
 
 //fetch variables from .env file
 dotenv.config();
@@ -26,6 +27,7 @@ app.use("/api/keys/paypal", (req, res) => {
 app.use("/api/games", gameRouter);
 app.use("/api/users", userRouter);
 app.use("/api/orders", orderRouter);
+app.use("/api/promocodes", promoCodeRouter);
 
 app.use((err, req, res, next) => {
   res.status(500).send({ message: err.message });

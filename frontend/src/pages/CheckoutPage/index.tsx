@@ -12,6 +12,7 @@ import { useNavigate } from "react-router";
 import { setOrderData } from "../../redux/user/slice";
 import axios from "axios";
 import { clear } from "../../redux/cart/slice";
+import { activatePromoCode } from "../../redux/promocode/slice";
 
 const CheckoutPage: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -42,7 +43,8 @@ const CheckoutPage: React.FC = () => {
       : (userData?.experience ?? 0) >= 10000
       ? 15
       : 0;
-  const totalDiscount = userDiscount + (isPromoActive ? promo ?? 0 : 0);
+  const totalDiscount =
+    userDiscount + (isPromoActive ? promo?.discount ?? 0 : 0);
 
   const [selectedDelivery, setSelectedDelivery] = useState(
     orderData?.deliveryMethod ?? "pickup"
@@ -129,7 +131,12 @@ const CheckoutPage: React.FC = () => {
           deliveryMethod: selectedDelivery,
           itemsPrice: Number(totalPrice),
           deliveryPrice: deliveryCost,
-          totalPrice: (Number(totalPrice) + deliveryCost).toFixed(2),
+          totalPrice: (
+            Number(totalPrice) -
+            (Number(totalPrice) / 100) * (promo?.discount ?? 0) -
+            (Number(totalPrice) / 100) * (userDiscount ?? 0) +
+            deliveryCost
+          ).toFixed(2),
           userDiscount: totalDiscount,
           status: status,
         },
@@ -147,15 +154,18 @@ const CheckoutPage: React.FC = () => {
       };
       localStorage.setItem("userOrderData", JSON.stringify(orderData));
       dispatch(setOrderData(orderData));
-
+      navigate(`/profile/orders/${data.orderId}`);
       dispatch(
         showToast({
           toastText: "Order Created Successfuly",
           toastType: toastStatus.SUCCESS,
         })
       );
+      dispatch(activatePromoCode(String(promo?.code)));
+      console.log(promo?.code);
+      localStorage.removeItem("Promocode");
+      localStorage.removeItem("IsPromoActive");
       dispatch(clear());
-      navigate(`/profile/orders/${data.orderId}`);
     } catch (error) {
       dispatch(
         showToast({
@@ -178,6 +188,19 @@ const CheckoutPage: React.FC = () => {
       setStatus("Waiting for delivery");
     }
   }, [selectedDelivery, selectedPayment]);
+
+  useEffect(() => {
+    if (cartItems.length <= 0) {
+      navigate("/catalog");
+      dispatch(
+        showToast({
+          toastText: "You need add products to cart before going to checkout",
+          toastType: toastStatus.INFO,
+        })
+      );
+    }
+  });
+
   return (
     <Layout>
       <Helmet>
@@ -550,7 +573,7 @@ const CheckoutPage: React.FC = () => {
               )}
               {isPromoActive && (
                 <div>
-                  <p>Discount from promocode</p> <b>{promo}%</b>
+                  <p>Discount from promocode</p> <b>{promo?.discount}%</b>
                 </div>
               )}
               <div>
@@ -559,7 +582,7 @@ const CheckoutPage: React.FC = () => {
                   $
                   {(
                     Number(totalPrice) -
-                    (Number(totalPrice) / 100) * (promo ?? 0) -
+                    (Number(totalPrice) / 100) * (promo?.discount ?? 0) -
                     (Number(totalPrice) / 100) * (userDiscount ?? 0) +
                     deliveryCost
                   ).toFixed(2)}
@@ -586,11 +609,22 @@ const CheckoutPage: React.FC = () => {
                   $
                   {(
                     item.price -
-                    (item.price / 100) * (item?.discount ?? 1)
+                    (item.price / 100) * (item?.discount ?? 0)
                   ).toFixed(2)}{" "}
                   each
                 </span>
-                <span>${item.price * (item.quantity ?? 1)} in total</span>
+                <span>
+                  $
+                  {(
+                    Number(
+                      (
+                        item.price -
+                        (item.price / 100) * (item?.discount ?? 0)
+                      ).toFixed(2)
+                    ) * (item?.quantity ?? 1)
+                  ).toFixed(2)}{" "}
+                  in total
+                </span>
               </p>
             </div>
           ))}
