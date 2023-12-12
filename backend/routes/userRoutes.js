@@ -91,4 +91,24 @@ userRouter.get(
   })
 );
 
+userRouter.put(
+  "/update-experience",
+  isAuth,
+  expressAsyncHandler(async (req, res) => {
+    const userId = req.user._id;
+    const { experienceToAdd } = req.body;
+
+    const user = await User.findById(userId);
+
+    if (user) {
+      user.experience += experienceToAdd;
+      const updatedUser = await user.save();
+
+      res.send(user);
+    } else {
+      res.status(404).send({ message: "User not found" });
+    }
+  })
+);
+
 export default userRouter;

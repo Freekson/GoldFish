@@ -12,7 +12,7 @@ import { useNavigate } from "react-router";
 import { setOrderData } from "../../redux/user/slice";
 import axios from "axios";
 import { clear } from "../../redux/cart/slice";
-import { activatePromoCode } from "../../redux/promocode/slice";
+import { activatePromoCode, clearPromoCode } from "../../redux/promocode/slice";
 
 const CheckoutPage: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -36,13 +36,14 @@ const CheckoutPage: React.FC = () => {
     )
     .toFixed(2);
   const userDiscount =
-    (userData?.experience ?? 0) >= 1000
-      ? 5
+    (userData?.experience ?? 0) >= 10000
+      ? 15
       : (userData?.experience ?? 0) >= 5000
       ? 10
-      : (userData?.experience ?? 0) >= 10000
-      ? 15
+      : (userData?.experience ?? 0) >= 1000
+      ? 5
       : 0;
+
   const totalDiscount =
     userDiscount + (isPromoActive ? promo?.discount ?? 0 : 0);
 
@@ -107,7 +108,6 @@ const CheckoutPage: React.FC = () => {
       [name]: value,
     }));
   };
-
   const handleSubmit = async (event: any) => {
     event.preventDefault();
 
@@ -153,19 +153,42 @@ const CheckoutPage: React.FC = () => {
         deliveryMethod: selectedDelivery,
       };
       localStorage.setItem("userOrderData", JSON.stringify(orderData));
-      dispatch(setOrderData(orderData));
-      navigate(`/profile/orders/${data.orderId}`);
-      dispatch(
-        showToast({
-          toastText: "Order Created Successfuly",
-          toastType: toastStatus.SUCCESS,
-        })
-      );
-      dispatch(activatePromoCode(String(promo?.code)));
-      console.log(promo?.code);
       localStorage.removeItem("Promocode");
       localStorage.removeItem("IsPromoActive");
+      dispatch(setOrderData(orderData));
+      if (promo) {
+        dispatch(activatePromoCode(String(promo?.code)));
+      }
       dispatch(clear());
+      dispatch(clearPromoCode());
+      navigate(`/profile/orders/${data.orderId}`);
+      try {
+        const experienceToAdd = Number((Number(totalPrice) * 5).toFixed(0));
+        if (experienceToAdd) {
+          await axios.put(
+            `/api/users/update-experience`,
+            { experienceToAdd },
+            {
+              headers: { Authorization: `Bearer ${userData?.token}` },
+            }
+          );
+          dispatch(
+            showToast({
+              toastText: `Order Created Successfuly. \n You have earned ${(
+                Number(totalPrice) * 5
+              ).toFixed(0)} points`,
+              toastType: toastStatus.DEFAULT,
+            })
+          );
+        }
+      } catch (error) {
+        dispatch(
+          showToast({
+            toastText: `Order Created Successfuly`,
+            toastType: toastStatus.INFO,
+          })
+        );
+      }
     } catch (error) {
       dispatch(
         showToast({
@@ -191,15 +214,16 @@ const CheckoutPage: React.FC = () => {
 
   useEffect(() => {
     if (cartItems.length <= 0) {
-      navigate("/catalog");
       dispatch(
         showToast({
           toastText: "You need add products to cart before going to checkout",
           toastType: toastStatus.INFO,
         })
       );
+      navigate("/catalog/?sort=newest&page=1");
     }
-  });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <Layout>
@@ -563,9 +587,6 @@ const CheckoutPage: React.FC = () => {
               <div>
                 <p>Order price</p> <b>${totalPrice}</b>
               </div>
-              <div>
-                <p>Cost of delivery</p> <b>${deliveryCost}</b>
-              </div>
               {userDiscount > 0 && (
                 <div>
                   <p>Loyality discount</p> <b>{userDiscount}%</b>
@@ -576,6 +597,20 @@ const CheckoutPage: React.FC = () => {
                   <p>Discount from promocode</p> <b>{promo?.discount}%</b>
                 </div>
               )}
+              <div>
+                <p>Order price with discount</p>{" "}
+                <b>
+                  $
+                  {(
+                    Number(totalPrice) -
+                    (Number(totalPrice) / 100) * (promo?.discount ?? 0) -
+                    (Number(totalPrice) / 100) * (userDiscount ?? 0)
+                  ).toFixed(2)}
+                </b>
+              </div>
+              <div>
+                <p>Cost of delivery</p> <b>${deliveryCost}</b>
+              </div>
               <div>
                 <p>Amount to be paid</p>{" "}
                 <b className={styles["total"]}>
@@ -598,7 +633,7 @@ const CheckoutPage: React.FC = () => {
         </form>
         <div className={styles["checkout__total"]}>
           <p className={styles["total"]}>
-            There are {cartItems.length} items in the cart worth ${totalPrice} :
+            There are {cartItems.length} items in the cart worth ${totalPrice}:
           </p>
           {cartItems.map((item) => (
             <div className={styles["total__item"]} key={item._id}>
