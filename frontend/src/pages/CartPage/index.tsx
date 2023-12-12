@@ -9,7 +9,7 @@ import { useSelector } from "react-redux";
 import { RootState, useAppDispatch } from "../../redux/store";
 import MessageBox, { MessageTypes } from "../../components/MessageBox";
 import { clear, setPromocode } from "../../redux/cart/slice";
-import { fetchPromoCode } from "../../redux/promocode/slice";
+import { clearPromoCode, fetchPromoCode } from "../../redux/promocode/slice";
 import { showToast } from "../../redux/toast/slice";
 import { toastStatus } from "../../redux/toast/types";
 import { Status } from "../../types";
@@ -44,7 +44,7 @@ const CartPage: React.FC = () => {
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     setInputValue(event.target.value);
   };
-  const onSubminPromocode = () => {
+  const onSubminPromocode = async () => {
     if (cartItems.length <= 0) {
       dispatch(
         showToast({
@@ -61,6 +61,11 @@ const CartPage: React.FC = () => {
       );
     } else {
       dispatch(fetchPromoCode({ code: inputValue }));
+    }
+    if (status === Status.SUCCESS && promocode) {
+      if (promocode?.code === inputValue) {
+        dispatch(fetchPromoCode({ code: inputValue }));
+      }
     }
   };
 
@@ -79,19 +84,50 @@ const CartPage: React.FC = () => {
   };
 
   const clearCart = () => {
+    setIsPromoActive(false);
+    setInputValue("");
     dispatch(clear());
+    dispatch(clearPromoCode());
+    localStorage.removeItem("Promocode");
+    localStorage.removeItem("IsPromoActive");
   };
 
   useEffect(() => {
     if (status === Status.ERROR) {
       dispatch(
         showToast({
-          toastText: "Promo code not found",
-          toastType: toastStatus.INFO,
+          toastText: "Promo code not found or it has expired ",
+          toastType: toastStatus.WARNING,
         })
       );
     }
   }, [dispatch, status]);
+
+  useEffect(() => {
+    if (
+      status === Status.SUCCESS &&
+      promocode &&
+      promocode.code === inputValue
+    ) {
+      dispatch(
+        showToast({
+          toastText: "Promo code has already been used",
+          toastType: toastStatus.INFO,
+        })
+      );
+    }
+  }, [status, promocode, inputValue, dispatch]);
+
+  useEffect(() => {
+    if (cartItems.length <= 0) {
+      setIsPromoActive(false);
+      setInputValue("");
+      dispatch(clearPromoCode());
+      localStorage.removeItem("Promocode");
+      localStorage.removeItem("IsPromoActive");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cartItems.length]);
 
   useEffect(() => {
     if (

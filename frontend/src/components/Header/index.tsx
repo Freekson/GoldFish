@@ -9,6 +9,7 @@ import { logout } from "../../redux/user/slice";
 import { showToast } from "../../redux/toast/slice";
 import { toastStatus } from "../../redux/toast/types";
 import { clear } from "../../redux/cart/slice";
+import { clearPromoCode } from "../../redux/promocode/slice";
 
 const Header: React.FC = () => {
   const navigate = useNavigate();
@@ -297,6 +298,7 @@ const Header: React.FC = () => {
                         localStorage.removeItem("Promocode");
                         localStorage.removeItem("IsPromoActive");
                         dispatch(clear());
+                        dispatch(clearPromoCode());
                         dispatch(
                           showToast({
                             toastText: "You logged out successfully",
