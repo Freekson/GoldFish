@@ -6,6 +6,41 @@ import { generateToken, isAuth } from "../utils.js";
 
 const userRouter = express.Router();
 
+/**
+ * @swagger
+ * tags:
+ *   name: User
+ *   description: API for managing users
+ */
+
+/**
+ * @swagger
+ * /api/users/login:
+ *   post:
+ *     summary: User login
+ *     description: Log in a user with valid credentials.
+ *     tags: [User]
+ *     responses:
+ *       200:
+ *         description: Successful login with user details and token.
+ *         content:
+ *           application/json:
+ *             example:
+ *               _id: "1234567890"
+ *               name: "John Doe"
+ *               email: "john@example.com"
+ *               experience: 100
+ *               isAdmin: false
+ *               isAuthor: true
+ *               token: "jwt_token"
+ *       401:
+ *         description: Invalid email or password.
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: Invalid email or password
+ */
+
 userRouter.post(
   "/login",
   expressAsyncHandler(async (req, res) => {
@@ -27,6 +62,40 @@ userRouter.post(
     res.status(401).send({ message: "Invalid email or password" });
   })
 );
+
+/**
+ * @swagger
+ * /api/users/register:
+ *   post:
+ *     summary: User registration
+ *     description: Register a new user.
+ *     tags: [User]
+ *     responses:
+ *       200:
+ *         description: Successful registration with user details and token.
+ *         content:
+ *           application/json:
+ *             example:
+ *               _id: "1234567890"
+ *               name: "John Doe"
+ *               email: "john@example.com"
+ *               experience: 0
+ *               isAdmin: false
+ *               isAuthor: false
+ *               token: "jwt_token"
+ *       400:
+ *         description: A user with this email already exists.
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: A user with this email is already exist
+ *       500:
+ *         description: An error occurred while registering the user.
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: An error occurred while registering the user
+ */
 
 userRouter.post(
   "/register",
@@ -67,6 +136,36 @@ userRouter.post(
   })
 );
 
+/**
+ * @swagger
+ * /api/users/profile:
+ *   get:
+ *     summary: Get user profile
+ *     description: Retrieve the profile of the authenticated user.
+ *     tags: [User]
+ *     security:
+ *       - Bearer: []
+ *     responses:
+ *       200:
+ *         description: Successful response with user details and token.
+ *         content:
+ *           application/json:
+ *             example:
+ *               _id: "1234567890"
+ *               name: "John Doe"
+ *               email: "john@example.com"
+ *               experience: 100
+ *               isAdmin: false
+ *               isAuthor: true
+ *               token: "jwt_token"
+ *       404:
+ *         description: User not found.
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: User not found
+ */
+
 userRouter.get(
   "/profile",
   isAuth,
@@ -90,6 +189,36 @@ userRouter.get(
     }
   })
 );
+
+/**
+ * @swagger
+ * /api/users/update-experience:
+ *   put:
+ *     summary: Update user experience
+ *     description: Update the experience of the authenticated user.
+ *     tags: [User]
+ *     security:
+ *       - Bearer: []
+ *     responses:
+ *       200:
+ *         description: Successful response with updated user details.
+ *         content:
+ *           application/json:
+ *             example:
+ *               _id: "1234567890"
+ *               name: "John Doe"
+ *               email: "john@example.com"
+ *               experience: 150
+ *               isAdmin: false
+ *               isAuthor: true
+ *               token: "jwt_token"
+ *       404:
+ *         description: User not found.
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: User not found
+ */
 
 userRouter.put(
   "/update-experience",
