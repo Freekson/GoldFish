@@ -4,6 +4,25 @@ import Game from "../models/GameModel.js";
 
 const gameRouter = express.Router();
 
+/**
+ * @swagger
+ * tags:
+ *   name: Games
+ *   description: API for managing promo games
+ */
+
+/**
+ * @swagger
+ * /api/games:
+ *   get:
+ *     summary: Get a list of games
+ *     description: Returns a list of games
+ *     tags: [Games]
+ *     responses:
+ *       '200':
+ *         description: A successful response
+ */
+
 gameRouter.get(
   "/",
   expressAsyncHandler(async (req, res) => {
@@ -16,6 +35,18 @@ gameRouter.get(
     }
   })
 );
+
+/**
+ * @swagger
+ * /api/games/discounted:
+ *   get:
+ *     summary: Get a list of discounted games
+ *     description: Returns a list of games with discounts
+ *     tags: [Games]
+ *     responses:
+ *       '200':
+ *         description: A successful response
+ */
 
 gameRouter.get(
   "/discounted",
@@ -33,6 +64,18 @@ gameRouter.get(
     }
   })
 );
+
+/**
+ * @swagger
+ * /api/games/combined-top:
+ *   get:
+ *     summary: Get a combined list of top-rated and top-discounted games
+ *     description: Returns a combined list of top-rated and top-discounted games
+ *     tags: [Games]
+ *     responses:
+ *       '200':
+ *         description: A successful response
+ */
 
 gameRouter.get(
   "/combined-top",
@@ -64,6 +107,18 @@ gameRouter.get(
     }
   })
 );
+
+/**
+ * @swagger
+ * /api/games/top-categories:
+ *   get:
+ *     summary: Get a list of top game categories
+ *     description: Returns a list of top game categories
+ *     tags: [Games]
+ *     responses:
+ *       '200':
+ *         description: A successful response
+ */
 
 gameRouter.get(
   "/top-categories",
@@ -101,6 +156,18 @@ gameRouter.get(
   })
 );
 
+/**
+ * @swagger
+ * /api/games/ratings-count:
+ *   get:
+ *     summary: Get the count of games for each rating
+ *     description: Returns the count of games for each rating
+ *     tags: [Games]
+ *     responses:
+ *       '200':
+ *         description: A successful response
+ */
+
 gameRouter.get(
   "/ratings-count",
   expressAsyncHandler(async (req, res) => {
@@ -127,6 +194,18 @@ gameRouter.get(
   })
 );
 
+/**
+ * @swagger
+ * /api/games/categories-count:
+ *   get:
+ *     summary: Get the count of games for each category
+ *     description: Returns the count of games for each category
+ *     tags: [Games]
+ *     responses:
+ *       '200':
+ *         description: A successful response
+ */
+
 gameRouter.get(
   "/categories-count",
   expressAsyncHandler(async (req, res) => {
@@ -142,6 +221,18 @@ gameRouter.get(
     }
   })
 );
+
+/**
+ * @swagger
+ * /api/games/publishers-count:
+ *   get:
+ *     summary: Get the count of games for each publisher
+ *     description: Returns the count of games for each publisher
+ *     tags: [Games]
+ *     responses:
+ *       '200':
+ *         description: A successful response
+ */
 
 gameRouter.get(
   "/publishers-count",
@@ -160,6 +251,78 @@ gameRouter.get(
 );
 
 //! dynamic routes
+
+/**
+ * @swagger
+ * /game/filtered:
+ *   get:
+ *     summary: Get a filtered list of games.
+ *     tags: [Games]
+ *     description: >
+ *       This route allows fetching a filtered list of games based on various parameters.
+ *     parameters:
+ *       - name: categories
+ *         in: query
+ *         description: Categories of games as an encoded array.
+ *         schema:
+ *           type: string
+ *       - name: publishers
+ *         in: query
+ *         description: Publishers of games as an encoded array.
+ *         schema:
+ *           type: string
+ *       - name: ratings
+ *         in: query
+ *         description: Ratings of games as an encoded array.
+ *         schema:
+ *           type: string
+ *       - name: discounted
+ *         in: query
+ *         description: Flag indicating the presence of discounts (true/false).
+ *         schema:
+ *           type: boolean
+ *       - name: min
+ *         in: query
+ *         description: Minimum price of games.
+ *         schema:
+ *           type: number
+ *       - name: max
+ *         in: query
+ *         description: Maximum price of games.
+ *         schema:
+ *           type: number
+ *       - name: page
+ *         in: query
+ *         description: Page number for pagination (default is 1).
+ *         schema:
+ *           type: integer
+ *       - name: sort
+ *         in: query
+ *         description: Sorting option for results (default is "newest").
+ *         schema:
+ *           type: string
+ *       - name: search
+ *         in: query
+ *         description: String for searching by title, description, or publisher of games.
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Successful request. Returns a filtered list of games.
+ *         content:
+ *           application/json:
+ *             example:
+ *               games: [{ gameObject }, { gameObject }]
+ *               totalGames: 100
+ *               totalPages: 9
+ *               currentPage: 1
+ *       400:
+ *         description: Incorrect format of parameters. Returns an error message.
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Incorrect format for arrays of categories, publishers, ratings, discounted, price, or sort options"
+ */
 
 gameRouter.get(
   "/filtered",
@@ -271,6 +434,25 @@ gameRouter.get(
   })
 );
 
+/**
+ * @swagger
+ * /api/games/product-page-combined/{id}:
+ *   get:
+ *     summary: Get the game, and 4 similar games
+ *     description: Returns a combined list of a specific game and related games in the same category
+ *     tags: [Games]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: The ID of the game
+ *         schema:
+ *           type: string
+ *     responses:
+ *       '200':
+ *         description: A successful response
+ */
+
 gameRouter.get(
   "/product-page-combined/:id",
   expressAsyncHandler(async (req, res) => {
@@ -292,6 +474,25 @@ gameRouter.get(
     res.send(combinedArray);
   })
 );
+
+/**
+ * @swagger
+ * /api/games/{id}:
+ *   get:
+ *     summary: Get details of a specific game
+ *     description: Returns details of a specific game
+ *     tags: [Games]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: The ID of the game
+ *         schema:
+ *           type: string
+ *     responses:
+ *       '200':
+ *         description: A successful response
+ */
 
 gameRouter.get(
   "/:id",
