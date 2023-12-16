@@ -485,7 +485,9 @@ const ProductPage: React.FC = () => {
                   customStyles={{ marginTop: "1rem" }}
                 />
               ) : (
-                similar.map((game) => <GameCard key={game._id} {...game} />)
+                similar.map((game) => (
+                  <GameCard key={game._id} {...game} game={game} />
+                ))
               )}
             </div>
           </section>

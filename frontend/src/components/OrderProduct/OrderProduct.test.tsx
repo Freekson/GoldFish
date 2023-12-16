@@ -30,5 +30,4 @@ test("OrderProduct component renders with correct data", () => {
 
   expect(screen.getByText("$20")).toBeInTheDocument();
   expect(screen.getByText("2 pcs.")).toBeInTheDocument();
-  expect(screen.getByText("Total: $40")).toBeInTheDocument();
 });

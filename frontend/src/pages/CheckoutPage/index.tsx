@@ -108,7 +108,7 @@ const CheckoutPage: React.FC = () => {
       [name]: value,
     }));
   };
-  const handleSubmit = async (event: any) => {
+  const handleSubmit:React.FormEventHandler<HTMLFormElement> = async (event) => {
     event.preventDefault();
 
     if (!isPublicOffer || !isPersonalData) {
