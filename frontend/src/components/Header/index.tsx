@@ -117,6 +117,25 @@ const Header: React.FC = () => {
     }
   };
 
+  const onClickLogout = () => {
+    setIsProfileActive(false);
+    dispatch(logout());
+    localStorage.removeItem("userInfo");
+    localStorage.removeItem("cartItems");
+    localStorage.removeItem("userOrderData");
+    localStorage.removeItem("Promocode");
+    localStorage.removeItem("IsPromoActive");
+    localStorage.removeItem("userWishlist");
+    dispatch(clear());
+    dispatch(clearPromoCode());
+    dispatch(
+      showToast({
+        toastText: "You logged out successfully",
+        toastType: toastStatus.SUCCESS,
+      })
+    );
+  };
+
   return (
     <header className={styles.header}>
       <div className={styles["header__container"]}>
@@ -262,6 +281,14 @@ const Header: React.FC = () => {
                   </li>
                   <li>
                     <Link
+                      to="/profile/wishlist"
+                      onClick={() => setIsProfileActive(false)}
+                    >
+                      Wishlist
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
                       to="/profile/events"
                       onClick={() => setIsProfileActive(false)}
                     >
@@ -287,26 +314,7 @@ const Header: React.FC = () => {
                     </li>
                   )}
                   <li>
-                    <Link
-                      to="/"
-                      onClick={() => {
-                        setIsProfileActive(false);
-                        dispatch(logout());
-                        localStorage.removeItem("userInfo");
-                        localStorage.removeItem("cartItems");
-                        localStorage.removeItem("userOrderData");
-                        localStorage.removeItem("Promocode");
-                        localStorage.removeItem("IsPromoActive");
-                        dispatch(clear());
-                        dispatch(clearPromoCode());
-                        dispatch(
-                          showToast({
-                            toastText: "You logged out successfully",
-                            toastType: toastStatus.SUCCESS,
-                          })
-                        );
-                      }}
-                    >
+                    <Link to="/" onClick={onClickLogout}>
                       Logout
                     </Link>
                   </li>

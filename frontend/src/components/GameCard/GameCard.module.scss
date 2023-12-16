@@ -9,9 +9,14 @@
   padding: 2.5rem 1rem;
   transition: all 0.1s linear;
   position: relative;
+  overflow: hidden;
 
   &:hover {
     box-shadow: 5px 6px 15px 0px #fb791ba1;
+
+    .heart {
+      left: 10px;
+    }
   }
 
   img {
@@ -142,5 +147,19 @@
     svg {
       margin-left: 0.8rem;
     }
+  }
+
+  .heart {
+    position: absolute;
+    left: -100px;
+    top: 10px;
+    width: 20px;
+    height: 20px;
+    padding: 0.5rem;
+    background-color: white;
+    border-radius: 9px;
+    cursor: pointer;
+    box-shadow: 5px 6px 16px 0px rgba(42, 42, 42, 0.1607843137);
+    transition: all 0.3s;
   }
 }

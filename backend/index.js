@@ -7,6 +7,7 @@ import orderRouter from "./routes/orderRoute.js";
 import promoCodeRouter from "./routes/promoCodeRoutes.js";
 import swaggerJSDoc from "swagger-jsdoc";
 import swaggerUi from "swagger-ui-express";
+import wishListRouter from "./routes/wishListRoutes.js";
 
 //fetch variables from .env file
 dotenv.config();
@@ -52,6 +53,7 @@ app.use("/api/games", gameRouter);
 app.use("/api/users", userRouter);
 app.use("/api/orders", orderRouter);
 app.use("/api/promocodes", promoCodeRouter);
+app.use("/api/wishlist", wishListRouter);
 
 app.use((err, req, res, next) => {
   res.status(500).send({ message: err.message });

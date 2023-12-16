@@ -12,11 +12,14 @@ import { fetchLastThreeOrders } from "../../redux/order/slice";
 import Skeleton from "react-loading-skeleton";
 import { Status } from "../../types";
 import MessageBox, { MessageTypes } from "../../components/MessageBox";
+import GameCard from "../../components/GameCard";
 
 const ProfilePage: React.FC = () => {
   const dispatch = useAppDispatch();
   const { userData } = useSelector((state: RootState) => state.user);
   const { lastOrders, status } = useSelector((state: RootState) => state.order);
+  const { items } = useSelector((state: RootState) => state.wishlist);
+
   const [currentLevel, setCurrentLevel] = useState(0);
 
   const currentExp = userData?.experience ?? 0;
@@ -185,6 +188,21 @@ const ProfilePage: React.FC = () => {
               />
             ))
           )}
+        </div>
+        <div className={styles["user__wishlist"]}>
+          <Link to="/profile/wishlist">My wishlist</Link>
+          <div className={styles["wishlist__wrapper"]}>
+            {items.slice(0, 4).map((item) => (
+              <GameCard
+                key={item._id}
+                game={item}
+                _id={item._id}
+                image_link={item.image_link}
+                title={item.title}
+                price={item.price}
+              />
+            ))}
+          </div>
         </div>
         <div className={styles["user__events"]}>
           <Link to="/profile/events">My events</Link>
