@@ -13,6 +13,7 @@ import GameCardSkeleton from "../../components/GameCard/GameCardSkeleton";
 import MessageBox, { MessageTypes } from "../../components/MessageBox";
 import Skeleton from "react-loading-skeleton";
 import { Status } from "../../types";
+import { fetchWishlist } from "../../redux/wishlist/slice";
 
 const MainPage: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -21,6 +22,13 @@ const MainPage: React.FC = () => {
   const { categoryData, status: CategoryStatus } = useSelector(
     (state: RootState) => state.category
   );
+  const { userData } = useSelector((state: RootState) => state.user);
+
+  useEffect(() => {
+    if (userData) {
+      dispatch(fetchWishlist({ id: userData._id, token: userData.token }));
+    }
+  }, [dispatch, userData]);
 
   useEffect(() => {
     const fetchData = async () => {

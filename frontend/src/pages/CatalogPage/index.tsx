@@ -17,6 +17,7 @@ import {
   fetchPublisherCount,
   fetchRatingCount,
 } from "../../redux/count/slice";
+import { fetchWishlist } from "../../redux/wishlist/slice";
 
 const CatalogPage: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -44,6 +45,7 @@ const CatalogPage: React.FC = () => {
   ];
 
   const { filterData, status } = useSelector((state: RootState) => state.game);
+  const { userData } = useSelector((state: RootState) => state.user);
   const {
     ratingCount,
     categoryCount,
@@ -229,6 +231,19 @@ const CatalogPage: React.FC = () => {
     selectedRatings,
     sortOption,
   ]);
+
+  //? update wishlist
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (userData) {
+        await dispatch(
+          fetchWishlist({ id: userData._id, token: userData.token })
+        );
+      }
+    };
+    fetchData();
+  }, [dispatch, userData]);
 
   //? handlers
 

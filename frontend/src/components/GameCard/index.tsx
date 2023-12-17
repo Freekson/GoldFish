@@ -2,12 +2,16 @@ import styles from "./GameCard.module.scss";
 import { Link, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { addItem } from "../../redux/cart/slice";
-import { IGame } from "../../types";
+import { IGame, Status } from "../../types";
 import { RootState, useAppDispatch } from "../../redux/store";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import axios from "axios";
-import { addGame, removeGame } from "../../redux/wishlist/slice";
+import {
+  addGame,
+  deleteGame,
+  postGame,
+  removeGame,
+} from "../../redux/wishlist/slice";
 
 type TProps = {
   _id: string;
@@ -32,36 +36,46 @@ const GameCard: React.FC<TProps> = ({
   const navigate = useNavigate();
 
   const { cartItems } = useSelector((state: RootState) => state.cart);
-  const { items } = useSelector((state: RootState) => state.wishlist);
+  const { items, status: wishlistStatus } = useSelector(
+    (state: RootState) => state.wishlist
+  );
+  const { userData } = useSelector((state: RootState) => state.user);
 
   const item = cartItems.find((item) => item._id === _id);
 
-  const [inWishlist, setInWishlist] = useState(
-    items ? items.some((game) => game._id === _id) : false
-  );
+  const [inWishlist, setInWishlist] = useState(false);
+
+  useEffect(() => {
+    if (wishlistStatus !== Status.LOADING) {
+      setInWishlist(items ? items.some((game) => game._id === _id) : false);
+    } else {
+      setInWishlist(false);
+    }
+  }, [_id, items, wishlistStatus]);
 
   const addToCart = () => {
     dispatch(addItem(game));
   };
 
-  const { userData } = useSelector((state: RootState) => state.user);
-
   const onClickHeart = () => {
     if (userData) {
       if (inWishlist) {
-        axios.delete(`/api/wishlist/remove`, {
-          data: { userId: userData._id, gameId: _id },
-          headers: { Authorization: `Bearer ${userData?.token}` },
-        });
+        dispatch(
+          deleteGame({
+            token: userData?.token,
+            userId: userData._id,
+            gameId: _id,
+          })
+        );
         dispatch(removeGame(game));
         toast.success("Game removed from wishlist");
       } else {
-        axios.post(
-          `/api/wishlist/add`,
-          { userId: userData._id, gameId: _id },
-          {
-            headers: { Authorization: `Bearer ${userData?.token}` },
-          }
+        dispatch(
+          postGame({
+            token: userData?.token,
+            userId: userData._id,
+            gameId: _id,
+          })
         );
         dispatch(addGame(game));
         toast.success("Game added to wishlist");
