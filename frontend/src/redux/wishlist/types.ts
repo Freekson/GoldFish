@@ -1,5 +1,6 @@
-import { IGame } from "../../types";
+import { IGame, Status } from "../../types";
 
-export interface userState {
+export interface wishlistState {
   items: IGame[] | [];
+  status: Status;
 }

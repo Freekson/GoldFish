@@ -8,7 +8,7 @@ import { useAppDispatch } from "../../redux/store";
 import { login } from "../../redux/user/slice";
 import { showToast } from "../../redux/toast/slice";
 import { toastStatus } from "../../redux/toast/types";
-import { setWishlist } from "../../redux/wishlist/slice";
+import { fetchWishlist } from "../../redux/wishlist/slice";
 
 const LoginPage: React.FC = () => {
   const { search } = useLocation();
@@ -37,12 +37,8 @@ const LoginPage: React.FC = () => {
         email,
         password,
       });
-      const wishlist = await axios.get("/api/wishlist/", {
-        params: { userId: data._id },
-        headers: { Authorization: `Bearer ${data.token}` },
-      });
+      dispatch(fetchWishlist({ token: data.token, id: data._id }));
       dispatch(login(data));
-      dispatch(setWishlist(wishlist.data));
       dispatch(
         showToast({
           toastText: "You have successfully logged in",
@@ -50,7 +46,6 @@ const LoginPage: React.FC = () => {
         })
       );
       localStorage.setItem("userInfo", JSON.stringify(data));
-      localStorage.setItem("userWishlist", JSON.stringify(wishlist.data));
       navigate(redirect || "/");
     } catch (err: any) {
       dispatch(

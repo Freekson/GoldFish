@@ -13,6 +13,7 @@ import Skeleton from "react-loading-skeleton";
 import { Status } from "../../types";
 import MessageBox, { MessageTypes } from "../../components/MessageBox";
 import GameCard from "../../components/GameCard";
+import { fetchWishlist } from "../../redux/wishlist/slice";
 
 const ProfilePage: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -45,6 +46,17 @@ const ProfilePage: React.FC = () => {
   useEffect(() => {
     dispatch(fetchLastThreeOrders({ token: userData?.token ?? "" }));
   }, [dispatch, userData?.token]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (userData) {
+        await dispatch(
+          fetchWishlist({ id: userData._id, token: userData.token })
+        );
+      }
+    };
+    fetchData();
+  }, [dispatch, userData]);
 
   return (
     <Layout>

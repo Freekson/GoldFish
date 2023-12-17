@@ -125,7 +125,6 @@ const Header: React.FC = () => {
     localStorage.removeItem("userOrderData");
     localStorage.removeItem("Promocode");
     localStorage.removeItem("IsPromoActive");
-    localStorage.removeItem("userWishlist");
     dispatch(clear());
     dispatch(clearPromoCode());
     dispatch(
