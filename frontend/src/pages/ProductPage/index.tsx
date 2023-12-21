@@ -579,7 +579,12 @@ const ProductPage: React.FC = () => {
                 />
               ) : (
                 similar.map((game) => (
-                  <GameCard key={game._id} {...game} game={game} />
+                  <GameCard
+                    key={game._id}
+                    game={game}
+                    isDiscount={game.discount ? true : false}
+                    discount={game.discount}
+                  />
                 ))
               )}
             </div>

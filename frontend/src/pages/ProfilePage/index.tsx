@@ -208,10 +208,8 @@ const ProfilePage: React.FC = () => {
               <GameCard
                 key={item._id}
                 game={item}
-                _id={item._id}
-                image_link={item.image_link}
-                title={item.title}
-                price={item.price}
+                isDiscount={item.discount ? true : false}
+                discount={item.discount}
               />
             ))}
           </div>

@@ -14,24 +14,12 @@ import {
 } from "../../redux/wishlist/slice";
 
 type TProps = {
-  _id: string;
-  image_link: string;
-  title: string;
-  price: number;
   isDiscount?: boolean;
   discount?: number;
   game: IGame;
 };
 
-const GameCard: React.FC<TProps> = ({
-  _id,
-  image_link,
-  title,
-  price,
-  isDiscount = false,
-  discount,
-  game,
-}) => {
+const GameCard: React.FC<TProps> = ({ isDiscount = false, discount, game }) => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
@@ -41,17 +29,19 @@ const GameCard: React.FC<TProps> = ({
   );
   const { userData } = useSelector((state: RootState) => state.user);
 
-  const item = cartItems.find((item) => item._id === _id);
+  const item = cartItems.find((item) => item._id === game._id);
 
   const [inWishlist, setInWishlist] = useState(false);
 
   useEffect(() => {
     if (wishlistStatus !== Status.LOADING) {
-      setInWishlist(items ? items.some((game) => game._id === _id) : false);
+      setInWishlist(
+        items ? items.some((item) => item._id === game._id) : false
+      );
     } else {
       setInWishlist(false);
     }
-  }, [_id, items, wishlistStatus]);
+  }, [game._id, items, wishlistStatus]);
 
   const addToCart = () => {
     dispatch(addItem(game));
@@ -64,7 +54,7 @@ const GameCard: React.FC<TProps> = ({
           deleteGame({
             token: userData?.token,
             userId: userData._id,
-            gameId: _id,
+            gameId: game._id,
           })
         );
         dispatch(removeGame(game));
@@ -74,13 +64,12 @@ const GameCard: React.FC<TProps> = ({
           postGame({
             token: userData?.token,
             userId: userData._id,
-            gameId: _id,
+            gameId: game._id,
           })
         );
         dispatch(addGame(game));
         toast.success("Game added to wishlist");
       }
-      setInWishlist(!inWishlist);
     } else {
       toast.info("You must be logged in to do this");
     }
@@ -118,19 +107,21 @@ const GameCard: React.FC<TProps> = ({
           />
         </svg>
       )}
-      <Link to={`/product/${_id}`}>
-        <img src={image_link} alt={title} />
+      <Link to={`/product/${game._id}`}>
+        <img src={game.image_link} alt={game.title} />
       </Link>
-      <Link to={`/product/${_id}`} className={styles.title}>
-        {title}
+      <Link to={`/product/${game._id}`} className={styles.title}>
+        {game.title}
       </Link>
       {isDiscount && discount ? (
         <p className={styles.price}>
-          <span className={styles.old}>${price}</span>
-          <span>${(price - (price / 100) * discount).toFixed(2)}</span>
+          <span className={styles.old}>${game.price}</span>
+          <span>
+            ${(game.price - (game.price / 100) * discount).toFixed(2)}
+          </span>
         </p>
       ) : (
-        <p className={styles.price}>${price}</p>
+        <p className={styles.price}>${game.price}</p>
       )}
       <div
         className={!item ? styles["buy"] : styles["buy_active"]}

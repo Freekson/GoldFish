@@ -118,9 +118,7 @@ const MainPage: React.FC = () => {
           ) : status === Status.LOADING ? (
             <GameCardSkeleton items={4} />
           ) : (
-            topRated.map((game) => (
-              <GameCard key={game._id} {...game} game={game} />
-            ))
+            topRated.map((game) => <GameCard key={game._id} game={game} />)
           )}
         </div>
       </section>
@@ -139,7 +137,12 @@ const MainPage: React.FC = () => {
             <GameCardSkeleton items={4} />
           ) : (
             topDiscounted.map((game) => (
-              <GameCard key={game._id} {...game} game={game} isDiscount />
+              <GameCard
+                key={game._id}
+                game={game}
+                isDiscount
+                discount={game.discount}
+              />
             ))
           )}
         </div>

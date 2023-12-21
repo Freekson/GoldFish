@@ -567,8 +567,7 @@ const CatalogPage: React.FC = () => {
             games.map((game) => (
               <GameCard
                 key={game._id}
-                {...game}
-                isDiscount={game.discount !== undefined}
+                isDiscount={game.discount ? true : false}
                 discount={game.discount}
                 game={game}
               />
