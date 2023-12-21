@@ -11,6 +11,7 @@ import CatalogPage from "./pages/CatalogPage";
 import CheckoutPage from "./pages/CheckoutPage";
 import ProfilePage from "./pages/ProfilePage";
 import ProtectedRoute from "./components/ProtectedRoute";
+import WishlistPage from "./pages/WishlistPage";
 
 function App() {
   return (
@@ -45,6 +46,14 @@ function App() {
           element={
             <ProtectedRoute>
               <OrdersListPage />
+            </ProtectedRoute>
+          }
+        ></Route>
+        <Route
+          path="/profile/wishlist"
+          element={
+            <ProtectedRoute>
+              <WishlistPage />
             </ProtectedRoute>
           }
         ></Route>

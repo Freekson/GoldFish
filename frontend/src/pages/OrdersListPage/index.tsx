@@ -23,7 +23,7 @@ const OrdersListPage: React.FC = () => {
   return (
     <Layout>
       <Helmet>
-        <title>Oders</title>
+        <title>Orders</title>
       </Helmet>
       <Breadcrumbs
         items={["Home", "Profile"]}
