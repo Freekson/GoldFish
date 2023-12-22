@@ -6,6 +6,7 @@ import { HelmetProvider } from "react-helmet-async";
 import ScrollToTop from "./components/ScrollToTop";
 import { store } from "./redux/store";
 import { Provider } from "react-redux";
+import { PayPalScriptProvider } from "@paypal/react-paypal-js";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
@@ -13,11 +14,13 @@ const root = ReactDOM.createRoot(
 root.render(
   <Router>
     <Provider store={store}>
-      <ScrollToTop>
-        <HelmetProvider>
-          <App />
-        </HelmetProvider>
-      </ScrollToTop>
+      <PayPalScriptProvider deferLoading={true} options={{ clientId: "test" }}>
+        <ScrollToTop>
+          <HelmetProvider>
+            <App />
+          </HelmetProvider>
+        </ScrollToTop>
+      </PayPalScriptProvider>
     </Provider>
   </Router>
 );

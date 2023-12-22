@@ -12,9 +12,23 @@ import { fetchHomePageProducts } from "../../redux/game/slice";
 import GameCardSkeleton from "../../components/GameCard/GameCardSkeleton";
 import MessageBox, { MessageTypes } from "../../components/MessageBox";
 import Skeleton from "react-loading-skeleton";
+import { Status } from "../../types";
+import { fetchWishlist } from "../../redux/wishlist/slice";
 
 const MainPage: React.FC = () => {
   const dispatch = useAppDispatch();
+
+  const { gameData, status } = useSelector((state: RootState) => state.game);
+  const { categoryData, status: CategoryStatus } = useSelector(
+    (state: RootState) => state.category
+  );
+  const { userData } = useSelector((state: RootState) => state.user);
+
+  useEffect(() => {
+    if (userData) {
+      dispatch(fetchWishlist({ id: userData._id, token: userData.token }));
+    }
+  }, [dispatch, userData]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -22,10 +36,6 @@ const MainPage: React.FC = () => {
     };
     fetchData();
   }, [dispatch]);
-  const { gameData, status } = useSelector((state: RootState) => state.game);
-  const { categoryData, status: CategoryStatus } = useSelector(
-    (state: RootState) => state.category
-  );
 
   const topRated = gameData.slice(0, 4);
   const topDiscounted = gameData.slice(4, 8);
@@ -36,6 +46,7 @@ const MainPage: React.FC = () => {
       <Helmet>
         <title>GoldFish</title>
       </Helmet>
+
       <section className={styles["catalog"]}>
         <Link to="/catalog">
           <h3>Catalog</h3>
@@ -98,18 +109,16 @@ const MainPage: React.FC = () => {
           <h3>Hurry up to buy</h3>
         </Link>
         <div className={styles["hurry-up__wrapper"]}>
-          {status === "error" ? (
+          {status === Status.ERROR ? (
             <MessageBox
               message="An error occurred while loading games, we are working on it"
               type={MessageTypes.DANGER}
               customStyles={{ marginTop: "1rem" }}
             />
-          ) : status === "loading" ? (
+          ) : status === Status.LOADING ? (
             <GameCardSkeleton items={4} />
           ) : (
-            topRated.map((game) => (
-              <GameCard key={game._id} {...game} game={game} />
-            ))
+            topRated.map((game) => <GameCard key={game._id} game={game} />)
           )}
         </div>
       </section>
@@ -118,17 +127,22 @@ const MainPage: React.FC = () => {
           <h3>Special offer</h3>
         </Link>
         <div className={styles["special-offer__wrapper"]}>
-          {status === "error" ? (
+          {status === Status.ERROR ? (
             <MessageBox
               message="An error occurred while loading games, we are working on it"
               type={MessageTypes.DANGER}
               customStyles={{ marginTop: "1rem" }}
             />
-          ) : status === "loading" ? (
+          ) : status === Status.LOADING ? (
             <GameCardSkeleton items={4} />
           ) : (
             topDiscounted.map((game) => (
-              <GameCard key={game._id} {...game} game={game} isDiscount />
+              <GameCard
+                key={game._id}
+                game={game}
+                isDiscount
+                discount={game.discount}
+              />
             ))
           )}
         </div>

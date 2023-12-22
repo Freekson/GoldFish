@@ -1,12 +1,30 @@
+import { Link } from "react-router-dom";
 import styles from "./OrderProduct.module.scss";
-const OrderProduct: React.FC = () => {
+
+type TProps = {
+  id: string;
+  title: string;
+  image: string;
+  price: number;
+  quantity: number;
+};
+const OrderProduct: React.FC<TProps> = ({
+  id,
+  title,
+  image,
+  price,
+  quantity,
+}) => {
   return (
     <div className={styles["product"]}>
-      <img src="/img/game-1.png" alt="game-1" />
+      <img src={image} alt={title} />
       <div className={styles["product__text"]}>
-        <p>Broken Realms: Horrek's Dreadlance</p>
-        <p>$21</p>
-        <p>4 pcs.</p>
+        <p>
+          <Link to={`/product/${id}`}>{title}</Link>
+        </p>
+        <p>${price}</p>
+        <p>{quantity} pcs.</p>
+        <p>Total: ${(price * quantity).toFixed(2)}</p>
       </div>
     </div>
   );

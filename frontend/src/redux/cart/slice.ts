@@ -1,11 +1,15 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { CartState } from "./types";
 import { getCartFromLS } from "../../utils/getCartFromLS";
+import { getPromoCodeFromLS } from "../../utils/getPromoCodeFromLS";
 
 const { cartItems } = getCartFromLS();
+const { promocode, isActive } = getPromoCodeFromLS();
 
 const initialState: CartState = {
   cartItems,
+  promo: promocode,
+  isPromoActive: isActive,
 };
 const cartSlice = createSlice({
   name: "cart",
@@ -38,8 +42,15 @@ const cartSlice = createSlice({
     },
     clear(state) {
       state.cartItems = [];
+      state.isPromoActive = false;
+      state.promo = undefined;
+    },
+    setPromocode(state, action) {
+      state.promo = action.payload;
+      state.isPromoActive = true;
     },
   },
 });
-export const { addItem, minusItem, deleteItem, clear } = cartSlice.actions;
+export const { addItem, minusItem, deleteItem, clear, setPromocode } =
+  cartSlice.actions;
 export default cartSlice.reducer;

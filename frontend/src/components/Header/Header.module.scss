@@ -1,7 +1,7 @@
 .header {
   background-color: #2a2a2a;
   position: fixed;
-  z-index: 10;
+  z-index: 999;
   width: 100%;
 
   &__container {
@@ -58,7 +58,7 @@
     width: 40%;
     display: flex;
     align-items: center;
-    justify-content: end;
+    justify-content: flex-end;
     position: relative;
   }
 
@@ -98,6 +98,8 @@
 
     li {
       margin: 0.7rem 0;
+      min-width: 5rem;
+      text-align: center;
 
       a:hover {
         text-decoration: underline;

@@ -1,7 +1,7 @@
 .product {
   display: flex;
   justify-content: space-between;
-  align-items: start;
+  align-items: flex-start;
 
   &__img {
     width: 60%;
@@ -13,6 +13,13 @@
       min-width: 50%;
       margin-bottom: 3rem;
     }
+  }
+
+  hr {
+    border: none;
+    height: 2px;
+    background-color: #2a2a2a1f;
+    margin-top: 0;
   }
 
   &__description {
@@ -27,18 +34,29 @@
     overflow: hidden;
     padding: 10px 20px;
     box-sizing: border-box;
+    position: relative;
 
-    hr {
-      width: 100%;
-      border: 2px solid #2a2a2a1f;
+    .heart {
+      position: absolute;
+      left: 10px;
+      top: 10px;
+      width: 20px;
+      height: 20px;
+      padding: 0.5rem;
+      background-color: white;
+      border-radius: 9px;
+      cursor: pointer;
+      box-shadow: 5px 6px 16px 0px rgba(42, 42, 42, 0.1607843137);
+      transition: all 0.3s;
     }
   }
 
   &__code {
-    width: 90%;
+    width: 80%;
     text-align: right;
     color: #2a2a2a;
     font-size: 0.75rem;
+    align-self: flex-end;
   }
 
   &__price {
@@ -72,12 +90,19 @@
 .similar {
   margin: 5rem 0;
 
+  h4 {
+    margin-bottom: 1.5rem;
+  }
+
   &__wrapper {
     display: flex;
-    justify-content: space-between;
 
     & > div {
       width: 20%;
+    }
+
+    & > div:not(:nth-child(4n)) {
+      margin-right: 2rem;
     }
   }
 }
@@ -174,6 +199,10 @@ hr {
       & > div {
         width: 30%;
         margin-bottom: 2rem;
+      }
+
+      & > div:not(:nth-child(4n)) {
+        margin-right: 0;
       }
     }
   }

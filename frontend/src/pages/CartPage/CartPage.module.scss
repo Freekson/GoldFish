@@ -1,7 +1,8 @@
 .cart {
   display: flex;
   justify-content: space-between;
-  align-items: start;
+  align-items: flex-start;
+  margin-bottom: 5rem;
 
   &__items {
     width: 65%;
@@ -16,7 +17,7 @@
     background-color: white;
     border-radius: 9px;
     box-shadow: 5px 6px 16px 0px #2a2a2a29;
-    padding: 1rem 1.5rem;
+    padding: 2rem 1.5rem;
     margin-bottom: 2rem;
   }
 

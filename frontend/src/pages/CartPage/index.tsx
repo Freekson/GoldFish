@@ -2,29 +2,154 @@ import { Helmet } from "react-helmet-async";
 import Breadcrumbs from "../../components/Breadcrumbs";
 import Layout from "../../components/Layout";
 import styles from "./CartPage.module.scss";
-import { Link } from "react-router-dom";
-import { ChangeEvent, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { ChangeEvent, useEffect, useState } from "react";
 import CartItem from "../../components/CartItem";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../redux/store";
+import { useSelector } from "react-redux";
+import { RootState, useAppDispatch } from "../../redux/store";
 import MessageBox, { MessageTypes } from "../../components/MessageBox";
-import { clear } from "../../redux/cart/slice";
+import { clear, setPromocode } from "../../redux/cart/slice";
+import { clearPromoCode, fetchPromoCode } from "../../redux/promocode/slice";
+import { showToast } from "../../redux/toast/slice";
+import { toastStatus } from "../../redux/toast/types";
+import { Status } from "../../types";
 
 const CartPage: React.FC = () => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
-  const [isPromoActive, setIsPromoActive] = useState(false);
-  const [inputValue, setInputValue] = useState("");
-  const { cartItems } = useSelector((state: RootState) => state.cart);
+  const { cartItems, isPromoActive, promo } = useSelector(
+    (state: RootState) => state.cart
+  );
+  const { promocodes, status } = useSelector(
+    (state: RootState) => state.promoCode
+  );
+  const promocode = promocodes[0] || promo;
+  const itemsPrice = cartItems
+    .reduce(
+      (a, c) =>
+        a +
+        (c.quantity
+          ? c.discount
+            ? (c.price - (c.price / 100) * c.discount) * c.quantity
+            : c.price * c.quantity
+          : 0),
+      0
+    )
+    .toFixed(2);
+
+  const [isPromoActiveted, setIsPromoActive] = useState(isPromoActive);
+  const [inputValue, setInputValue] = useState(promo?.code || "");
+
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     setInputValue(event.target.value);
   };
-  const onSubminPromocode = () => {
-    setIsPromoActive(true);
+  const onSubminPromocode = async () => {
+    if (cartItems.length <= 0) {
+      dispatch(
+        showToast({
+          toastText: "You need add products to cart before using promo code",
+          toastType: toastStatus.INFO,
+        })
+      );
+    } else if (inputValue.length <= 0) {
+      dispatch(
+        showToast({
+          toastText: "You did not enter promo code",
+          toastType: toastStatus.INFO,
+        })
+      );
+    } else {
+      dispatch(fetchPromoCode({ code: inputValue }));
+    }
+    if (status === Status.SUCCESS && promocode) {
+      if (promocode?.code === inputValue) {
+        dispatch(fetchPromoCode({ code: inputValue }));
+      }
+    }
   };
+
+  const onCheckout = (e: any) => {
+    e.preventDefault();
+    if (cartItems.length <= 0) {
+      dispatch(
+        showToast({
+          toastText: "You need add products to cart before going to checkout",
+          toastType: toastStatus.INFO,
+        })
+      );
+    } else {
+      navigate("/checkout");
+    }
+  };
+
   const clearCart = () => {
+    setIsPromoActive(false);
+    setInputValue("");
     dispatch(clear());
+    dispatch(clearPromoCode());
+    localStorage.removeItem("Promocode");
+    localStorage.removeItem("IsPromoActive");
   };
+
+  useEffect(() => {
+    if (status === Status.ERROR) {
+      dispatch(
+        showToast({
+          toastText: "Promo code not found or it has expired ",
+          toastType: toastStatus.WARNING,
+        })
+      );
+    }
+  }, [dispatch, status]);
+
+  useEffect(() => {
+    if (
+      status === Status.SUCCESS &&
+      promocode &&
+      promocode.code === inputValue
+    ) {
+      dispatch(
+        showToast({
+          toastText: "Promo code has already been used",
+          toastType: toastStatus.INFO,
+        })
+      );
+    }
+  }, [status, promocode, inputValue, dispatch]);
+
+  useEffect(() => {
+    if (cartItems.length <= 0) {
+      setIsPromoActive(false);
+      setInputValue("");
+      dispatch(clearPromoCode());
+      localStorage.removeItem("Promocode");
+      localStorage.removeItem("IsPromoActive");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cartItems.length]);
+
+  useEffect(() => {
+    if (
+      promocode?.code &&
+      promocode.code === inputValue &&
+      promocode.isActive
+    ) {
+      dispatch(
+        showToast({
+          toastText: "Promo code activated",
+          toastType: toastStatus.SUCCESS,
+        })
+      );
+      setIsPromoActive(true);
+      dispatch(setPromocode(promocode));
+      localStorage.setItem("Promocode", JSON.stringify(promocode));
+      localStorage.setItem(
+        "IsPromoActive",
+        JSON.stringify(promocode?.isActive)
+      );
+    }
+  }, [dispatch, inputValue, promocode]);
 
   return (
     <Layout>
@@ -59,30 +184,23 @@ const CartPage: React.FC = () => {
         <div className={styles["cart__summary"]}>
           <p className={styles["cart__sum"]}>
             Sum:
-            <b>
-              ${" "}
-              {cartItems
-                .reduce(
-                  (a, c) =>
-                    a +
-                    (c.quantity
-                      ? c.discount
-                        ? (c.price - (c.price / 100) * c.discount) * c.quantity
-                        : c.price * c.quantity
-                      : 0),
-                  0
-                )
-                .toFixed(2)}
-            </b>
+            <b>$ {itemsPrice}</b>
           </p>
-          {isPromoActive && (
+          {isPromoActiveted && (
             <p className={styles["cart__sum"]}>
-              With discount: <b>$200</b>
+              With discount:{" "}
+              <b>
+                $
+                {(
+                  Number(itemsPrice) -
+                  (Number(itemsPrice) / 100) * promocode.discount
+                ).toFixed(2)}
+              </b>
             </p>
           )}
           <div
             className={
-              isPromoActive
+              isPromoActiveted
                 ? styles["cart__promocode_active"]
                 : styles["cart__promocode"]
             }
@@ -92,9 +210,9 @@ const CartPage: React.FC = () => {
               type="text"
               value={inputValue}
               onChange={handleInputChange}
-              disabled={isPromoActive}
+              disabled={isPromoActiveted}
             />
-            {isPromoActive ? (
+            {isPromoActiveted ? (
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="19"
@@ -129,7 +247,7 @@ const CartPage: React.FC = () => {
               </svg>
             )}
           </div>
-          <Link to="/checkout" className={styles["buy"]}>
+          <Link to="/checkout" className={styles["buy"]} onClick={onCheckout}>
             Checkout
           </Link>
           <div className={styles["clear"]} onClick={clearCart}>

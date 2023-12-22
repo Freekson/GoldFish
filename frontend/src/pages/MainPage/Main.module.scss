@@ -192,6 +192,22 @@ a:hover {
   }
 }
 
+@media (min-width: 1728px) {
+  .about {
+    &__wrapper {
+      align-items: flex-start;
+    }
+
+    &__text {
+      width: 50%;
+    }
+
+    img {
+      width: 40%;
+    }
+  }
+}
+
 @media (max-width: 1728px) {
   .catalog {
     &__wrapper {

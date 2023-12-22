@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { countState, ICountItem, Status } from "./types";
+import { countState, ICountItem } from "./types";
 import axios from "axios";
+import { Status } from "../../types";
 
 const initialState: countState = {
   ratingCount: [],

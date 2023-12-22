@@ -10,6 +10,8 @@ import RegisterPage from "./pages/RegisterPage";
 import CatalogPage from "./pages/CatalogPage";
 import CheckoutPage from "./pages/CheckoutPage";
 import ProfilePage from "./pages/ProfilePage";
+import ProtectedRoute from "./components/ProtectedRoute";
+import WishlistPage from "./pages/WishlistPage";
 
 function App() {
   return (
@@ -18,14 +20,43 @@ function App() {
         <Route path="/" element={<MainPage />}></Route>
         <Route path="/product/:id" element={<ProductPage />}></Route>
         <Route path="/cart" element={<CartPage />}></Route>
-        <Route path="/checkout" element={<CheckoutPage />}></Route>
         <Route path="/about-us" element={<AboutUsPage />}></Route>
         <Route path="/catalog" element={<CatalogPage />}></Route>
-        <Route path="/profile/orders" element={<OrdersListPage />}></Route>
         <Route path="/profile/orders/:id" element={<OrderTrackPage />}></Route>
         <Route path="/login" element={<LoginPage />}></Route>
         <Route path="/register" element={<RegisterPage />}></Route>
-        <Route path="/profile" element={<ProfilePage />}></Route>
+        <Route
+          path="/checkout"
+          element={
+            <ProtectedRoute>
+              <CheckoutPage />
+            </ProtectedRoute>
+          }
+        ></Route>
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <ProfilePage />
+            </ProtectedRoute>
+          }
+        ></Route>
+        <Route
+          path="/profile/orders"
+          element={
+            <ProtectedRoute>
+              <OrdersListPage />
+            </ProtectedRoute>
+          }
+        ></Route>
+        <Route
+          path="/profile/wishlist"
+          element={
+            <ProtectedRoute>
+              <WishlistPage />
+            </ProtectedRoute>
+          }
+        ></Route>
       </Routes>
     </div>
   );

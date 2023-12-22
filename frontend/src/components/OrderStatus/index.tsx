@@ -1,16 +1,32 @@
+import { useEffect, useState } from "react";
 import styles from "./OrderStatus.module.scss";
 
+export enum EStatusType {
+  cash = "cash",
+  store = "store",
+  post = "post",
+}
 type TProps = {
   step: number;
+  statusType: EStatusType;
 };
 
-const OrderStatus: React.FC<TProps> = ({ step }) => {
-  const steps = [
-    "Waiting for payment",
-    "Paid",
-    "Waiting for confirmation",
-    "Purchased",
-  ];
+const OrderStatus: React.FC<TProps> = ({ step, statusType }) => {
+  const [steps, setSteps] = useState<string[]>([]);
+  useEffect(() => {
+    if (statusType === EStatusType.post) {
+      setSteps([
+        "Waiting for payment",
+        "Paid",
+        "Waiting for delivery",
+        "Delivered",
+      ]);
+    } else if (statusType === EStatusType.cash) {
+      setSteps(["Waiting for delivery", "Delivered and Paid"]);
+    } else if (statusType === EStatusType.store) {
+      setSteps(["Waiting for pick up", "Picked up and paid"]);
+    }
+  }, [statusType]);
   return (
     <div className={styles["order-status"]}>
       {steps.map((item, index) => (

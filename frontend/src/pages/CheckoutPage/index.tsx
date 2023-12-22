@@ -2,9 +2,229 @@ import { Helmet } from "react-helmet-async";
 import Layout from "../../components/Layout";
 import styles from "./Checkout.module.scss";
 import Breadcrumbs from "../../components/Breadcrumbs";
-import Button from "../../components/Button";
+import { useSelector } from "react-redux";
+import { RootState, useAppDispatch } from "../../redux/store";
+import { useEffect, useState } from "react";
+import { TUserAdress, TUserContact } from "../../types";
+import { showToast } from "../../redux/toast/slice";
+import { toastStatus } from "../../redux/toast/types";
+import { useNavigate } from "react-router";
+import { setOrderData } from "../../redux/user/slice";
+import axios from "axios";
+import { clear } from "../../redux/cart/slice";
+import { activatePromoCode, clearPromoCode } from "../../redux/promocode/slice";
 
 const CheckoutPage: React.FC = () => {
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  const [status, setStatus] = useState("");
+
+  const { cartItems, isPromoActive, promo } = useSelector(
+    (state: RootState) => state.cart
+  );
+  const { userData, orderData } = useSelector((state: RootState) => state.user);
+  const totalPrice = cartItems
+    .reduce(
+      (a, c) =>
+        a +
+        (c.quantity
+          ? c.discount
+            ? (c.price - (c.price / 100) * c.discount) * c.quantity
+            : c.price * c.quantity
+          : 0),
+      0
+    )
+    .toFixed(2);
+  const userDiscount =
+    (userData?.experience ?? 0) >= 10000
+      ? 15
+      : (userData?.experience ?? 0) >= 5000
+      ? 10
+      : (userData?.experience ?? 0) >= 1000
+      ? 5
+      : 0;
+
+  const totalDiscount =
+    userDiscount + (isPromoActive ? promo?.discount ?? 0 : 0);
+
+  const [selectedDelivery, setSelectedDelivery] = useState(
+    orderData?.deliveryMethod ?? "pickup"
+  );
+  const [selectedPayment, setSelectedPayment] = useState(
+    orderData?.paymentMethod ?? "paypal"
+  );
+  const [isPublicOffer, setIsPublicOffer] = useState(false);
+  const [isPersonalData, setIsPersonalData] = useState(false);
+
+  const deliveryCost =
+    selectedDelivery === "pickup" || selectedDelivery === "pickupLocations"
+      ? 0
+      : selectedDelivery === "mailDelivery"
+      ? 5
+      : selectedDelivery === "expressDelivery"
+      ? 12
+      : 0;
+
+  const [address, setAddress] = useState<TUserAdress>({
+    country: orderData?.address.country ?? "",
+    city: orderData?.address.city ?? "",
+    street: orderData?.address.street ?? "",
+    house: orderData?.address.house ?? "",
+    flat: orderData?.address.flat ?? "",
+  });
+
+  const [contactData, setContactData] = useState<TUserContact>({
+    name: orderData?.contact.name ?? "",
+    surname: orderData?.contact.surname ?? "",
+    email: userData?.email || (orderData?.contact.email ?? ""),
+    phone: orderData?.contact.phone ?? "",
+  });
+
+  const handleDeliveryChange = (deliveryType: string) => {
+    setSelectedDelivery(deliveryType);
+  };
+  const handlePaymentChange = (payment: string) => {
+    setSelectedPayment(payment);
+  };
+  const handlePublicOffer = (event: any) => {
+    setIsPublicOffer(event.target.checked);
+  };
+  const handlePersonalData = (event: any) => {
+    setIsPersonalData(event.target.checked);
+  };
+
+  const handleAdressChange = (e: any) => {
+    const { name, value } = e.target;
+    setAddress((prevAddress) => ({
+      ...prevAddress,
+      [name]: value,
+    }));
+  };
+
+  const handleContactChange = (e: any) => {
+    const { name, value } = e.target;
+    setContactData((prevContactData) => ({
+      ...prevContactData,
+      [name]: value,
+    }));
+  };
+  const handleSubmit:React.FormEventHandler<HTMLFormElement> = async (event) => {
+    event.preventDefault();
+
+    if (!isPublicOffer || !isPersonalData) {
+      dispatch(
+        showToast({
+          toastText: "You must fill in the fields with *",
+          toastType: toastStatus.INFO,
+        })
+      );
+      return;
+    }
+    try {
+      const { data } = await axios.post(
+        "/api/orders",
+        {
+          orderItems: cartItems,
+          address: address,
+          contact: contactData,
+          paymentMethod: selectedPayment,
+          deliveryMethod: selectedDelivery,
+          itemsPrice: Number(totalPrice),
+          deliveryPrice: deliveryCost,
+          totalPrice: (
+            Number(totalPrice) -
+            (Number(totalPrice) / 100) * (promo?.discount ?? 0) -
+            (Number(totalPrice) / 100) * (userDiscount ?? 0) +
+            deliveryCost
+          ).toFixed(2),
+          userDiscount: totalDiscount,
+          status: status,
+        },
+        {
+          headers: {
+            authorization: `Bearer ${userData?.token}`,
+          },
+        }
+      );
+      const orderData = {
+        address,
+        contact: contactData,
+        paymentMethod: selectedPayment,
+        deliveryMethod: selectedDelivery,
+      };
+      localStorage.setItem("userOrderData", JSON.stringify(orderData));
+      localStorage.removeItem("Promocode");
+      localStorage.removeItem("IsPromoActive");
+      dispatch(setOrderData(orderData));
+      if (promo) {
+        dispatch(activatePromoCode(String(promo?.code)));
+      }
+      dispatch(clear());
+      dispatch(clearPromoCode());
+      navigate(`/profile/orders/${data.orderId}`);
+      try {
+        const experienceToAdd = Number((Number(totalPrice) * 5).toFixed(0));
+        if (experienceToAdd) {
+          await axios.put(
+            `/api/users/update-experience`,
+            { experienceToAdd },
+            {
+              headers: { Authorization: `Bearer ${userData?.token}` },
+            }
+          );
+          dispatch(
+            showToast({
+              toastText: `Order Created Successfuly. \n You have earned ${(
+                Number(totalPrice) * 5
+              ).toFixed(0)} points`,
+              toastType: toastStatus.DEFAULT,
+            })
+          );
+        }
+      } catch (error) {
+        dispatch(
+          showToast({
+            toastText: `Order Created Successfuly`,
+            toastType: toastStatus.INFO,
+          })
+        );
+      }
+    } catch (error) {
+      dispatch(
+        showToast({
+          toastText: `Error wile creating order: ${error}`,
+          toastType: toastStatus.ERROR,
+        })
+      );
+    }
+  };
+
+  useEffect(() => {
+    if (
+      selectedDelivery === "pickup" ||
+      selectedDelivery === "pickupLocations"
+    ) {
+      setStatus("Waiting for pick up");
+    } else if (selectedPayment === "paypal") {
+      setStatus("Waiting for payment");
+    } else {
+      setStatus("Waiting for delivery");
+    }
+  }, [selectedDelivery, selectedPayment]);
+
+  useEffect(() => {
+    if (cartItems.length <= 0) {
+      dispatch(
+        showToast({
+          toastText: "You need add products to cart before going to checkout",
+          toastType: toastStatus.INFO,
+        })
+      );
+      navigate("/catalog/?sort=newest&page=1");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <Layout>
       <Helmet>
@@ -17,24 +237,68 @@ const CheckoutPage: React.FC = () => {
       />
       <h3>Checkout</h3>
       <section className={styles["checkout"]}>
-        <section className={styles["checkout__wrapper"]}>
+        <form
+          onSubmit={handleSubmit}
+          className={styles["checkout__wrapper"]}
+          action="/submit"
+          method="post"
+        >
           <div className={styles["address"]}>
             <h4>Address</h4>
             <fieldset>
               <div className={styles["address__item"]}>
-                Country* <input type="text" placeholder="Country" />
+                Country*{" "}
+                <input
+                  type="text"
+                  name="country"
+                  placeholder="Country"
+                  value={address.country}
+                  onChange={handleAdressChange}
+                  required
+                />
               </div>
               <div className={styles["address__item"]}>
-                City* <input type="text" placeholder="City" />
+                City*{" "}
+                <input
+                  type="text"
+                  name="city"
+                  placeholder="City"
+                  value={address.city}
+                  onChange={handleAdressChange}
+                  required
+                />
               </div>
               <div className={styles["address__item"]}>
-                Street* <input type="text" placeholder="Street" />
+                Street*{" "}
+                <input
+                  type="text"
+                  name="street"
+                  placeholder="Street"
+                  value={address.street}
+                  onChange={handleAdressChange}
+                  required
+                />
               </div>
               <div className={styles["address__item"]}>
-                House* <input type="text" placeholder="House" />
+                House*{" "}
+                <input
+                  type="text"
+                  name="house"
+                  placeholder="House"
+                  value={address.house}
+                  onChange={handleAdressChange}
+                  required
+                />
               </div>
               <div className={styles["address__item"]}>
-                Flat <input type="text" placeholder="Flat" />
+                Flat{" "}
+                <input
+                  type="text"
+                  name="flat"
+                  placeholder="Flat"
+                  value={address.flat}
+                  onChange={handleAdressChange}
+                />
               </div>
             </fieldset>
             <p className={styles["warning"]}>* Required fields</p>
@@ -63,7 +327,12 @@ const CheckoutPage: React.FC = () => {
                   <b>Pickup from the store</b>
                   <p>Free, today</p>
                 </div>
-                <input type="checkbox" id="delivery-1" />
+                <input
+                  type="checkbox"
+                  id="delivery-1"
+                  checked={selectedDelivery === "pickup"}
+                  onChange={() => handleDeliveryChange("pickup")}
+                />
                 <label htmlFor="delivery-1"></label>
               </div>
               <div className={styles["delivery__item"]}>
@@ -81,9 +350,14 @@ const CheckoutPage: React.FC = () => {
                 </svg>
                 <div>
                   <b>Pickup from 761 locations</b>
-                  <p>From $10, 1 day</p>
+                  <p>Free, 1 day</p>
                 </div>
-                <input type="checkbox" id="delivery-2" />
+                <input
+                  type="checkbox"
+                  id="delivery-2"
+                  checked={selectedDelivery === "pickupLocations"}
+                  onChange={() => handleDeliveryChange("pickupLocations")}
+                />{" "}
                 <label htmlFor="delivery-2"></label>
               </div>
               <div className={styles["delivery__item"]}>
@@ -111,7 +385,12 @@ const CheckoutPage: React.FC = () => {
                   <b>Express delivery</b>
                   <p>From $12, 1 day</p>
                 </div>
-                <input type="checkbox" id="delivery-3" />
+                <input
+                  type="checkbox"
+                  id="delivery-3"
+                  checked={selectedDelivery === "expressDelivery"}
+                  onChange={() => handleDeliveryChange("expressDelivery")}
+                />{" "}
                 <label htmlFor="delivery-3"></label>
               </div>
               <div className={styles["delivery__item"]}>
@@ -141,12 +420,16 @@ const CheckoutPage: React.FC = () => {
                     </clipPath>
                   </defs>
                 </svg>
-
                 <div>
                   <b>Mail delivery</b>
-                  <p>From $12, from 3 days</p>
+                  <p>From $5, from 3 days</p>
                 </div>
-                <input type="checkbox" id="delivery-4" />
+                <input
+                  type="checkbox"
+                  id="delivery-4"
+                  checked={selectedDelivery === "mailDelivery"}
+                  onChange={() => handleDeliveryChange("mailDelivery")}
+                />{" "}
                 <label htmlFor="delivery-4"></label>
               </div>
             </div>
@@ -175,7 +458,12 @@ const CheckoutPage: React.FC = () => {
                   <b>Payment by card</b>
                   <p>PayPal</p>
                 </div>
-                <input type="checkbox" id="payment-1" />
+                <input
+                  type="checkbox"
+                  id="payment-1"
+                  checked={selectedPayment === "paypal"}
+                  onChange={() => handlePaymentChange("paypal")}
+                />
                 <label htmlFor="payment-1"></label>
               </div>
               <div className={styles["payment__item"]}>
@@ -207,7 +495,12 @@ const CheckoutPage: React.FC = () => {
                   <b>Cash payment</b>
                   <p>To the courier upon receipt</p>
                 </div>
-                <input type="checkbox" id="payment-2" />
+                <input
+                  type="checkbox"
+                  id="payment-2"
+                  checked={selectedPayment === "cash"}
+                  onChange={() => handlePaymentChange("cash")}
+                />
                 <label htmlFor="payment-2"></label>
               </div>
             </div>
@@ -216,20 +509,48 @@ const CheckoutPage: React.FC = () => {
             <h4>Contact details</h4>
             <fieldset>
               <div className={styles["contact__item"]}>
-                Name* <input type="text" placeholder="Name" />
-              </div>
-              <div className={styles["contact__item"]}>
-                Surname* <input type="text" placeholder="Surname" />
-              </div>
-              <div className={styles["contact__item"]}>
-                E-mail* <input type="email" placeholder="E-mail" />
-              </div>
-              <div className={styles["contact__item"]}>
-                Phone*
+                Name*{" "}
                 <input
                   type="text"
+                  name="name"
+                  placeholder="Name"
+                  value={contactData.name}
+                  onChange={handleContactChange}
+                  required
+                />
+              </div>
+              <div className={styles["contact__item"]}>
+                Surname*{" "}
+                <input
+                  type="text"
+                  name="surname"
+                  placeholder="Surname"
+                  value={contactData.surname}
+                  onChange={handleContactChange}
+                  required
+                />
+              </div>
+              <div className={styles["contact__item"]}>
+                E-mail*{" "}
+                <input
+                  type="email"
+                  name="email"
+                  placeholder="E-mail"
+                  value={contactData.email}
+                  onChange={handleContactChange}
+                  required
+                />
+              </div>
+              <div className={styles["contact__item"]}>
+                Phone*{" "}
+                <input
+                  type="text"
+                  name="phone"
                   pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
                   placeholder="___-___-____"
+                  value={contactData.phone}
+                  onChange={handleContactChange}
+                  required
                 />
               </div>
             </fieldset>
@@ -237,14 +558,24 @@ const CheckoutPage: React.FC = () => {
           </div>
           <div className={styles["agreements"]}>
             <div>
-              <input type="checkbox" id="agreement-1" />
+              <input
+                type="checkbox"
+                id="agreement-1"
+                checked={isPublicOffer}
+                onChange={handlePublicOffer}
+              />
               <label htmlFor="agreement-1">
                 I have read and agree with the provisions of the{" "}
                 <u>Public Offer</u>
               </label>
             </div>
             <div>
-              <input type="checkbox" id="agreement-2" />
+              <input
+                type="checkbox"
+                id="agreement-2"
+                checked={isPersonalData}
+                onChange={handlePersonalData}
+              />
               <label htmlFor="agreement-2">
                 I agree to the <u>processing of personal data</u>
               </label>
@@ -254,44 +585,84 @@ const CheckoutPage: React.FC = () => {
             <h4>Total</h4>
             <div className={styles["results__wrapper"]}>
               <div>
-                <p>Order price</p> <b>$12</b>
+                <p>Order price</p> <b>${totalPrice}</b>
+              </div>
+              {userDiscount > 0 && (
+                <div>
+                  <p>Loyality discount</p> <b>{userDiscount}%</b>
+                </div>
+              )}
+              {isPromoActive && (
+                <div>
+                  <p>Discount from promocode</p> <b>{promo?.discount}%</b>
+                </div>
+              )}
+              <div>
+                <p>Order price with discount</p>{" "}
+                <b>
+                  $
+                  {(
+                    Number(totalPrice) -
+                    (Number(totalPrice) / 100) * (promo?.discount ?? 0) -
+                    (Number(totalPrice) / 100) * (userDiscount ?? 0)
+                  ).toFixed(2)}
+                </b>
               </div>
               <div>
-                <p>Cost of delivery</p> <b>$10</b>
+                <p>Cost of delivery</p> <b>${deliveryCost}</b>
               </div>
               <div>
-                <p>Amount of discount</p> <b>$0</b>
-              </div>
-              <div>
-                <p>Amount of discount from promocode</p> <b>$0</b>
-              </div>
-              <div>
-                <p>Amount to be paid</p> <b className={styles["total"]}>$22</b>
+                <p>Amount to be paid</p>{" "}
+                <b className={styles["total"]}>
+                  $
+                  {(
+                    Number(totalPrice) -
+                    (Number(totalPrice) / 100) * (promo?.discount ?? 0) -
+                    (Number(totalPrice) / 100) * (userDiscount ?? 0) +
+                    deliveryCost
+                  ).toFixed(2)}
+                </b>
               </div>
             </div>
           </div>
           <div className={styles["btn"]}>
-            <Button to="/profile/orders/123" text="Pay" type="active" />
+            <button type="submit" className={styles["active-btn"]}>
+              Checkout
+            </button>
           </div>
-        </section>
+        </form>
         <div className={styles["checkout__total"]}>
           <p className={styles["total"]}>
-            There are 3 items in the cart worth $243:
+            There are {cartItems.length} items in the cart worth ${totalPrice}:
           </p>
-          <div className={styles["total__item"]}>
-            <p className={styles["name"]}>Vampire Munchkin</p>
-            <p>
-              2 pcs. <span>$12</span>
-            </p>
-          </div>
-          <div className={styles["total__item"]}>
-            <p className={styles["name"]}>
-              Warhammer 40,000:Craftworlds Farseer
-            </p>
-            <p>
-              1 pcs. <span>$12</span>
-            </p>
-          </div>
+          {cartItems.map((item) => (
+            <div className={styles["total__item"]} key={item._id}>
+              <p className={styles["name"]}>{item.title}</p>
+              <p>
+                {item.quantity} pcs.{" "}
+                <span>
+                  $
+                  {(
+                    item.price -
+                    (item.price / 100) * (item?.discount ?? 0)
+                  ).toFixed(2)}{" "}
+                  each
+                </span>
+                <span>
+                  $
+                  {(
+                    Number(
+                      (
+                        item.price -
+                        (item.price / 100) * (item?.discount ?? 0)
+                      ).toFixed(2)
+                    ) * (item?.quantity ?? 1)
+                  ).toFixed(2)}{" "}
+                  in total
+                </span>
+              </p>
+            </div>
+          ))}
         </div>
       </section>
     </Layout>

@@ -1,3 +1,9 @@
+export enum Status {
+  LOADING = "loading",
+  ERROR = "error",
+  SUCCESS = "success",
+}
+
 export interface IGame {
   _id: string;
   title: string;
@@ -17,4 +23,79 @@ export interface IGame {
 export interface IGameAll {
   games: IGame[];
   gameCount: number;
+}
+
+export type TUser = {
+  _id: string;
+  name: string;
+  email: string;
+  password: string;
+  isAdmin: boolean;
+  isAuthor: boolean;
+  experience: number;
+  token: string;
+  image?: string;
+};
+
+export type TUserAdress = {
+  country: string;
+  city: string;
+  street: string;
+  house: string;
+  flat: string;
+};
+
+export type TUserContact = {
+  name: string;
+  surname: string;
+  email: string;
+  phone: string;
+};
+export interface IUserOrder {
+  address: TUserAdress;
+  contact: TUserContact;
+  paymentMethod: string;
+  deliveryMethod: string;
+}
+
+export interface IOrder {
+  _id: string;
+  orderItems: IGame[];
+  address: TUserAdress;
+  contact: TUserContact;
+  paymentMethod: string;
+  deliveryMethod: string;
+  itemsPrice: number;
+  deliveryPrice: number;
+  totalPrice: number;
+  userDiscount: number;
+  user: string;
+  status: string;
+  isPaid: boolean;
+  paidAt?: string;
+  isDelivered: boolean;
+  deliveredAt?: string;
+  paymentResult?: {
+    id: string;
+    status: string;
+    update_time: string;
+    email_address: string;
+  };
+  createdAt: string;
+}
+
+export interface IPromoCode {
+  _id: string;
+  code: string;
+  discount: number;
+  expiresAt: string;
+  isActive: boolean;
+}
+
+export interface DateTimeFormatOptions {
+  year?: "numeric" | "2-digit";
+  month?: "numeric" | "2-digit" | "long" | "short" | "narrow";
+  day?: "numeric" | "2-digit";
+  hour?: "numeric" | "2-digit";
+  minute?: "numeric" | "2-digit";
 }

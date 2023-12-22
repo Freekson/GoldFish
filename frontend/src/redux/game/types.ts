@@ -1,3 +1,5 @@
+import { Status } from "../../types";
+
 export interface IGame {
   _id: string;
   title: string;
@@ -16,12 +18,6 @@ export interface IGame {
 export interface IGameAll {
   games: IGame[];
   gameCount?: number;
-}
-
-export enum Status {
-  LOADING = "loading",
-  ERROR = "error",
-  SUCCESS = "success",
 }
 
 export interface gameState {
