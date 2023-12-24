@@ -399,7 +399,7 @@ const MainPage: React.FC = () => {
               <fieldset className={styles["contact__fieldset"]}>
                 <label htmlFor="comment">Your comment:</label> <br />
                 <textarea
-                  className={styles["contact__texarea"]}
+                  className={styles["contact__textarea"]}
                   id="comment"
                   name="user_comment"
                   rows={4}

@@ -12,6 +12,8 @@ import CheckoutPage from "./pages/CheckoutPage";
 import ProfilePage from "./pages/ProfilePage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import WishlistPage from "./pages/WishlistPage";
+import SettingPage from "./pages/SettingsPage";
+import ContactPage from "./pages/ContactPage";
 
 function App() {
   return (
@@ -25,6 +27,7 @@ function App() {
         <Route path="/profile/orders/:id" element={<OrderTrackPage />}></Route>
         <Route path="/login" element={<LoginPage />}></Route>
         <Route path="/register" element={<RegisterPage />}></Route>
+        <Route path="/contact" element={<ContactPage />}></Route>
         <Route
           path="/checkout"
           element={
@@ -54,6 +57,14 @@ function App() {
           element={
             <ProtectedRoute>
               <WishlistPage />
+            </ProtectedRoute>
+          }
+        ></Route>
+        <Route
+          path="/profile/settings"
+          element={
+            <ProtectedRoute>
+              <SettingPage />
             </ProtectedRoute>
           }
         ></Route>
