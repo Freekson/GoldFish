@@ -50,10 +50,10 @@ const Footer: React.FC = () => {
                 <a href="#2">Blog</a>
               </li>
               <li>
-                <a href="#3">About us</a>
+                <Link to="/about-us">About us</Link>
               </li>
               <li>
-                <a href="#4">Contacts</a>
+                <Link to="/contact">Contacts</Link>
               </li>
             </ul>
           </li>

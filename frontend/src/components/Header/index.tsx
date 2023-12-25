@@ -272,18 +272,18 @@ const Header: React.FC = () => {
                   </li>
                   <li>
                     <Link
-                      to="/profile/orders"
-                      onClick={() => setIsProfileActive(false)}
-                    >
-                      Orders
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
                       to="/profile/wishlist"
                       onClick={() => setIsProfileActive(false)}
                     >
                       Wishlist
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="/profile/orders"
+                      onClick={() => setIsProfileActive(false)}
+                    >
+                      Orders
                     </Link>
                   </li>
                   <li>
@@ -366,7 +366,7 @@ const Header: React.FC = () => {
               <Link to="/about-us">About us</Link>
             </li>
             <li>
-              <a href="#contct">Contacts</a>
+              <Link to="/contact">Contacts</Link>
             </li>
             <li className={styles.icons}>
               <a href="#insta">
@@ -546,7 +546,7 @@ const Header: React.FC = () => {
               </Link>
             </li>
             <li>
-              <a href="5">
+              <Link to="/contact">
                 Contacts
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -557,7 +557,7 @@ const Header: React.FC = () => {
                 >
                   <path d="M0 12L5 7L0 2L1 0L8 7L1 14L0 12Z" fill="#C8C5C3" />
                 </svg>
-              </a>
+              </Link>
             </li>
           </ul>
         </div>

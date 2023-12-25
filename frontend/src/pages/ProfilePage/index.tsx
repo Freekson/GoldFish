@@ -14,12 +14,15 @@ import { Status } from "../../types";
 import MessageBox, { MessageTypes } from "../../components/MessageBox";
 import GameCard from "../../components/GameCard";
 import { fetchWishlist } from "../../redux/wishlist/slice";
+import GameCardSkeleton from "../../components/GameCard/GameCardSkeleton";
 
 const ProfilePage: React.FC = () => {
   const dispatch = useAppDispatch();
   const { userData } = useSelector((state: RootState) => state.user);
   const { lastOrders, status } = useSelector((state: RootState) => state.order);
-  const { items } = useSelector((state: RootState) => state.wishlist);
+  const { items, status: wishlistStatus } = useSelector(
+    (state: RootState) => state.wishlist
+  );
 
   const [currentLevel, setCurrentLevel] = useState(0);
 
@@ -204,14 +207,26 @@ const ProfilePage: React.FC = () => {
         <div className={styles["user__wishlist"]}>
           <Link to="/profile/wishlist">My wishlist</Link>
           <div className={styles["wishlist__wrapper"]}>
-            {items.slice(0, 4).map((item) => (
-              <GameCard
-                key={item._id}
-                game={item}
-                isDiscount={item.discount ? true : false}
-                discount={item.discount}
+            {wishlistStatus === Status.ERROR ? (
+              <MessageBox
+                message="An error occurred while loading games, we are working on it"
+                type={MessageTypes.DANGER}
+                customStyles={{ marginTop: "1rem" }}
               />
-            ))}
+            ) : wishlistStatus === Status.LOADING ? (
+              <GameCardSkeleton items={4} />
+            ) : (
+              items
+                .slice(0, 4)
+                .map((item) => (
+                  <GameCard
+                    key={item._id}
+                    game={item}
+                    isDiscount={item.discount ? true : false}
+                    discount={item.discount}
+                  />
+                ))
+            )}
           </div>
         </div>
         <div className={styles["user__events"]}>
