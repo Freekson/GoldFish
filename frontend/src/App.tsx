@@ -14,6 +14,8 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import WishlistPage from "./pages/WishlistPage";
 import SettingPage from "./pages/SettingsPage";
 import ContactPage from "./pages/ContactPage";
+import ChangePasswordPage from "./pages/ChangePasswordPage";
+import ChangeProfileDataPage from "./pages/ChangeProfileDataPage";
 
 function App() {
   return (
@@ -65,6 +67,22 @@ function App() {
           element={
             <ProtectedRoute>
               <SettingPage />
+            </ProtectedRoute>
+          }
+        ></Route>
+        <Route
+          path="/profile/settings/change-password"
+          element={
+            <ProtectedRoute>
+              <ChangePasswordPage />
+            </ProtectedRoute>
+          }
+        ></Route>
+        <Route
+          path="/profile/settings/change-profile-data"
+          element={
+            <ProtectedRoute>
+              <ChangeProfileDataPage />
             </ProtectedRoute>
           }
         ></Route>
