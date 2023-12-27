@@ -30,10 +30,10 @@ const SettingPage: React.FC = () => {
               <Link to="/">Change profile image</Link>
             </li>
             <li>
-              <Link to="/">Change profile data</Link>
+              <Link to="./change-profile-data">Change profile data</Link>
             </li>
             <li>
-              <Link to="/">Change profile password</Link>
+              <Link to="./change-password">Change password</Link>
             </li>
             <li>
               <Link to="/contact">Feedback</Link>

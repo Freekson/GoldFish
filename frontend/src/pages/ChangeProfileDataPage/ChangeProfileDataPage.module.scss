@@ -1,26 +1,16 @@
-.contact {
+.form {
   &__wrapper {
     margin-bottom: 5rem;
     display: flex;
-    justify-content: center;
+    justify-content: space-around;
   }
 
   &__form {
-    width: 80%;
+    width: 35%;
     display: flex;
     flex-direction: column;
     align-items: center;
     max-width: 1000px;
-  }
-
-  &__textarea {
-    width: 100%;
-    resize: vertical;
-    box-sizing: border-box;
-    border-radius: 9px;
-    padding: 0.8rem 1rem;
-    outline: none;
-    font-family: "Fira Sans", sans-serif;
   }
 
   &__input {
@@ -64,8 +54,24 @@
   }
 }
 
+@media (max-width: 760px) {
+  .form {
+    &__wrapper {
+      flex-direction: column;
+      align-items: center;
+    }
+    &__form {
+      width: 100%;
+    }
+    &__btn {
+      width: 80%;
+      margin-bottom: 2rem;
+    }
+  }
+}
+
 @media (max-width: 480px) {
-  .contact {
+  .form {
     &__btn {
       width: 80%;
     }
@@ -73,7 +79,7 @@
 }
 
 @media (max-width: 320px) {
-  .contact {
+  .form {
     &__btn {
       width: 100%;
     }
