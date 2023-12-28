@@ -27,7 +27,7 @@ const SettingPage: React.FC = () => {
         <aside className={styles["settings__aside"]}>
           <ul>
             <li>
-              <Link to="/">Change profile image</Link>
+              <Link to="./change-image">Change profile image</Link>
             </li>
             <li>
               <Link to="./change-profile-data">Change profile data</Link>
