@@ -8,6 +8,7 @@ import promoCodeRouter from "./routes/promoCodeRoutes.js";
 import swaggerJSDoc from "swagger-jsdoc";
 import swaggerUi from "swagger-ui-express";
 import wishListRouter from "./routes/wishListRoutes.js";
+import uploadRouter from "./routes/uploadRoutes.js";
 
 //fetch variables from .env file
 dotenv.config();
@@ -36,19 +37,18 @@ const options = {
 };
 const swaggerSpec = swaggerJSDoc(options);
 
-// Connecting Swagger UI
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-
 // Route for getting JSON-file Swagger-specification
 app.get("/swagger.json", (req, res) => {
   res.setHeader("Content-Type", "application/json");
   res.send(swaggerSpec);
 });
 
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use("/api/keys/paypal", (req, res) => {
   res.send(process.env.PAYPAL_CLIENT_ID || "sb");
 });
 
+app.use("/api/upload", uploadRouter);
 app.use("/api/games", gameRouter);
 app.use("/api/users", userRouter);
 app.use("/api/orders", orderRouter);

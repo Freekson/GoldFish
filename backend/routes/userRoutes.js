@@ -175,15 +175,28 @@ userRouter.get(
     const user = await User.findById(userId);
 
     if (user) {
-      res.send({
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-        experience: user.experience,
-        isAdmin: user.isAdmin,
-        isAuthor: user.isAuthor,
-        token: generateToken(user),
-      });
+      if (user.image) {
+        res.send({
+          _id: user._id,
+          name: user.name,
+          email: user.email,
+          experience: user.experience,
+          isAdmin: user.isAdmin,
+          isAuthor: user.isAuthor,
+          token: generateToken(user),
+          image: user.image,
+        });
+      } else {
+        res.send({
+          _id: user._id,
+          name: user.name,
+          email: user.email,
+          experience: user.experience,
+          isAdmin: user.isAdmin,
+          isAuthor: user.isAuthor,
+          token: generateToken(user),
+        });
+      }
     } else {
       res.status(404).send({ message: "User not found" });
     }
@@ -468,6 +481,72 @@ userRouter.put(
     } catch (error) {
       console.error("Error updating email:", error);
       res.status(500).send({ message: "Internal Server Error" });
+    }
+  })
+);
+
+/**
+ * @swagger
+ * /api/users/update-image:
+ *   put:
+ *     summary: Update user image
+ *     description: Update the image of the authenticated user.
+ *     tags: [User]
+ *     security:
+ *       - Bearer: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               imageUrl:
+ *                 type: string
+ *                 description: URL of the new user image.
+ *     responses:
+ *       200:
+ *         description: Successful response with updated user details.
+ *         content:
+ *           application/json:
+ *             example:
+ *               _id: "1234567890"
+ *               name: "User Name"
+ *               email: "user@example.com"
+ *               experience: 100
+ *               isAdmin: false
+ *               isAuthor: true
+ *               image: "https://example.com/new-image.jpg"
+ *               token: "jwt_token"
+ *       404:
+ *         description: User not found.
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: User not found
+ *       500:
+ *         description: Internal Server Error.
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: Internal Server Error
+ */
+
+userRouter.put(
+  "/update-image",
+  isAuth,
+  expressAsyncHandler(async (req, res) => {
+    const userId = req.user._id;
+    const { imageUrl } = req.body;
+
+    const user = await User.findById(userId);
+
+    if (user) {
+      user.image = imageUrl;
+      const updatedUser = await user.save();
+      res.send(updatedUser);
+    } else {
+      res.status(404).send({ message: "User not found" });
     }
   })
 );

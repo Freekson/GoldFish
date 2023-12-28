@@ -16,6 +16,7 @@ import SettingPage from "./pages/SettingsPage";
 import ContactPage from "./pages/ContactPage";
 import ChangePasswordPage from "./pages/ChangePasswordPage";
 import ChangeProfileDataPage from "./pages/ChangeProfileDataPage";
+import ChangeImagePage from "./pages/ChangeImagePage";
 
 function App() {
   return (
@@ -83,6 +84,14 @@ function App() {
           element={
             <ProtectedRoute>
               <ChangeProfileDataPage />
+            </ProtectedRoute>
+          }
+        ></Route>
+        <Route
+          path="/profile/settings/change-image"
+          element={
+            <ProtectedRoute>
+              <ChangeImagePage />
             </ProtectedRoute>
           }
         ></Route>
