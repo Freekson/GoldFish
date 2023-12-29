@@ -17,6 +17,9 @@ import ContactPage from "./pages/ContactPage";
 import ChangePasswordPage from "./pages/ChangePasswordPage";
 import ChangeProfileDataPage from "./pages/ChangeProfileDataPage";
 import ChangeImagePage from "./pages/ChangeImagePage";
+import CreateArticlePage from "./pages/CreateArticlePage";
+import AuthorRoute from "./components/AuthorRoute";
+import ArticlePage from "./pages/ArticlePage";
 
 function App() {
   return (
@@ -31,6 +34,10 @@ function App() {
         <Route path="/login" element={<LoginPage />}></Route>
         <Route path="/register" element={<RegisterPage />}></Route>
         <Route path="/contact" element={<ContactPage />}></Route>
+        <Route path="/blog/:id" element={<ArticlePage />}></Route>
+
+        {/* //! Protected routs */}
+
         <Route
           path="/checkout"
           element={
@@ -93,6 +100,17 @@ function App() {
             <ProtectedRoute>
               <ChangeImagePage />
             </ProtectedRoute>
+          }
+        ></Route>
+
+        {/* //! Author routs */}
+
+        <Route
+          path="/author/create"
+          element={
+            <AuthorRoute>
+              <CreateArticlePage />
+            </AuthorRoute>
           }
         ></Route>
       </Routes>

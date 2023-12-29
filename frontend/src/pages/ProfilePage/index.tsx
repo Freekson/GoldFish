@@ -15,6 +15,7 @@ import MessageBox, { MessageTypes } from "../../components/MessageBox";
 import GameCard from "../../components/GameCard";
 import { fetchWishlist } from "../../redux/wishlist/slice";
 import GameCardSkeleton from "../../components/GameCard/GameCardSkeleton";
+import OpenedCard from "../../components/OpenedCard";
 
 const ProfilePage: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -83,14 +84,28 @@ const ProfilePage: React.FC = () => {
             <p className={styles["user__status"]}>
               Status:{" "}
               <span>
-                {userData?.isAdmin
-                  ? "Admin"
-                    ? userData?.isAuthor
+                {userData?.isAuthor
+                  ? userData?.isAdmin
+                    ? "Admin"
                     : "Author"
-                  : "Standart User"}
+                  : "Standard User"}
               </span>
             </p>
           </div>
+          {userData?.isAuthor && (
+            <div className={styles["user__author"]}>
+              <OpenedCard
+                title={"Author panel"}
+                description={
+                  <>
+                    <Link to="/author/create">Create new article</Link>
+                    <Link to="/">Article management</Link>
+                    <Link to="/">Dashboard</Link>
+                  </>
+                }
+              />
+            </div>
+          )}
         </div>
         <div className={styles["user__achievements"]}>
           <h4>Loyalty card</h4>
@@ -215,6 +230,12 @@ const ProfilePage: React.FC = () => {
               />
             ) : wishlistStatus === Status.LOADING ? (
               <GameCardSkeleton items={4} />
+            ) : items.length <= 0 ? (
+              <MessageBox
+                message="Your wishlist is empty"
+                type={MessageTypes.INFO}
+                customStyles={{ marginTop: "1rem" }}
+              />
             ) : (
               items
                 .slice(0, 4)

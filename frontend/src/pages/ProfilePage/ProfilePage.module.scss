@@ -9,6 +9,7 @@
   &__info {
     display: flex;
     justify-content: space-between;
+    align-items: center;
 
     & > div {
       display: flex;
@@ -16,6 +17,7 @@
       font-size: 1.2rem;
 
       .user__status {
+        margin: 0;
         span {
           font-weight: bold;
         }
@@ -37,6 +39,26 @@
         object-fit: cover;
         user-select: none;
         pointer-events: none;
+      }
+    }
+  }
+
+  &__author {
+    display: flex;
+    flex-direction: column;
+
+    & > div {
+      padding: 0;
+
+      & > div {
+        a {
+          display: block;
+          margin: 0.75rem 0;
+
+          &:hover {
+            text-decoration: underline;
+          }
+        }
       }
     }
   }
@@ -240,6 +262,14 @@
 
 @media (max-width: 760px) {
   .user {
+    &__info {
+      flex-wrap: wrap;
+
+      .user__author {
+        width: 100%;
+        margin-top: 2rem;
+      }
+    }
     &__orders {
       display: flex;
       flex-direction: column;

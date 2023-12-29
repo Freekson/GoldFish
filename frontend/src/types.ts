@@ -82,6 +82,7 @@ export interface IOrder {
     email_address: string;
   };
   createdAt: string;
+  updatedAt: string;
 }
 
 export interface IPromoCode {
@@ -90,6 +91,18 @@ export interface IPromoCode {
   discount: number;
   expiresAt: string;
   isActive: boolean;
+}
+
+export interface IArticle {
+  _id: string;
+  title: string;
+  content: string;
+  image: string | null;
+  tags: string[];
+  author: TUser;
+  views: number;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface DateTimeFormatOptions {
