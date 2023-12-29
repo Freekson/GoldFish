@@ -33,3 +33,11 @@ export const isAuth = (req, res, next) => {
     res.status(401).send({ message: "No Token" });
   }
 };
+
+export const isAuthor = (req, res, next) => {
+  if (req.user && req.user.isAuthor) {
+    next();
+  } else {
+    res.status(401).send({ message: "You are not author" });
+  }
+};

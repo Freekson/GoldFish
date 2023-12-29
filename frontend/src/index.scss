@@ -25,6 +25,18 @@ h3 {
   margin-bottom: 2rem;
 }
 
+.editor-toolbar.fullscreen {
+  z-index: 9999;
+}
+
+.EasyMDEContainer .CodeMirror-fullscreen {
+  z-index: 9998;
+}
+
+.editor-preview-side {
+  z-index: 9999;
+}
+
 @media (max-width: 668px) {
   html {
     font-size: 12px;

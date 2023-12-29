@@ -22,16 +22,12 @@ const ChangeImagePage: React.FC = () => {
       bodyFormData.append("file", file);
       try {
         setIsLoading(true);
-        const { data } = await axios.post(
-          "/api/upload/update-profile-image",
-          bodyFormData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-              Authorization: `Bearer ${userData?.token}`,
-            },
-          }
-        );
+        const { data } = await axios.post("/api/upload/image", bodyFormData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${userData?.token}`,
+          },
+        });
         setIsLoading(false);
         setImage(data.secure_url);
         console.log(data.secure_url);
