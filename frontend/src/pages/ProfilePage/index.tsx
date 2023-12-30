@@ -99,7 +99,7 @@ const ProfilePage: React.FC = () => {
                 description={
                   <>
                     <Link to="/author/create">Create new article</Link>
-                    <Link to="/">Article management</Link>
+                    <Link to="/author/management">Article management</Link>
                     <Link to="/">Dashboard</Link>
                   </>
                 }

@@ -5,7 +5,9 @@ import { articleState } from "./types";
 
 const initialState: articleState = {
   article: null,
+  articles: [],
   status: Status.LOADING,
+  statusAll: Status.LOADING,
 };
 
 export const fetchArticle = createAsyncThunk<IArticle, { id: string }>(
@@ -15,6 +17,16 @@ export const fetchArticle = createAsyncThunk<IArticle, { id: string }>(
     return data;
   }
 );
+
+export const fetchAuthorArticles = createAsyncThunk<
+  IArticle[],
+  { token: string }
+>("article/fetchAuthorArticles", async ({ token }) => {
+  const { data } = await axios.get<IArticle[]>(`/api/article/author-articles`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return data;
+});
 
 const articleSlice = createSlice({
   name: "article",
@@ -32,6 +44,19 @@ const articleSlice = createSlice({
     builder.addCase(fetchArticle.rejected, (state) => {
       state.article = null;
       state.status = Status.ERROR;
+    });
+
+    builder.addCase(fetchAuthorArticles.pending, (state) => {
+      state.articles = [];
+      state.statusAll = Status.LOADING;
+    });
+    builder.addCase(fetchAuthorArticles.fulfilled, (state, action) => {
+      state.articles = action.payload;
+      state.statusAll = Status.SUCCESS;
+    });
+    builder.addCase(fetchAuthorArticles.rejected, (state) => {
+      state.articles = [];
+      state.statusAll = Status.ERROR;
     });
   },
 });

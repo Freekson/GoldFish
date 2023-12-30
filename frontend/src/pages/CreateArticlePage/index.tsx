@@ -67,7 +67,6 @@ const CreateArticlePage: React.FC = () => {
         });
         setIsLoading(false);
         setImage(data.secure_url);
-        console.log(data.secure_url);
         toast.success("Image uploaded successfuly");
       } catch (err) {
         setIsLoading(false);

@@ -20,6 +20,8 @@ import ChangeImagePage from "./pages/ChangeImagePage";
 import CreateArticlePage from "./pages/CreateArticlePage";
 import AuthorRoute from "./components/AuthorRoute";
 import ArticlePage from "./pages/ArticlePage";
+import ManageArticlePage from "./pages/ManageArticlePage";
+import UpdateArticlePage from "./pages/UpdateArticlePage";
 
 function App() {
   return (
@@ -110,6 +112,22 @@ function App() {
           element={
             <AuthorRoute>
               <CreateArticlePage />
+            </AuthorRoute>
+          }
+        ></Route>
+        <Route
+          path="/author/management"
+          element={
+            <AuthorRoute>
+              <ManageArticlePage />
+            </AuthorRoute>
+          }
+        ></Route>
+        <Route
+          path="/author/update/:id"
+          element={
+            <AuthorRoute>
+              <UpdateArticlePage />
             </AuthorRoute>
           }
         ></Route>
