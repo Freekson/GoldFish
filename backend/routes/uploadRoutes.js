@@ -64,24 +64,32 @@ const uploadRouter = express.Router();
  */
 
 uploadRouter.post("/image", isAuth, upload.single("file"), async (req, res) => {
-  cloudinary.config({
-    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-    api_key: process.env.CLOUDINARY_API_KEY,
-    api_secret: process.env.CLOUDINARY_API_SECRET,
-  });
-  const streamUpload = (req) => {
-    return new Promise((resolve, reject) => {
-      const stream = cloudinary.uploader.upload_stream((error, result) => {
-        if (result) {
-          resolve(result);
-        } else {
-          reject(error);
-        }
-      });
-      streamifier.createReadStream(req.file.buffer).pipe(stream);
+  try {
+    cloudinary.config({
+      cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+      api_key: process.env.CLOUDINARY_API_KEY,
+      api_secret: process.env.CLOUDINARY_API_SECRET,
     });
-  };
-  const result = await streamUpload(req);
-  res.send(result);
+
+    const streamUpload = (req) => {
+      return new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream((error, result) => {
+          if (result) {
+            resolve(result);
+          } else {
+            reject(error);
+          }
+        });
+        streamifier.createReadStream(req.file.buffer).pipe(stream);
+      });
+    };
+
+    const result = await streamUpload(req);
+    res.send(result);
+  } catch (error) {
+    console.error("Error in image upload:", error);
+    res.status(500).send("Internal Server Error");
+  }
 });
+
 export default uploadRouter;

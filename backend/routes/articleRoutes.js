@@ -27,11 +27,29 @@ articleRouter.post(
 );
 
 articleRouter.get(
+  "/author-articles",
+  isAuth,
+  isAuthor,
+  expressAsyncHandler(async (req, res) => {
+    const userId = req.user._id;
+    try {
+      const articles = await Article.find({ author: userId }).sort({
+        createdAt: -1,
+      });
+      res.status(200).json(articles);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Internal Server Error" });
+    }
+  })
+);
+
+articleRouter.get(
   "/:id",
   expressAsyncHandler(async (req, res) => {
-    const articleId = req.params.id;
+    const id = req.params.id;
 
-    const article = await Article.findById(articleId);
+    const article = await Article.findById(id);
 
     if (article) {
       article.views += 1;
@@ -55,6 +73,73 @@ articleRouter.get(
       }
     } else {
       res.status(404).json({ message: "Article not found" });
+    }
+  })
+);
+
+articleRouter.delete(
+  "/:id",
+  isAuth,
+  isAuthor,
+  expressAsyncHandler(async (req, res) => {
+    const id = req.params.id;
+
+    try {
+      const article = await Article.findById(id);
+      if (!article) {
+        return res.status(404).json({ message: "Article not found" });
+      }
+
+      if (article.author.toString() !== req.user._id.toString()) {
+        return res
+          .status(403)
+          .json({ message: "Unauthorized to delete this article" });
+      }
+
+      await Article.deleteOne({ _id: id });
+      res.status(200).json({ message: "Article deleted successfully" });
+    } catch (error) {
+      console.error(error);
+      res
+        .status(500)
+        .json({ message: "Internal Server Error", error: error.message });
+    }
+  })
+);
+
+articleRouter.put(
+  "/:id",
+  isAuth,
+  isAuthor,
+  expressAsyncHandler(async (req, res) => {
+    const id = req.params.id;
+    const { title, content, tags, image } = req.body;
+
+    try {
+      const article = await Article.findById(id);
+      if (!article) {
+        return res.status(404).json({ message: "Article not found" });
+      }
+
+      if (article.author.toString() !== req.user._id.toString()) {
+        return res
+          .status(403)
+          .json({ message: "Unauthorized to update this article" });
+      }
+
+      article.title = title;
+      article.content = content;
+      article.tags = tags;
+      article.image = image;
+
+      const updatedArticle = await article.save();
+
+      res.status(200).json(updatedArticle);
+    } catch (error) {
+      console.error(error);
+      res
+        .status(500)
+        .json({ message: "Internal Server Error", error: error.message });
     }
   })
 );
