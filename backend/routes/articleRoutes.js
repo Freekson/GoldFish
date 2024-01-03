@@ -69,7 +69,7 @@ articleRouter.get(
 
         res.status(200).json(articleWithAuthor);
       } else {
-        res.status(404).json({ message: "Author nor found" });
+        res.status(404).json({ message: "Author not found" });
       }
     } else {
       res.status(404).json({ message: "Article not found" });
@@ -140,6 +140,56 @@ articleRouter.put(
       res
         .status(500)
         .json({ message: "Internal Server Error", error: error.message });
+    }
+  })
+);
+
+articleRouter.post(
+  "/like/:id",
+  isAuth,
+  expressAsyncHandler(async (req, res) => {
+    const articleId = req.params.id;
+    const { userId } = req.body;
+
+    const article = await Article.findById(articleId);
+
+    if (article) {
+      if (article.dislikedBy.includes(userId)) {
+        article.dislikedBy.pull(userId);
+      }
+
+      if (!article.likedBy.includes(userId)) {
+        article.likedBy.push(userId);
+      }
+
+      await article.save();
+      res.status(200).json({ message: "User liked the article", article });
+    } else {
+      res.status(404).json({ message: "Article not found" });
+    }
+  })
+);
+
+articleRouter.post(
+  "/dislike/:id",
+  isAuth,
+  expressAsyncHandler(async (req, res) => {
+    const articleId = req.params.id;
+    const { userId } = req.body;
+
+    const article = await Article.findById(articleId);
+
+    if (article) {
+      if (article.likedBy.includes(userId)) {
+        article.likedBy.pull(userId);
+      }
+      if (!article.dislikedBy.includes(userId)) {
+        article.dislikedBy.push(userId);
+      }
+      await article.save();
+      res.status(200).json({ message: "User disliked the article", article });
+    } else {
+      res.status(404).json({ message: "Article not found" });
     }
   })
 );

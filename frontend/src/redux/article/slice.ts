@@ -31,7 +31,11 @@ export const fetchAuthorArticles = createAsyncThunk<
 const articleSlice = createSlice({
   name: "article",
   initialState,
-  reducers: {},
+  reducers: {
+    setStatus(state, action) {
+      state.status = action.payload;
+    },
+  },
   extraReducers: (builder) => {
     builder.addCase(fetchArticle.pending, (state) => {
       state.article = null;
@@ -60,4 +64,5 @@ const articleSlice = createSlice({
     });
   },
 });
+export const { setStatus } = articleSlice.actions;
 export default articleSlice.reducer;

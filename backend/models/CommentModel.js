@@ -1,20 +1,17 @@
 import mongoose from "mongoose";
 
-const articleSchema = new mongoose.Schema(
+const commentSchema = new mongoose.Schema(
   {
-    title: { type: String, required: true },
     content: { type: String, required: true },
-    image: { type: String, required: true },
-    tags: [{ type: String }],
     author: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },
-    views: { type: Number, default: 0 },
     likedBy: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
     dislikedBy: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
-    comments: [{ type: mongoose.Schema.Types.ObjectId, ref: "Comment" }],
+    reportedBy: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+    replies: [{ type: mongoose.Schema.Types.ObjectId, ref: "Reply" }],
     createdAt: { type: Date, default: Date.now, required: true },
     updatedAt: { type: Date, default: null },
   },
@@ -23,5 +20,5 @@ const articleSchema = new mongoose.Schema(
   }
 );
 
-const Article = mongoose.model("Article", articleSchema);
-export default Article;
+const Comment = mongoose.model("Comment", commentSchema);
+export default Comment;
