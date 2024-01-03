@@ -10,6 +10,7 @@ import swaggerUi from "swagger-ui-express";
 import wishListRouter from "./routes/wishListRoutes.js";
 import uploadRouter from "./routes/uploadRoutes.js";
 import articleRouter from "./routes/articleRoutes.js";
+import commentRouter from "./routes/commentRoutes.js";
 
 //fetch variables from .env file
 dotenv.config();
@@ -56,6 +57,7 @@ app.use("/api/orders", orderRouter);
 app.use("/api/promocodes", promoCodeRouter);
 app.use("/api/wishlist", wishListRouter);
 app.use("/api/article", articleRouter);
+app.use("/api/comments", commentRouter);
 
 app.use((err, req, res, next) => {
   res.status(500).send({ message: err.message });

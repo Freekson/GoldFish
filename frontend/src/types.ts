@@ -101,6 +101,9 @@ export interface IArticle {
   tags: string[];
   author: TUser;
   views: number;
+  likedBy: string[];
+  dislikedBy: string[];
+  comments: string[];
   createdAt: string;
   updatedAt: string;
 }
