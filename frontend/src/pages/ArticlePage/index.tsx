@@ -17,16 +17,28 @@ import { toast } from "react-toastify";
 import axios from "axios";
 import WriteComment from "../../components/WriteComment";
 import Comment from "../../components/Comment";
+import { fetchComments } from "../../redux/comment/slice";
 
 const ArticlePage: React.FC = () => {
   const dispatch = useAppDispatch();
   const { id } = useParams();
   const { article, status } = useSelector((state: RootState) => state.article);
+  const { comments, status: commentStatus } = useSelector(
+    (state: RootState) => state.comment
+  );
+
   const { userData } = useSelector((state: RootState) => state.user);
 
   useEffect(() => {
     const fetchData = async () => {
       id && dispatch(fetchArticle({ id }));
+    };
+    fetchData();
+  }, [dispatch, id]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      id && dispatch(fetchComments({ id }));
     };
     fetchData();
   }, [dispatch, id]);
@@ -133,9 +145,38 @@ const ArticlePage: React.FC = () => {
           ) : (
             <WriteComment />
           )}
-          <h3>Comments</h3>
-          <Comment />
-          <Comment isCommentReply={true} />
+          {commentStatus === Status.LOADING ? (
+            <Skeleton height={300} style={{ marginTop: "5rem" }} />
+          ) : commentStatus === Status.SUCCESS ? (
+            (comments?.length || 0) > 0 && (
+              <>
+                <h3>Comments</h3>
+                {comments?.map((com) => (
+                  <div key={com._id} style={{ margin: "2rem 0" }}>
+                    <Comment comment={com} />
+                    {com.replies && com.replies.length > 0 && (
+                      <>
+                        {com.replies.map((reply) => (
+                          <Comment
+                            isCommentReply
+                            comment={reply}
+                            parentComment={com._id}
+                            key={reply._id}
+                          />
+                        ))}
+                      </>
+                    )}
+                  </div>
+                ))}
+              </>
+            )
+          ) : (
+            <MessageBox
+              message="We can't fetch comments for this article 😕"
+              type={MessageTypes.DANGER}
+              customStyles={{ marginTop: "1rem" }}
+            />
+          )}
         </section>
         {status !== Status.ERROR && (
           <aside className={styles["article__aside"]}>
@@ -144,7 +185,7 @@ const ArticlePage: React.FC = () => {
             ) : status === Status.SUCCESS ? (
               <>
                 <img
-                  src="/img/user-photo.png"
+                  src={`${article?.author.image || "/img/user-photo.png"}`}
                   alt="user"
                   className={styles["user-image"]}
                 />

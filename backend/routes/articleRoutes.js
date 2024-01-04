@@ -64,6 +64,7 @@ articleRouter.get(
             _id: author._id,
             name: author.name,
             email: author.email,
+            image: author.image,
           },
         };
 

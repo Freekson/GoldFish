@@ -108,6 +108,31 @@ export interface IArticle {
   updatedAt: string;
 }
 
+export type TReply = {
+  _id: string;
+  content: string;
+  author: TUser;
+  likedBy: string[];
+  dislikedBy: string[];
+  reportedBy: string[];
+  parentComment: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export interface IComment {
+  _id: string;
+  content: string;
+  author: TUser;
+  likedBy: string[];
+  dislikedBy: string[];
+  reportedBy: string[];
+  replies?: TReply[];
+  articleId: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface DateTimeFormatOptions {
   year?: "numeric" | "2-digit";
   month?: "numeric" | "2-digit" | "long" | "short" | "narrow";
