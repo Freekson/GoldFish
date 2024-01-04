@@ -9,6 +9,7 @@ import orderReducer from "./order/slice";
 import promoCodeReducer from "./promocode/slice";
 import wishlistReducer from "./wishlist/slice";
 import articleReducer from "./article/slice";
+import commentReducer from "./comment/slice";
 
 import { useDispatch } from "react-redux";
 
@@ -24,6 +25,7 @@ export const store = configureStore({
     promoCode: promoCodeReducer,
     wishlist: wishlistReducer,
     article: articleReducer,
+    comment: commentReducer,
   },
 });
 

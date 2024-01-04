@@ -31,6 +31,7 @@
       height: 75px;
       border-radius: 50%;
       pointer-events: none;
+      object-fit: cover;
     }
   }
 
@@ -91,7 +92,7 @@
   }
 }
 
-@media (max-width: 1200px) {
+@media (max-width: 1300px) {
   .article {
     &__wrapper {
       flex-wrap: wrap;

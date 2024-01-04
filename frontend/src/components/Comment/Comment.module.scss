@@ -1,15 +1,26 @@
 .comment {
   display: flex;
 
+  &__content {
+    width: 100%;
+  }
+
   &__image {
-    margin-right: 2rem;
-    padding-top: 2rem;
+    margin-right: 1rem;
+    width: 75px;
+    height: 75px;
+    display: inline-block;
+    border-radius: 50%;
+    pointer-events: none;
 
     img {
       width: 75px;
       height: 75px;
-      border-radius: 50%;
+      object-fit: cover;
+      -webkit-user-select: none;
+      user-select: none;
       pointer-events: none;
+      border-radius: 50%;
     }
   }
 
@@ -88,6 +99,22 @@
         }
       }
     }
+
+    .btn_right {
+      display: flex;
+      .functional {
+        display: flex;
+        align-items: flex-start;
+
+        .trash {
+          margin-left: 1rem;
+        }
+        svg {
+          fill: gray;
+          margin-right: 0.3rem;
+        }
+      }
+    }
   }
   &__content {
     form {
@@ -146,6 +173,7 @@
 
 .comment-reply {
   margin-left: 7rem;
+  margin-top: 1rem;
 }
 
 @media (max-width: 992px) {
