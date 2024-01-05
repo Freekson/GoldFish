@@ -1,10 +1,107 @@
 import express from "express";
-import { isAuth } from "../utils.js";
+import { isAuth, isAuthor } from "../utils.js";
+import mongoose from "mongoose";
 import expressAsyncHandler from "express-async-handler";
 import Article from "../models/ArticleModel.js";
 import Comment from "../models/CommentModel.js";
+import Reply from "../models/ReplyModel.js";
 
 const commentRouter = express.Router();
+
+commentRouter.get(
+  "/summary",
+  isAuth,
+  isAuthor,
+  expressAsyncHandler(async (req, res) => {
+    const userId = req.user._id;
+
+    try {
+      const commentsAggregation = await Comment.aggregate([
+        {
+          $match: {
+            articleId: {
+              $in: (
+                await Article.find({ author: userId })
+              ).map((article) => article._id),
+            },
+          },
+        },
+        {
+          $group: {
+            _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
+            comments: { $sum: 1 },
+          },
+        },
+        {
+          $sort: { _id: 1 },
+        },
+      ]);
+
+      const repliesAggregation = await Reply.aggregate([
+        {
+          $lookup: {
+            from: "comments",
+            localField: "parentComment",
+            foreignField: "_id",
+            as: "parentCommentDetails",
+          },
+        },
+        {
+          $unwind: "$parentCommentDetails",
+        },
+        {
+          $match: {
+            "parentCommentDetails.articleId": {
+              $in: (
+                await Article.find({ author: userId })
+              ).map((article) => article._id),
+            },
+          },
+        },
+        {
+          $group: {
+            _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
+            replies: { $sum: 1 },
+          },
+        },
+      ]);
+
+      const totalComments =
+        commentsAggregation.length > 0
+          ? commentsAggregation
+              .map((item) => item.comments)
+              .reduce((a, b) => a + b)
+          : 0;
+      const totalReplies =
+        repliesAggregation.length > 0
+          ? repliesAggregation
+              .map((item) => item.replies)
+              .reduce((a, b) => a + b)
+          : 0;
+
+      const commentsSummary = commentsAggregation.map((item) => ({
+        _id: item._id,
+        comments: item.comments,
+      }));
+
+      const repliesSummary = repliesAggregation.map((item) => ({
+        _id: item._id,
+        replies: item.replies,
+      }));
+
+      res.json({
+        totalComments,
+        totalReplies,
+        commentsSummary,
+        repliesSummary,
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: error.message || "Internal Server Error" });
+    }
+  })
+);
+
 commentRouter.post(
   "/:articleId",
   isAuth,

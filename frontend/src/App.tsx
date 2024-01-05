@@ -22,6 +22,7 @@ import AuthorRoute from "./components/AuthorRoute";
 import ArticlePage from "./pages/ArticlePage";
 import ManageArticlePage from "./pages/ManageArticlePage";
 import UpdateArticlePage from "./pages/UpdateArticlePage";
+import AuthorDashboardPage from "./pages/AuthorDashboardPage";
 
 function App() {
   return (
@@ -120,6 +121,14 @@ function App() {
           element={
             <AuthorRoute>
               <ManageArticlePage />
+            </AuthorRoute>
+          }
+        ></Route>
+        <Route
+          path="/author/dashboard"
+          element={
+            <AuthorRoute>
+              <AuthorDashboardPage />
             </AuthorRoute>
           }
         ></Route>
