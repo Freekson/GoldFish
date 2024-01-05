@@ -103,7 +103,6 @@ export interface IArticle {
   views: number;
   likedBy: string[];
   dislikedBy: string[];
-  comments: string[];
   createdAt: string;
   updatedAt: string;
 }

@@ -1,9 +1,9 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 import { IComment, Status } from "../../types";
-import { comentState } from "./types";
+import { commentState } from "./types";
 
-const initialState: comentState = {
+const initialState: commentState = {
   comments: null,
   status: Status.LOADING,
 };

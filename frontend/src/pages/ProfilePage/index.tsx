@@ -3,7 +3,6 @@ import Layout from "../../components/Layout";
 import { Helmet } from "react-helmet-async";
 import Breadcrumbs from "../../components/Breadcrumbs";
 import styles from "./ProfilePage.module.scss";
-import UserEvent from "../../components/UserEvent";
 import UserOrder from "../../components/UserOrder";
 import { Link } from "react-router-dom";
 import { RootState, useAppDispatch } from "../../redux/store";
@@ -84,11 +83,9 @@ const ProfilePage: React.FC = () => {
             <p className={styles["user__status"]}>
               Status:{" "}
               <span>
-                {userData?.isAuthor
-                  ? userData?.isAdmin
-                    ? "Admin"
-                    : "Author"
-                  : "Standard User"}
+                {userData?.isAdmin && "Admin"}
+                {userData?.isAuthor && !userData?.isAdmin && "Author"}
+                {!userData?.isAdmin && !userData?.isAuthor && "Standard User"}
               </span>
             </p>
           </div>
@@ -100,7 +97,7 @@ const ProfilePage: React.FC = () => {
                   <>
                     <Link to="/author/create">Create new article</Link>
                     <Link to="/author/management">Article management</Link>
-                    <Link to="/">Dashboard</Link>
+                    <Link to="/author/dashboard">Dashboard</Link>
                   </>
                 }
               />
@@ -250,12 +247,12 @@ const ProfilePage: React.FC = () => {
             )}
           </div>
         </div>
-        <div className={styles["user__events"]}>
+        {/* <div className={styles["user__events"]}>
           <Link to="/profile/events">My events</Link>
           <UserEvent />
           <UserEvent />
           <UserEvent />
-        </div>
+        </div> */}
       </section>
     </Layout>
   );

@@ -324,12 +324,9 @@ const Comment: React.FC<TProps> = ({
           <span>
             <b>{comment.author.name}</b>
             <span className={styles["status"]}>
-              Status:{" "}
-              {comment.author.isAuthor
-                ? comment.author.isAdmin
-                  ? "Admin"
-                  : "Author"
-                : "User"}
+              Status: {userData?.isAdmin && "Admin"}
+              {userData?.isAuthor && !userData?.isAdmin && "Author"}
+              {!userData?.isAdmin && !userData?.isAuthor && "Standard User"}
             </span>
           </span>{" "}
           <span className={styles["date"]}>{formattedDate}</span>

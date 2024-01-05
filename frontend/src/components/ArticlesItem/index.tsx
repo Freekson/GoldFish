@@ -48,14 +48,10 @@ const ArticlesItem: React.FC<TProps> = ({ article }) => {
       </div>
       <div className="rating">
         <p>
-          <b>Rating:</b> Will be later...
+          <b>Rating:</b> {article.likedBy.length - article.dislikedBy.length}
         </p>
       </div>
-      <div className="comments">
-        <p>
-          <b>Count of comments:</b> Will be later...
-        </p>
-      </div>
+
       <div className={styles["actions"]}>
         <Link to={`/blog/${article._id}`}>Show</Link>
         <p onClick={deleteHandler}>Delete</p>

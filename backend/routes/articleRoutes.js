@@ -45,6 +45,66 @@ articleRouter.get(
 );
 
 articleRouter.get(
+  "/summary",
+  isAuth,
+  isAuthor,
+  expressAsyncHandler(async (req, res) => {
+    const userId = req.user._id;
+
+    try {
+      const summary = await Article.aggregate([
+        { $match: { author: new mongoose.Types.ObjectId(userId) } },
+        {
+          $group: {
+            _id: null,
+            totalViews: { $sum: "$views" },
+            totalLikes: { $sum: { $size: "$likedBy" } },
+            totalDislikes: { $sum: { $size: "$dislikedBy" } },
+            totalArticles: { $sum: 1 },
+          },
+        },
+      ]);
+
+      const dailyArticles = await Article.aggregate([
+        {
+          $group: {
+            _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
+            articles: { $sum: 1 },
+          },
+        },
+        { $sort: { _id: 1 } },
+      ]);
+
+      const tags = await Article.aggregate([
+        { $match: { author: new mongoose.Types.ObjectId(userId) } },
+        { $unwind: "$tags" },
+        {
+          $group: {
+            _id: "$tags",
+            count: { $sum: 1 },
+          },
+        },
+      ]);
+      const authorInfo = summary[0] || {
+        totalViews: 0,
+        totalLikes: 0,
+        totalDislikes: 0,
+        totalArticles: 0,
+      };
+
+      res.status(200).json({
+        ...authorInfo,
+        dailyArticles,
+        tags,
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: error.message || "Internal Server Error" });
+    }
+  })
+);
+
+articleRouter.get(
   "/:id",
   expressAsyncHandler(async (req, res) => {
     const id = req.params.id;

@@ -147,7 +147,7 @@ const MainPage: React.FC = () => {
           )}
         </div>
       </section>
-      <section className={styles["upcoming-events"]}>
+      {/* <section className={styles["upcoming-events"]}>
         <Link to="/events">
           <h3>Upcoming events</h3>
         </Link>
@@ -190,7 +190,7 @@ const MainPage: React.FC = () => {
             <Button text="Show more" to="#events" type="active" />
           </div>
         </div>
-      </section>
+      </section> */}
       <section className={styles["more-info"]}>
         <Link to="/blog">
           <h3>More interesting information</h3>
