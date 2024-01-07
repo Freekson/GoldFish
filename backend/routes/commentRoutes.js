@@ -8,6 +8,49 @@ import Reply from "../models/ReplyModel.js";
 
 const commentRouter = express.Router();
 
+/**
+ * @swagger
+ * tags:
+ *   name: Comments
+ *   description: API for managing comments
+ */
+
+/**
+ * @swagger
+ * /comments/summary:
+ *   get:
+ *     summary: Get a summary of comments and replies for articles authored by the user.
+ *     tags: [Comments]
+ *     description: >
+ *       This route allows an authenticated author to get a summary of comments and replies for articles they authored.
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Successful request. Returns a summary of comments and replies.
+ *         content:
+ *           application/json:
+ *             example:
+ *               totalComments: 30
+ *               totalReplies: 15
+ *               commentsSummary:
+ *                 - _id: "2022-01-01"
+ *                   comments: 5
+ *                 - _id: "2022-01-02"
+ *                   comments: 10
+ *               repliesSummary:
+ *                 - _id: "2022-01-01"
+ *                   replies: 2
+ *                 - _id: "2022-01-02"
+ *                   replies: 5
+ *       500:
+ *         description: Internal Server Error.
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Internal Server Error"
+ */
+
 commentRouter.get(
   "/summary",
   isAuth,
@@ -102,6 +145,51 @@ commentRouter.get(
   })
 );
 
+/**
+ * @swagger
+ * /comments/{articleId}:
+ *   post:
+ *     summary: Add a comment to an article by ID.
+ *     tags: [Comments]
+ *     description: >
+ *       This route allows an authenticated user to add a comment to an article by its ID.
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: articleId
+ *         in: path
+ *         description: ID of the article to add a comment to.
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           example:
+ *             content: "This is a new comment."
+ *     responses:
+ *       201:
+ *         description: Successful request. Returns a success message and the added comment.
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Comment added"
+ *               comment: { commentObject }
+ *       404:
+ *         description: Article not found.
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Article not found"
+ *       500:
+ *         description: Internal Server Error.
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Internal Server Error"
+ */
+
 commentRouter.post(
   "/:articleId",
   isAuth,
@@ -139,6 +227,51 @@ commentRouter.post(
   })
 );
 
+/**
+ * @swagger
+ * /comments/{articleId}:
+ *   get:
+ *     summary: Get comments for an article by ID.
+ *     tags: [Comments]
+ *     description: >
+ *       This route allows fetching comments for an article by its ID.
+ *     parameters:
+ *       - name: articleId
+ *         in: path
+ *         description: ID of the article to get comments for.
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Successful request. Returns comments for the specified article.
+ *         content:
+ *           application/json:
+ *             example:
+ *               - _id: "commentId1"
+ *                 content: "This is a comment."
+ *                 author: { authorObject }
+ *                 replies: [{ replyObject }]
+ *                 createdAt: "2022-01-01T12:00:00.000Z"
+ *               - _id: "commentId2"
+ *                 content: "Another comment."
+ *                 author: { authorObject }
+ *                 replies: [{ replyObject }]
+ *                 createdAt: "2022-01-02T14:30:00.000Z"
+ *       404:
+ *         description: Comments not found.
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Comments not found"
+ *       500:
+ *         description: Internal Server Error.
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Internal Server Error"
+ */
+
 commentRouter.get(
   "/:articleId",
   expressAsyncHandler(async (req, res) => {
@@ -170,6 +303,57 @@ commentRouter.get(
     }
   })
 );
+
+/**
+ * @swagger
+ * /comments/{commentId}:
+ *   put:
+ *     summary: Edit a comment by ID.
+ *     tags: [Comments]
+ *     description: >
+ *       This route allows an authenticated user to edit their own comment by its ID.
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: commentId
+ *         in: path
+ *         description: ID of the comment to be edited.
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           example:
+ *             content: "Edited content of the comment."
+ *     responses:
+ *       200:
+ *         description: Successful request. Returns a success message and the edited comment.
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Comment edited"
+ *               comment: { commentObject }
+ *       403:
+ *         description: Unauthorized to edit this comment.
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Unauthorized to edit this comment"
+ *       404:
+ *         description: Comment not found.
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Comment not found"
+ *       500:
+ *         description: Internal Server Error.
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Internal Server Error"
+ */
 
 commentRouter.put(
   "/:commentId",
@@ -203,6 +387,50 @@ commentRouter.put(
   })
 );
 
+/**
+ * @swagger
+ * /comments/{commentId}:
+ *   delete:
+ *     summary: Delete a comment by ID.
+ *     tags: [Comments]
+ *     description: >
+ *       This route allows an authenticated user to delete their own comment by its ID.
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: commentId
+ *         in: path
+ *         description: ID of the comment to be deleted.
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Successful request. Returns a success message.
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Comment deleted"
+ *       403:
+ *         description: Unauthorized to delete this comment.
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Unauthorized to delete this comment"
+ *       404:
+ *         description: Comment not found.
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Comment not found"
+ *       500:
+ *         description: Internal Server Error.
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Internal Server Error"
+ */
+
 commentRouter.delete(
   "/:commentId",
   isAuth,
@@ -232,6 +460,51 @@ commentRouter.delete(
   })
 );
 
+/**
+ * @swagger
+ * /comments/like/{id}:
+ *   post:
+ *     summary: Like a comment by ID.
+ *     tags: [Comments]
+ *     description: >
+ *       This route allows an authenticated user to like a comment by its ID.
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         description: ID of the comment to be liked.
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           example:
+ *             userId: "userId123"
+ *     responses:
+ *       200:
+ *         description: Successful request. Returns a success message and the liked comment.
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "User liked the comment"
+ *               comment: { commentObject }
+ *       404:
+ *         description: Comment not found.
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Comment not found"
+ *       500:
+ *         description: Internal Server Error.
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Internal Server Error"
+ */
+
 commentRouter.post(
   "/like/:id",
   isAuth,
@@ -258,6 +531,51 @@ commentRouter.post(
   })
 );
 
+/**
+ * @swagger
+ * /comments/dislike/{id}:
+ *   post:
+ *     summary: Dislike a comment by ID.
+ *     tags: [Comments]
+ *     description: >
+ *       This route allows an authenticated user to dislike a comment by its ID.
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         description: ID of the comment to be disliked.
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           example:
+ *             userId: "userId123"
+ *     responses:
+ *       200:
+ *         description: Successful request. Returns a success message and the disliked comment.
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "User disliked the comment"
+ *               comment: { commentObject }
+ *       404:
+ *         description: Comment not found.
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Comment not found"
+ *       500:
+ *         description: Internal Server Error.
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Internal Server Error"
+ */
+
 commentRouter.post(
   "/dislike/:id",
   isAuth,
@@ -283,6 +601,51 @@ commentRouter.post(
     }
   })
 );
+
+/**
+ * @swagger
+ * /comments/report/{id}:
+ *   post:
+ *     summary: Report a comment by ID.
+ *     tags: [Comments]
+ *     description: >
+ *       This route allows an authenticated user to report a comment by its ID.
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         description: ID of the comment to be reported.
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           example:
+ *             userId: "userId123"
+ *     responses:
+ *       200:
+ *         description: Successful request. Returns a success message and the reported comment.
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Comment reported"
+ *               comment: { commentObject }
+ *       404:
+ *         description: Comment not found.
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Comment not found"
+ *       500:
+ *         description: Internal Server Error.
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Internal Server Error"
+ */
 
 commentRouter.post(
   "/report/:id",

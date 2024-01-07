@@ -23,6 +23,7 @@ import ArticlePage from "./pages/ArticlePage";
 import ManageArticlePage from "./pages/ManageArticlePage";
 import UpdateArticlePage from "./pages/UpdateArticlePage";
 import AuthorDashboardPage from "./pages/AuthorDashboardPage";
+import BlogPage from "./pages/BlogPage";
 
 function App() {
   return (
@@ -37,6 +38,7 @@ function App() {
         <Route path="/login" element={<LoginPage />}></Route>
         <Route path="/register" element={<RegisterPage />}></Route>
         <Route path="/contact" element={<ContactPage />}></Route>
+        <Route path="/blog" element={<BlogPage />}></Route>
         <Route path="/blog/:id" element={<ArticlePage />}></Route>
 
         {/* //! Protected routs */}

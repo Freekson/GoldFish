@@ -360,7 +360,7 @@ const Header: React.FC = () => {
               <a href="#events">Events</a>
             </li>
             <li>
-              <a href="#blog">Blog</a>
+              <Link to="/blog">Blog</Link>
             </li>
             <li>
               <Link to="/about-us">About us</Link>
@@ -518,7 +518,7 @@ const Header: React.FC = () => {
               </a>
             </li>
             <li>
-              <a href="3">
+              <Link to="/about-us">
                 Blog
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -529,7 +529,7 @@ const Header: React.FC = () => {
                 >
                   <path d="M0 12L5 7L0 2L1 0L8 7L1 14L0 12Z" fill="#C8C5C3" />
                 </svg>
-              </a>
+              </Link>
             </li>
             <li>
               <Link to="/about-us">

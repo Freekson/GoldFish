@@ -6,6 +6,58 @@ import { isAuth } from "../utils.js";
 
 const replyRouter = express.Router();
 
+/**
+ * @swagger
+ * tags:
+ *   name: Replies
+ *   description: API for managing replies
+ */
+
+/**
+ * @swagger
+ * /replies/{commentId}:
+ *   post:
+ *     summary: Add a reply to a comment by ID.
+ *     tags: [Replies]
+ *     description: >
+ *       This route allows an authenticated user to add a reply to a comment by its ID.
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: commentId
+ *         in: path
+ *         description: ID of the comment to which the reply will be added.
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           example:
+ *             content: "This is a reply."
+ *     responses:
+ *       201:
+ *         description: Successful request. Returns a success message and the added reply.
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Reply added"
+ *               reply: { replyObject }
+ *       404:
+ *         description: Comment not found.
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Comment not found"
+ *       500:
+ *         description: Internal Server Error.
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Internal Server Error"
+ */
+
 replyRouter.post(
   "/:commentId",
   isAuth,
@@ -39,6 +91,57 @@ replyRouter.post(
   })
 );
 
+/**
+ * @swagger
+ * /replies/{replyId}:
+ *   put:
+ *     summary: Update a reply by ID.
+ *     tags: [Replies]
+ *     description: >
+ *       This route allows an authenticated user to update a reply by its ID.
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: replyId
+ *         in: path
+ *         description: ID of the reply to be updated.
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           example:
+ *             content: "Updated reply content."
+ *     responses:
+ *       200:
+ *         description: Successful request. Returns a success message and the updated reply.
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Reply updated"
+ *               reply: { replyObject }
+ *       403:
+ *         description: You don't have permission to edit this reply.
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "You don't have permission to edit this reply"
+ *       404:
+ *         description: Reply not found.
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Reply not found"
+ *       500:
+ *         description: Internal Server Error.
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Internal Server Error"
+ */
+
 replyRouter.put(
   "/:replyId",
   isAuth,
@@ -69,6 +172,50 @@ replyRouter.put(
   })
 );
 
+/**
+ * @swagger
+ * /replies/{replyId}:
+ *   delete:
+ *     summary: Delete a reply by ID.
+ *     tags: [Replies]
+ *     description: >
+ *       This route allows an authenticated user to delete a reply by its ID.
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: replyId
+ *         in: path
+ *         description: ID of the reply to be deleted.
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Successful request. Returns a success message.
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Reply deleted"
+ *       403:
+ *         description: You don't have permission to delete this reply.
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "You don't have permission to delete this reply"
+ *       404:
+ *         description: Reply not found.
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Reply not found"
+ *       500:
+ *         description: Internal Server Error.
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Internal Server Error"
+ */
+
 replyRouter.delete(
   "/:replyId",
   isAuth,
@@ -97,6 +244,51 @@ replyRouter.delete(
   })
 );
 
+/**
+ * @swagger
+ * /replies/like/{id}:
+ *   post:
+ *     summary: Like a reply by ID.
+ *     tags: [Replies]
+ *     description: >
+ *       This route allows an authenticated user to like a reply by its ID.
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         description: ID of the reply to be liked.
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           example:
+ *             userId: "user1Id"
+ *     responses:
+ *       200:
+ *         description: Successful request. Returns a success message and the liked reply.
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "User liked the reply"
+ *               reply: { replyObject }
+ *       404:
+ *         description: Reply not found.
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Reply not found"
+ *       500:
+ *         description: Internal Server Error.
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Internal Server Error"
+ */
+
 replyRouter.post(
   "/like/:id",
   isAuth,
@@ -123,6 +315,51 @@ replyRouter.post(
   })
 );
 
+/**
+ * @swagger
+ * /replies/dislike/{id}:
+ *   post:
+ *     summary: Dislike a reply by ID.
+ *     tags: [Replies]
+ *     description: >
+ *       This route allows an authenticated user to dislike a reply by its ID.
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         description: ID of the reply to be disliked.
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           example:
+ *             userId: "user1Id"
+ *     responses:
+ *       200:
+ *         description: Successful request. Returns a success message and the disliked reply.
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "User disliked the reply"
+ *               reply: { replyObject }
+ *       404:
+ *         description: Reply not found.
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Reply not found"
+ *       500:
+ *         description: Internal Server Error.
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Internal Server Error"
+ */
+
 replyRouter.post(
   "/dislike/:id",
   isAuth,
@@ -148,6 +385,51 @@ replyRouter.post(
     }
   })
 );
+
+/**
+ * @swagger
+ * /replies/report/{id}:
+ *   post:
+ *     summary: Report a reply by ID.
+ *     tags: [Replies]
+ *     description: >
+ *       This route allows an authenticated user to report a reply by its ID.
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         description: ID of the reply to be reported.
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           example:
+ *             userId: "user1Id"
+ *     responses:
+ *       200:
+ *         description: Successful request. Returns a success message and the reported reply.
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Reply reported"
+ *               reply: { replyObject }
+ *       404:
+ *         description: Reply not found.
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Reply not found"
+ *       500:
+ *         description: Internal Server Error.
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Internal Server Error"
+ */
 
 replyRouter.post(
   "/report/:id",
