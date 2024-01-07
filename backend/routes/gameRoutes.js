@@ -8,7 +8,7 @@ const gameRouter = express.Router();
  * @swagger
  * tags:
  *   name: Games
- *   description: API for managing promo games
+ *   description: API for managing games
  */
 
 /**
