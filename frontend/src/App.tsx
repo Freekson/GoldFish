@@ -24,6 +24,7 @@ import ManageArticlePage from "./pages/ManageArticlePage";
 import UpdateArticlePage from "./pages/UpdateArticlePage";
 import AuthorDashboardPage from "./pages/AuthorDashboardPage";
 import BlogPage from "./pages/BlogPage";
+import NotFoundPage from "./pages/NotFoundPage";
 
 function App() {
   return (
@@ -142,6 +143,7 @@ function App() {
             </AuthorRoute>
           }
         ></Route>
+        <Route path="*" element={<NotFoundPage />}></Route>
       </Routes>
     </div>
   );
