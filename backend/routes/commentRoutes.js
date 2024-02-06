@@ -17,7 +17,7 @@ const commentRouter = express.Router();
 
 /**
  * @swagger
- * /comments/summary:
+ * /api/comments/summary:
  *   get:
  *     summary: Get a summary of comments and replies for articles authored by the user.
  *     tags: [Comments]
@@ -145,9 +145,11 @@ commentRouter.get(
   })
 );
 
+//! dynamic routes
+
 /**
  * @swagger
- * /comments/{articleId}:
+ * /api/comments/{articleId}:
  *   post:
  *     summary: Add a comment to an article by ID.
  *     tags: [Comments]
@@ -229,7 +231,7 @@ commentRouter.post(
 
 /**
  * @swagger
- * /comments/{articleId}:
+ * /api/comments/{articleId}:
  *   get:
  *     summary: Get comments for an article by ID.
  *     tags: [Comments]
@@ -306,7 +308,7 @@ commentRouter.get(
 
 /**
  * @swagger
- * /comments/{commentId}:
+ * /api/comments/{commentId}:
  *   put:
  *     summary: Edit a comment by ID.
  *     tags: [Comments]
@@ -389,7 +391,7 @@ commentRouter.put(
 
 /**
  * @swagger
- * /comments/{commentId}:
+ * /api/comments/{commentId}:
  *   delete:
  *     summary: Delete a comment by ID.
  *     tags: [Comments]
@@ -462,7 +464,7 @@ commentRouter.delete(
 
 /**
  * @swagger
- * /comments/like/{id}:
+ * /api/comments/like/{id}:
  *   post:
  *     summary: Like a comment by ID.
  *     tags: [Comments]
@@ -533,7 +535,7 @@ commentRouter.post(
 
 /**
  * @swagger
- * /comments/dislike/{id}:
+ * /api/comments/dislike/{id}:
  *   post:
  *     summary: Dislike a comment by ID.
  *     tags: [Comments]
@@ -604,7 +606,7 @@ commentRouter.post(
 
 /**
  * @swagger
- * /comments/report/{id}:
+ * /api/comments/report/{id}:
  *   post:
  *     summary: Report a comment by ID.
  *     tags: [Comments]

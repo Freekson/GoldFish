@@ -16,7 +16,7 @@ const articleRouter = express.Router();
 
 /**
  * @swagger
- * /articles:
+ * /api/article:
  *   get:
  *     summary: Get all articles.
  *     tags: [Articles]
@@ -41,7 +41,7 @@ articleRouter.get(
 
 /**
  * @swagger
- * /articles/filtered:
+ * /api/article/filtered:
  *   get:
  *     summary: Get a filtered list of articles.
  *     tags: [Articles]
@@ -95,6 +95,7 @@ articleRouter.get(
   "/filtered",
   expressAsyncHandler(async (req, res) => {
     const encodedAuthors = req.query.authors;
+
     const encodedTags = req.query.tags;
     const searchQuery = req.query.search
       ? new RegExp(req.query.search, "i")
@@ -172,6 +173,66 @@ articleRouter.get(
   })
 );
 
+/**
+ * @swagger
+ * /api/article/create:
+ *   post:
+ *     summary: Create a new article.
+ *     tags: [Articles]
+ *     description: >
+ *       This route allows authenticated authors to create a new article.
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *               content:
+ *                 type: string
+ *               tags:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *               image:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Article successfully created.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Article'
+ *       401:
+ *         description: Unauthorized. User not authenticated.
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Unauthorized. Please log in."
+ *       403:
+ *         description: Forbidden. User does not have permission to access.
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Forbidden. Insufficient permissions."
+ *       400:
+ *         description: Bad request. Missing required fields or invalid data format.
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Bad request. Missing required fields or invalid data format."
+ *       500:
+ *         description: Internal Server Error.
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Internal Server Error"
+ */
+
 articleRouter.post(
   "/create",
   isAuth,
@@ -193,7 +254,7 @@ articleRouter.post(
 
 /**
  * @swagger
- * /articles/author-articles:
+ * /api/article/author-articles:
  *   get:
  *     summary: Get articles authored by the authenticated author.
  *     tags: [Articles]
@@ -248,7 +309,7 @@ articleRouter.get(
 
 /**
  * @swagger
- * /articles/summary:
+ * /api/article/summary:
  *   get:
  *     summary: Get summary statistics for the authenticated author.
  *     tags: [Articles]
@@ -350,7 +411,193 @@ articleRouter.get(
 
 /**
  * @swagger
- * /articles/{id}:
+ * /api/article/tags-count:
+ *   get:
+ *     summary: Get count of all tags used in articles.
+ *     tags: [Articles]
+ *     description: >
+ *       This route allows fetching the count of all tags used in articles.
+ *     responses:
+ *       200:
+ *         description: Successful request. Returns count of all tags used in articles.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   _id:
+ *                     type: string
+ *                     description: Tag name.
+ *                   count:
+ *                     type: integer
+ *                     description: Number of articles using this tag.
+ *       404:
+ *         description: Tags not found. No tags are available.
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Tags not found"
+ *       500:
+ *         description: Internal Server Error.
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Internal Server Error"
+ */
+
+articleRouter.get(
+  "/tags-count",
+  expressAsyncHandler(async (req, res) => {
+    try {
+      const tagsCount = await Article.aggregate([
+        { $unwind: "$tags" },
+        {
+          $group: {
+            _id: "$tags",
+            count: { $sum: 1 },
+          },
+        },
+        { $sort: { count: -1, _id: 1 } },
+      ]);
+
+      if (tagsCount && tagsCount.length > 0) {
+        res.send(tagsCount);
+      } else {
+        res.status(404).send({ message: "Tags not found" });
+      }
+    } catch (error) {
+      res.status(500).send({ message: "Internal Server Error" });
+    }
+  })
+);
+
+/**
+ * @swagger
+ * /api/article/authors-count:
+ *   get:
+ *     summary: Get count of articles for each author.
+ *     tags: [Articles]
+ *     description: >
+ *       This route allows fetching the count of articles for each author.
+ *     responses:
+ *       200:
+ *         description: Successful request. Returns count of articles for each author.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   _id:
+ *                     type: string
+ *                     description: ID of the author.
+ *                   name:
+ *                     type: string
+ *                     description: Name of the author.
+ *                   count:
+ *                     type: integer
+ *                     description: Number of articles written by this author.
+ *       404:
+ *         description: Authors not found. No authors with articles are available.
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Authors not found"
+ *       500:
+ *         description: Internal Server Error.
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Internal Server Error"
+ */
+
+articleRouter.get(
+  "/authors-count",
+  expressAsyncHandler(async (req, res) => {
+    try {
+      const authorsArticlesCount = await User.aggregate([
+        {
+          $lookup: {
+            from: "articles",
+            localField: "_id",
+            foreignField: "author",
+            as: "articles",
+          },
+        },
+        {
+          $project: {
+            _id: "$_id",
+            name: "$name",
+            count: { $size: "$articles" },
+          },
+        },
+        {
+          $match: {
+            count: { $gt: 0 },
+          },
+        },
+        { $sort: { count: -1, _id: 1 } },
+      ]);
+
+      if (authorsArticlesCount && authorsArticlesCount.length > 0) {
+        res.send(authorsArticlesCount);
+      } else {
+        res.status(404).send({ message: "Authors not found" });
+      }
+    } catch (error) {
+      res.status(500).send({ message: "Internal Server Error" });
+    }
+  })
+);
+
+/**
+ * @swagger
+ * /api/article/latest-articles:
+ *   get:
+ *     summary: Get the three latest articles.
+ *     tags: [Articles]
+ *     description: >
+ *       This route allows fetching the three latest articles.
+ *     responses:
+ *       200:
+ *         description: Successful request. Returns the three latest articles.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Article'
+ *       500:
+ *         description: Internal Server Error.
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Internal Server Error"
+ */
+
+articleRouter.get(
+  "/latest-articles",
+  expressAsyncHandler(async (req, res) => {
+    try {
+      const latestArticles = await Article.find()
+        .sort({ createdAt: -1 })
+        .limit(3);
+      res.status(200).json(latestArticles);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Internal Server Error" });
+    }
+  })
+);
+
+//! dynamic routes
+
+/**
+ * @swagger
+ * /api/article/{id}:
  *   get:
  *     summary: Get an article by ID.
  *     tags: [Articles]
@@ -425,7 +672,7 @@ articleRouter.get(
 
 /**
  * @swagger
- * /articles/{id}:
+ * /api/article/{id}:
  *   delete:
  *     summary: Delete an article by ID.
  *     tags: [Articles]
@@ -499,7 +746,7 @@ articleRouter.delete(
 
 /**
  * @swagger
- * /articles/{id}:
+ * /api/article/{id}:
  *   put:
  *     summary: Update an article by ID.
  *     tags: [Articles]
@@ -608,7 +855,7 @@ articleRouter.put(
 
 /**
  * @swagger
- * /articles/like/{id}:
+ * /api/article/like/{id}:
  *   post:
  *     summary: Like an article by ID.
  *     tags: [Articles]
@@ -679,7 +926,7 @@ articleRouter.post(
 
 /**
  * @swagger
- * /articles/dislike/{id}:
+ * /api/article/dislike/{id}:
  *   post:
  *     summary: Dislike an article by ID.
  *     tags: [Articles]

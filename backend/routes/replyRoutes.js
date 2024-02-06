@@ -15,7 +15,7 @@ const replyRouter = express.Router();
 
 /**
  * @swagger
- * /replies/{commentId}:
+ * /api/replies/{commentId}:
  *   post:
  *     summary: Add a reply to a comment by ID.
  *     tags: [Replies]
@@ -93,7 +93,7 @@ replyRouter.post(
 
 /**
  * @swagger
- * /replies/{replyId}:
+ * /api/replies/{replyId}:
  *   put:
  *     summary: Update a reply by ID.
  *     tags: [Replies]
@@ -174,7 +174,7 @@ replyRouter.put(
 
 /**
  * @swagger
- * /replies/{replyId}:
+ * /api/replies/{replyId}:
  *   delete:
  *     summary: Delete a reply by ID.
  *     tags: [Replies]
@@ -246,7 +246,7 @@ replyRouter.delete(
 
 /**
  * @swagger
- * /replies/like/{id}:
+ * /api/replies/like/{id}:
  *   post:
  *     summary: Like a reply by ID.
  *     tags: [Replies]
@@ -317,7 +317,7 @@ replyRouter.post(
 
 /**
  * @swagger
- * /replies/dislike/{id}:
+ * /api/replies/dislike/{id}:
  *   post:
  *     summary: Dislike a reply by ID.
  *     tags: [Replies]
@@ -388,7 +388,7 @@ replyRouter.post(
 
 /**
  * @swagger
- * /replies/report/{id}:
+ * /api/replies/report/{id}:
  *   post:
  *     summary: Report a reply by ID.
  *     tags: [Replies]

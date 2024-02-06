@@ -19,7 +19,7 @@ const GameCardSkeleton: React.FC<TProps> = ({ items }) => {
           <div style={{ marginTop: "1rem", width: "90%" }}>
             <Skeleton />
           </div>
-          <div style={{ marginTop: "1rem", width: "90%" }}>
+          <div style={{ marginTop: "1rem", width: "90%", display: "flex" }}>
             <Skeleton height={30} />
           </div>
           <div
