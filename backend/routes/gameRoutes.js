@@ -254,7 +254,7 @@ gameRouter.get(
 
 /**
  * @swagger
- * /game/filtered:
+ * /api/game/filtered:
  *   get:
  *     summary: Get a filtered list of games.
  *     tags: [Games]

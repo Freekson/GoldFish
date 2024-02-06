@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 import { IArticle, Status } from "../../types";
-import { articleState } from "./types";
+import { ArtilceFilterParamsType, FilterRespType, articleState } from "./types";
 
 const initialState: articleState = {
   article: null,
@@ -27,6 +27,24 @@ export const fetchAuthorArticles = createAsyncThunk<
   });
   return data;
 });
+
+export const fetchFilteredArticles = createAsyncThunk<
+  FilterRespType,
+  ArtilceFilterParamsType
+>("article/fetchFilteredArticles", async ({ path }) => {
+  const { data } = await axios.get<FilterRespType>(`/api/article${path}`);
+  return data;
+});
+
+export const fetchLastThreeArticles = createAsyncThunk<IArticle[]>(
+  "article/fetchLastThreeArticles",
+  async () => {
+    const { data } = await axios.get<IArticle[]>(
+      `/api/article/latest-articles`
+    );
+    return data;
+  }
+);
 
 const articleSlice = createSlice({
   name: "article",
@@ -59,6 +77,30 @@ const articleSlice = createSlice({
       state.statusAll = Status.SUCCESS;
     });
     builder.addCase(fetchAuthorArticles.rejected, (state) => {
+      state.articles = [];
+      state.statusAll = Status.ERROR;
+    });
+
+    builder.addCase(fetchFilteredArticles.pending, (state) => {
+      state.statusAll = Status.LOADING;
+    });
+    builder.addCase(fetchFilteredArticles.fulfilled, (state, action) => {
+      state.filterData = action.payload;
+      state.statusAll = Status.SUCCESS;
+    });
+    builder.addCase(fetchFilteredArticles.rejected, (state) => {
+      state.statusAll = Status.ERROR;
+    });
+
+    builder.addCase(fetchLastThreeArticles.pending, (state) => {
+      state.articles = [];
+      state.statusAll = Status.LOADING;
+    });
+    builder.addCase(fetchLastThreeArticles.fulfilled, (state, action) => {
+      state.articles = action.payload;
+      state.statusAll = Status.SUCCESS;
+    });
+    builder.addCase(fetchLastThreeArticles.rejected, (state) => {
       state.articles = [];
       state.statusAll = Status.ERROR;
     });
