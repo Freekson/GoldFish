@@ -8,6 +8,9 @@ import toastReducer from "./toast/slice";
 import orderReducer from "./order/slice";
 import promoCodeReducer from "./promocode/slice";
 import wishlistReducer from "./wishlist/slice";
+import articleReducer from "./article/slice";
+import commentReducer from "./comment/slice";
+import summaryReducer from "./summary/slice";
 
 import { useDispatch } from "react-redux";
 
@@ -22,6 +25,9 @@ export const store = configureStore({
     order: orderReducer,
     promoCode: promoCodeReducer,
     wishlist: wishlistReducer,
+    article: articleReducer,
+    comment: commentReducer,
+    summary: summaryReducer,
   },
 });
 

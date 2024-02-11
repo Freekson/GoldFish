@@ -175,15 +175,28 @@ userRouter.get(
     const user = await User.findById(userId);
 
     if (user) {
-      res.send({
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-        experience: user.experience,
-        isAdmin: user.isAdmin,
-        isAuthor: user.isAuthor,
-        token: generateToken(user),
-      });
+      if (user.image) {
+        res.send({
+          _id: user._id,
+          name: user.name,
+          email: user.email,
+          experience: user.experience,
+          isAdmin: user.isAdmin,
+          isAuthor: user.isAuthor,
+          token: generateToken(user),
+          image: user.image,
+        });
+      } else {
+        res.send({
+          _id: user._id,
+          name: user.name,
+          email: user.email,
+          experience: user.experience,
+          isAdmin: user.isAdmin,
+          isAuthor: user.isAuthor,
+          token: generateToken(user),
+        });
+      }
     } else {
       res.status(404).send({ message: "User not found" });
     }
@@ -233,7 +246,305 @@ userRouter.put(
       user.experience += experienceToAdd;
       const updatedUser = await user.save();
 
-      res.send(user);
+      res.send(updatedUser);
+    } else {
+      res.status(404).send({ message: "User not found" });
+    }
+  })
+);
+
+/**
+ * @swagger
+ * /api/users/update-password:
+ *   put:
+ *     summary: Update user password
+ *     description: Update the password of the authenticated user.
+ *     tags: [User]
+ *     security:
+ *       - Bearer: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               currentPassword:
+ *                 type: string
+ *                 description: Current password of the user.
+ *               newPassword:
+ *                 type: string
+ *                 description: New password for the user.
+ *     responses:
+ *       200:
+ *         description: Successful response with updated user details.
+ *         content:
+ *           application/json:
+ *             example:
+ *               _id: "1234567890"
+ *               name: "John Doe"
+ *               email: "john@example.com"
+ *               experience: 150
+ *               isAdmin: false
+ *               isAuthor: true
+ *               token: "jwt_token"
+ *       401:
+ *         description: Incorrect current password.
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: Incorrect current password
+ *       404:
+ *         description: User not found.
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: User not found
+ */
+
+userRouter.put(
+  "/update-password",
+  isAuth,
+  expressAsyncHandler(async (req, res) => {
+    const userId = req.user._id;
+    const { currentPassword, newPassword } = req.body;
+
+    const user = await User.findById(userId);
+
+    if (user) {
+      const isPasswordValid = await bcrypt.compare(
+        currentPassword,
+        user.password
+      );
+
+      if (isPasswordValid) {
+        const hashedNewPassword = await bcrypt.hashSync(newPassword);
+        user.password = hashedNewPassword;
+        const updatedUser = await user.save();
+        res.send(updatedUser);
+      } else {
+        res.status(401).send({ message: "Incorrect current password" });
+      }
+    } else {
+      res.status(404).send({ message: "User not found" });
+    }
+  })
+);
+
+/**
+ * @swagger
+ * /api/users/update-name:
+ *   put:
+ *     summary: Update user name
+ *     description: Update the name of the authenticated user.
+ *     tags: [User]
+ *     security:
+ *       - Bearer: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               newName:
+ *                 type: string
+ *                 description: New name for the user.
+ *     responses:
+ *       200:
+ *         description: Successful response with updated user details.
+ *         content:
+ *           application/json:
+ *             example:
+ *               _id: "1234567890"
+ *               name: "New Name"
+ *               email: "user@example.com"
+ *               experience: 100
+ *               isAdmin: false
+ *               isAuthor: true
+ *               token: "jwt_token"
+ *       401:
+ *         description: Unauthorized, user not authenticated.
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: Unauthorized
+ *       404:
+ *         description: User not found.
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: User not found
+ */
+
+userRouter.put(
+  "/update-name",
+  isAuth,
+  expressAsyncHandler(async (req, res) => {
+    const userId = req.user._id;
+    const { newName } = req.body;
+
+    const user = await User.findById(userId);
+
+    if (user) {
+      user.name = newName;
+      const updatedUser = await user.save();
+      res.send(updatedUser);
+    } else {
+      res.status(404).send({ message: "User not found" });
+    }
+  })
+);
+
+/**
+ * @swagger
+ * /api/users/update-email:
+ *   put:
+ *     summary: Update user email
+ *     description: Update the email of the authenticated user and check for duplicate emails in the database.
+ *     tags: [User]
+ *     security:
+ *       - Bearer: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               newEmail:
+ *                 type: string
+ *                 description: New email for the user.
+ *     responses:
+ *       200:
+ *         description: Successful response with updated user details.
+ *         content:
+ *           application/json:
+ *             example:
+ *               _id: "1234567890"
+ *               name: "User Name"
+ *               email: "new.email@example.com"
+ *               experience: 100
+ *               isAdmin: false
+ *               isAuthor: true
+ *               token: "jwt_token"
+ *       400:
+ *         description: Email already in use or bad request.
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: Email already in use
+ *       401:
+ *         description: Unauthorized, user not authenticated.
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: Unauthorized
+ *       404:
+ *         description: User not found.
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: User not found
+ *       500:
+ *         description: Internal Server Error.
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: Internal Server Error
+ */
+
+userRouter.put(
+  "/update-email",
+  isAuth,
+  expressAsyncHandler(async (req, res) => {
+    const userId = req.user._id;
+    const { newEmail } = req.body;
+
+    try {
+      const existingUser = await User.findOne({ email: newEmail });
+
+      if (existingUser) {
+        return res.status(400).send({ message: "Email already in use" });
+      }
+
+      const user = await User.findById(userId);
+
+      if (user) {
+        user.email = newEmail;
+        const updatedUser = await user.save();
+
+        res.send(updatedUser);
+      } else {
+        res.status(404).send({ message: "User not found" });
+      }
+    } catch (error) {
+      console.error("Error updating email:", error);
+      res.status(500).send({ message: "Internal Server Error" });
+    }
+  })
+);
+
+/**
+ * @swagger
+ * /api/users/update-image:
+ *   put:
+ *     summary: Update user image
+ *     description: Update the image of the authenticated user.
+ *     tags: [User]
+ *     security:
+ *       - Bearer: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               imageUrl:
+ *                 type: string
+ *                 description: URL of the new user image.
+ *     responses:
+ *       200:
+ *         description: Successful response with updated user details.
+ *         content:
+ *           application/json:
+ *             example:
+ *               _id: "1234567890"
+ *               name: "User Name"
+ *               email: "user@example.com"
+ *               experience: 100
+ *               isAdmin: false
+ *               isAuthor: true
+ *               image: "https://example.com/new-image.jpg"
+ *               token: "jwt_token"
+ *       404:
+ *         description: User not found.
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: User not found
+ *       500:
+ *         description: Internal Server Error.
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: Internal Server Error
+ */
+
+userRouter.put(
+  "/update-image",
+  isAuth,
+  expressAsyncHandler(async (req, res) => {
+    const userId = req.user._id;
+    const { imageUrl } = req.body;
+
+    const user = await User.findById(userId);
+
+    if (user) {
+      user.image = imageUrl;
+      const updatedUser = await user.save();
+      res.send(updatedUser);
     } else {
       res.status(404).send({ message: "User not found" });
     }

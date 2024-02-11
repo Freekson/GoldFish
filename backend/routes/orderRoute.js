@@ -173,6 +173,8 @@ orderRouter.get(
   })
 );
 
+//! dynamic routes
+
 /**
  * @swagger
  * /api/orders/{id}:

@@ -82,6 +82,7 @@ export interface IOrder {
     email_address: string;
   };
   createdAt: string;
+  updatedAt: string;
 }
 
 export interface IPromoCode {
@@ -90,6 +91,45 @@ export interface IPromoCode {
   discount: number;
   expiresAt: string;
   isActive: boolean;
+}
+
+export interface IArticle {
+  _id: string;
+  title: string;
+  content: string;
+  image: string | null;
+  tags: string[];
+  author: TUser;
+  views: number;
+  likedBy: string[];
+  dislikedBy: string[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type TReply = {
+  _id: string;
+  content: string;
+  author: TUser;
+  likedBy: string[];
+  dislikedBy: string[];
+  reportedBy: string[];
+  parentComment: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export interface IComment {
+  _id: string;
+  content: string;
+  author: TUser;
+  likedBy: string[];
+  dislikedBy: string[];
+  reportedBy: string[];
+  replies?: TReply[];
+  articleId: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface DateTimeFormatOptions {

@@ -64,6 +64,8 @@ promoCodeRouter.get(
   })
 );
 
+//! dynamic routes
+
 /**
  * @swagger
  * /api/promocodes/{code}:

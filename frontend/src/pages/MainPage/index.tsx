@@ -14,6 +14,9 @@ import MessageBox, { MessageTypes } from "../../components/MessageBox";
 import Skeleton from "react-loading-skeleton";
 import { Status } from "../../types";
 import { fetchWishlist } from "../../redux/wishlist/slice";
+import { fetchLastThreeArticles } from "../../redux/article/slice";
+import ArticleCard from "../../components/ArticleCard";
+import { ThreeDots } from "react-loader-spinner";
 
 const MainPage: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -23,6 +26,9 @@ const MainPage: React.FC = () => {
     (state: RootState) => state.category
   );
   const { userData } = useSelector((state: RootState) => state.user);
+  const { articles, statusAll: articleStatus } = useSelector(
+    (state: RootState) => state.article
+  );
 
   useEffect(() => {
     if (userData) {
@@ -33,6 +39,7 @@ const MainPage: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       dispatch(fetchHomePageProducts());
+      dispatch(fetchLastThreeArticles());
     };
     fetchData();
   }, [dispatch]);
@@ -147,7 +154,7 @@ const MainPage: React.FC = () => {
           )}
         </div>
       </section>
-      <section className={styles["upcoming-events"]}>
+      {/* <section className={styles["upcoming-events"]}>
         <Link to="/events">
           <h3>Upcoming events</h3>
         </Link>
@@ -190,50 +197,38 @@ const MainPage: React.FC = () => {
             <Button text="Show more" to="#events" type="active" />
           </div>
         </div>
-      </section>
+      </section> */}
       <section className={styles["more-info"]}>
         <Link to="/blog">
-          <h3>More interesting information</h3>
+          <h3>Our blog</h3>
         </Link>
         <div className={styles["more-info__wrapper"]}>
-          <div className={styles["more-info__blog"]}>
-            <ImageText
-              img="./img/blog-1.png"
-              imgAlt="blog"
-              text={
-                <>
-                  <p style={{ fontWeight: "500" }}>
-                    Desired, but unlikely releases
-                  </p>
-                  <p>A small list of “what if...”</p>
-                </>
-              }
+          {articleStatus === Status.ERROR ? (
+            <MessageBox
+              message="An error occurred while loading articles, reload page or wait"
+              type={MessageTypes.DANGER}
+              customStyles={{ marginTop: "1rem" }}
             />
-            <ImageText
-              img="./img/blog-1.png"
-              imgAlt="blog"
-              text={
-                <>
-                  <p style={{ fontWeight: "500" }}>
-                    Desired, but unlikely releases
-                  </p>
-                  <p>A small list of “what if...”</p>
-                </>
-              }
-            />
-            <ImageText
-              img="./img/blog-1.png"
-              imgAlt="blog"
-              text={
-                <>
-                  <p style={{ fontWeight: "500" }}>
-                    Desired, but unlikely releases
-                  </p>
-                  <p>A small list of “what if...”</p>
-                </>
-              }
-            />
-          </div>
+          ) : articleStatus === Status.LOADING ? (
+            <div className={styles["loading"]}>
+              <ThreeDots
+                height="80"
+                width="80"
+                radius="9"
+                color="#fb791b"
+                ariaLabel="three-dots-loading"
+                wrapperStyle={{}}
+                visible={true}
+              />
+            </div>
+          ) : (
+            <div className={styles["more-info__blog"]}>
+              {articles.map((article) => (
+                <ArticleCard article={article} key={article._id} />
+              ))}
+            </div>
+          )}
+
           <div className={styles["more-info__btn"]}>
             <Button text="Show more" to="#events" type="inactive" />
           </div>
@@ -399,7 +394,7 @@ const MainPage: React.FC = () => {
               <fieldset className={styles["contact__fieldset"]}>
                 <label htmlFor="comment">Your comment:</label> <br />
                 <textarea
-                  className={styles["contact__texarea"]}
+                  className={styles["contact__textarea"]}
                   id="comment"
                   name="user_comment"
                   rows={4}

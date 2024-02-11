@@ -1,0 +1,56 @@
+.article {
+  position: relative;
+  background: none;
+  cursor: pointer;
+  min-height: 200px;
+
+  img {
+    width: 100%;
+    border-radius: 9px;
+    overflow: hidden;
+    box-shadow: 5px 6px 16px 0px #2a2a2a29;
+    min-height: 200px;
+  }
+
+  div {
+    width: 100%;
+    padding: 1rem 1rem;
+    position: absolute;
+    bottom: 4px;
+    right: 0;
+    height: 80px;
+    background-color: rgba(42, 42, 42, 0.8);
+    color: white;
+    box-sizing: border-box;
+    border-radius: 0px 0px 9px 9px;
+    transition: all 0.2s linear;
+    box-shadow: 5px 6px 16px 0px #2a2a2a29;
+    overflow: hidden;
+
+    .title {
+      margin-top: 2rem;
+    }
+
+    .views,
+    .date {
+      text-align: right;
+      width: 100%;
+    }
+  }
+
+  &:hover {
+    div {
+      height: 150px;
+    }
+  }
+}
+
+@media (max-width: 667px) {
+  .article {
+    &:hover {
+      div {
+        height: 120px;
+      }
+    }
+  }
+}

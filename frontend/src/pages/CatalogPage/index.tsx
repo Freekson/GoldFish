@@ -55,6 +55,7 @@ const CatalogPage: React.FC = () => {
   const games = filterData?.games;
   const pages = filterData?.totalPages ?? 1;
 
+  //? fetch count data
   useEffect(() => {
     const fetchData = async () => {
       dispatch(fetchRatingCount());
@@ -319,6 +320,8 @@ const CatalogPage: React.FC = () => {
     setSortOption(selectedOption);
   };
 
+  //? other functions
+
   const clearFilters = () => {
     setSelectedCategories([]);
     setSelectedPublishers([]);
@@ -367,14 +370,16 @@ const CatalogPage: React.FC = () => {
               </svg>
             </p>
           )}
-          <p>Sort By</p>
-          <select value={sortOption} onChange={handleSortChange}>
-            {sortOptions.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
+          <div className={styles["sort-select"]}>
+            <p>Sort By</p>
+            <select value={sortOption} onChange={handleSortChange}>
+              {sortOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
       </div>
       <section className={styles["catalog"]}>
@@ -385,7 +390,7 @@ const CatalogPage: React.FC = () => {
             description={
               <div className={styles["filters"]}>
                 {countStatus === "loading" ? (
-                  <Skeleton height={300} />
+                  <Skeleton height={100} width={200} />
                 ) : (
                   categoryCount.map((category, index) => (
                     <fieldset key={index}>
@@ -416,7 +421,7 @@ const CatalogPage: React.FC = () => {
             description={
               <div className={styles["filters"]}>
                 {countStatus === "loading" ? (
-                  <Skeleton height={300} />
+                  <Skeleton height={100} width={200} />
                 ) : (
                   publishersCount.map((publisher, index) => (
                     <fieldset key={index}>

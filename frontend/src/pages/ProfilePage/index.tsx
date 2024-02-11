@@ -3,7 +3,6 @@ import Layout from "../../components/Layout";
 import { Helmet } from "react-helmet-async";
 import Breadcrumbs from "../../components/Breadcrumbs";
 import styles from "./ProfilePage.module.scss";
-import UserEvent from "../../components/UserEvent";
 import UserOrder from "../../components/UserOrder";
 import { Link } from "react-router-dom";
 import { RootState, useAppDispatch } from "../../redux/store";
@@ -14,12 +13,16 @@ import { Status } from "../../types";
 import MessageBox, { MessageTypes } from "../../components/MessageBox";
 import GameCard from "../../components/GameCard";
 import { fetchWishlist } from "../../redux/wishlist/slice";
+import GameCardSkeleton from "../../components/GameCard/GameCardSkeleton";
+import OpenedCard from "../../components/OpenedCard";
 
 const ProfilePage: React.FC = () => {
   const dispatch = useAppDispatch();
   const { userData } = useSelector((state: RootState) => state.user);
   const { lastOrders, status } = useSelector((state: RootState) => state.order);
-  const { items } = useSelector((state: RootState) => state.wishlist);
+  const { items, status: wishlistStatus } = useSelector(
+    (state: RootState) => state.wishlist
+  );
 
   const [currentLevel, setCurrentLevel] = useState(0);
 
@@ -80,14 +83,26 @@ const ProfilePage: React.FC = () => {
             <p className={styles["user__status"]}>
               Status:{" "}
               <span>
-                {userData?.isAdmin
-                  ? "Admin"
-                    ? userData?.isAuthor
-                    : "Author"
-                  : "Standart User"}
+                {userData?.isAdmin && "Admin"}
+                {userData?.isAuthor && !userData?.isAdmin && "Author"}
+                {!userData?.isAdmin && !userData?.isAuthor && "Standard User"}
               </span>
             </p>
           </div>
+          {userData?.isAuthor && (
+            <div className={styles["user__author"]}>
+              <OpenedCard
+                title={"Author panel"}
+                description={
+                  <>
+                    <Link to="/author/create">Create new article</Link>
+                    <Link to="/author/management">Article management</Link>
+                    <Link to="/author/dashboard">Dashboard</Link>
+                  </>
+                }
+              />
+            </div>
+          )}
         </div>
         <div className={styles["user__achievements"]}>
           <h4>Loyalty card</h4>
@@ -204,22 +219,40 @@ const ProfilePage: React.FC = () => {
         <div className={styles["user__wishlist"]}>
           <Link to="/profile/wishlist">My wishlist</Link>
           <div className={styles["wishlist__wrapper"]}>
-            {items.slice(0, 4).map((item) => (
-              <GameCard
-                key={item._id}
-                game={item}
-                isDiscount={item.discount ? true : false}
-                discount={item.discount}
+            {wishlistStatus === Status.ERROR ? (
+              <MessageBox
+                message="An error occurred while loading games, we are working on it"
+                type={MessageTypes.DANGER}
+                customStyles={{ marginTop: "1rem" }}
               />
-            ))}
+            ) : wishlistStatus === Status.LOADING ? (
+              <GameCardSkeleton items={4} />
+            ) : items.length <= 0 ? (
+              <MessageBox
+                message="Your wishlist is empty"
+                type={MessageTypes.INFO}
+                customStyles={{ marginTop: "1rem" }}
+              />
+            ) : (
+              items
+                .slice(0, 4)
+                .map((item) => (
+                  <GameCard
+                    key={item._id}
+                    game={item}
+                    isDiscount={item.discount ? true : false}
+                    discount={item.discount}
+                  />
+                ))
+            )}
           </div>
         </div>
-        <div className={styles["user__events"]}>
+        {/* <div className={styles["user__events"]}>
           <Link to="/profile/events">My events</Link>
           <UserEvent />
           <UserEvent />
           <UserEvent />
-        </div>
+        </div> */}
       </section>
     </Layout>
   );

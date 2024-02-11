@@ -14,16 +14,26 @@
       span {
         text-decoration: underline;
         margin-left: 0.3rem;
+        overflow: hidden;
+        max-width: 300px;
+        text-overflow: ellipsis;
+        white-space: nowrap;
       }
 
       svg {
         margin-left: 0.5rem;
+        vertical-align: middle;
         cursor: pointer;
 
         path {
           fill: #2a2a2a;
         }
       }
+    }
+
+    .sort-select {
+      display: flex;
+      align-items: center;
     }
 
     p {
@@ -222,6 +232,21 @@
   }
 }
 
+@media (max-width: 1030px) {
+  .catalog-up {
+    .sort-by {
+      flex-direction: column;
+      align-items: flex-end;
+      margin-bottom: 2rem;
+
+      .search {
+        order: 2;
+        margin-right: 0;
+      }
+    }
+  }
+}
+
 @media (max-width: 992px) {
   .catalog {
     flex-wrap: wrap;
@@ -245,6 +270,18 @@
   }
 }
 
+@media (max-width: 760px) {
+  .catalog-up {
+    .sort-by {
+      .search {
+        span {
+          max-width: 100px;
+        }
+      }
+    }
+  }
+}
+
 @media (max-width: 620px) {
   .catalog {
     &__filters {
@@ -257,6 +294,24 @@
       p {
         width: 20px;
         height: 20px;
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .catalog-up {
+    flex-direction: column;
+
+    h3 {
+      margin-bottom: 0;
+    }
+
+    .sort-by {
+      .search {
+        span {
+          max-width: 150px;
+        }
       }
     }
   }

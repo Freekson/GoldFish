@@ -8,6 +8,7 @@ import { useAppDispatch } from "../../redux/store";
 import { login } from "../../redux/user/slice";
 import { showToast } from "../../redux/toast/slice";
 import { toastStatus } from "../../redux/toast/types";
+import { validatePassword } from "../../utils/validatePassword";
 
 const RegisterPage: React.FC = () => {
   const { search } = useLocation();
@@ -43,50 +44,9 @@ const RegisterPage: React.FC = () => {
     setConfirmPassword(event.target.value);
   };
 
-  const validatePassword = () => {
-    const minLength = 6;
-    const hasUpperCase = /[A-Z]/.test(password);
-    const hasLowerCase = /[a-z]/.test(password);
-    const hasDigit = /\d/.test(password);
-
-    if (password !== confirmPassword) {
-      dispatch(
-        showToast({
-          toastText: "Passwords do not match",
-          toastType: toastStatus.WARNING,
-        })
-      );
-      return false;
-    }
-
-    if (password.length < minLength) {
-      dispatch(
-        showToast({
-          toastText: "Password must be at least 6 characters long",
-          toastType: toastStatus.WARNING,
-        })
-      );
-      return false;
-    }
-
-    if (!hasUpperCase || !hasLowerCase || !hasDigit) {
-      dispatch(
-        showToast({
-          toastText:
-            "Password must contain at least one uppercase letter, one lowercase letter, and one digit",
-          toastType: toastStatus.WARNING,
-        })
-      );
-
-      return false;
-    }
-
-    return true;
-  };
-
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
-    const isValid = validatePassword();
+    const isValid = validatePassword(password, confirmPassword);
 
     if (isValid) {
       try {
