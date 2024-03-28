@@ -54,6 +54,7 @@ const WishlistPage: React.FC = () => {
               game={item}
               isDiscount={item.discount ? true : false}
               discount={item.discount}
+              key={item._id}
             />
           ))
         )}
